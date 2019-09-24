@@ -1,0 +1,4 @@
+rootProject.name = 'tai'
+include 'tai-base'
+include 'tai-sql'
+include 'tai-criteria'
