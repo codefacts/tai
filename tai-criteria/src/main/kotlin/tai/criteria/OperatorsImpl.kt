@@ -1,20 +1,13 @@
 package tai.criteria
 
+import tai.base.JsonMap
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.reflect.KClass
 
-const val op__ = "op";
-const val arg__ = "arg";
-const val arg1__ = "arg1";
-const val arg2__ = "arg2";
-const val arg3__ = "arg3";
-const val arg4__ = "arg4";
-const val arg5__ = "arg5";
-
 class BooleanValueHolder : CriteriaOperationNative<Boolean> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Boolean> = Boolean::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Boolean): CriteriaExpression {
@@ -23,7 +16,7 @@ class BooleanValueHolder : CriteriaOperationNative<Boolean> {
 }
 
 class ByteValueHolder : CriteriaOperationNative<Byte> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Byte> = Byte::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Byte): CriteriaExpression {
@@ -32,7 +25,7 @@ class ByteValueHolder : CriteriaOperationNative<Byte> {
 }
 
 class ShortValueHolder : CriteriaOperationNative<Short> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Short> = Short::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Short): CriteriaExpression {
@@ -41,7 +34,7 @@ class ShortValueHolder : CriteriaOperationNative<Short> {
 }
 
 class IntValueHolder : CriteriaOperationNative<Int> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Int> = Int::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Int): CriteriaExpression {
@@ -50,7 +43,7 @@ class IntValueHolder : CriteriaOperationNative<Int> {
 }
 
 class LongValueHolder : CriteriaOperationNative<Long> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Long> = Long::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Long): CriteriaExpression {
@@ -59,7 +52,7 @@ class LongValueHolder : CriteriaOperationNative<Long> {
 }
 
 class StringValueHolder : CriteriaOperationNative<String> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<String> = String::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: String): CriteriaExpression {
@@ -68,7 +61,7 @@ class StringValueHolder : CriteriaOperationNative<String> {
 }
 
 class DateValueHolder : CriteriaOperationNative<Date> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<Date> = Date::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Date): CriteriaExpression {
@@ -77,7 +70,7 @@ class DateValueHolder : CriteriaOperationNative<Date> {
 }
 
 class LocalDateTimeHolder : CriteriaOperationNative<LocalDateTime> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<LocalDateTime> = LocalDateTime::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: LocalDateTime): CriteriaExpression {
@@ -86,7 +79,7 @@ class LocalDateTimeHolder : CriteriaOperationNative<LocalDateTime> {
 }
 
 class LocalDateHolder : CriteriaOperationNative<LocalDate> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg__))
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<LocalDate> = LocalDate::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: LocalDate): CriteriaExpression {
@@ -94,20 +87,51 @@ class LocalDateHolder : CriteriaOperationNative<LocalDate> {
     }
 }
 
-class AndOperator : CriteriaOperation1 {
+class AndOperatorImpl : CriteriaOperation1 {
 
-    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecMulti(
-        arg__, true, null, ::combineMulti
-    ))
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecMulti(
+            arg_, true, null, ::combineMulti
+        )
+    )
 
     private fun combineMulti(criteriaDialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val expBuilder = CriteriaExpressionBuilderImpl();
+        expBuilder.add("( ");
+        for (i in 0..(list.size - 2)) {
+            expBuilder.add(list[i]).add(" AND ");
+        }
+        return expBuilder.add(list[list.size - 1]).add(" )").build();
     }
 
     override fun renderExpression(
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return param;
     }
+}
+
+fun main() {
+    val kk = CriteriaToTextConverterImpl(
+        operationMap = mapOf(
+            and_ to AndOperatorImpl(),
+            int_value_ to IntValueHolder()
+        ),
+        criteriaDialect = CriteriaDialectImpl(mutableListOf(), mapOf())
+    );
+    val exp = kk.convert(mapOf(
+        op_ to and_,
+        arg_ to listOf<JsonMap>(
+            mapOf(
+                op_ to int_value_,
+                arg_ to 5
+            ),
+            mapOf(
+                op_ to int_value_,
+                arg_ to 5
+            )
+        )
+    ))
+    println(exp)
 }

@@ -44,7 +44,14 @@ interface CriteriaDialect {
 }
 
 interface CriteriaExpression {
-    fun toTextRepresentation(stringBuilder: StringBuilder): String;
+    fun toTextRepresentation(): String;
+    fun toInternalRepresentation(stringBuilder: StringBuilder): StringBuilder;
+}
+
+interface CriteriaExpressionBuilder {
+    fun add(text: String): CriteriaExpressionBuilder;
+    fun add(criteriaExpression: CriteriaExpression): CriteriaExpressionBuilder;
+    fun build(): CriteriaExpression;
 }
 
 interface CriteriaOperation {

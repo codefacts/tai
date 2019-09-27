@@ -18,11 +18,11 @@ class CriteriaToTextConverterImpl(
 ) : CriteriaToTextConverter {
 
     override fun convert(jsonMap: JsonMap): String {
-        return toExpression(jsonMap).toTextRepresentation(StringBuilder());
+        return toExpression(jsonMap).toTextRepresentation();
     }
 
     private fun toExpression(jsonMap: Map<String, Any>): CriteriaExpression {
-        val operationName = jsonMap[op__];
+        val operationName = jsonMap[op_];
         val criteriaOperation = operationMap[operationName]
             ?: throw CriteriaException("No criteria operation found for op = '$operationName'");
 
@@ -92,7 +92,7 @@ class CriteriaToTextConverterImpl(
     ): CriteriaExpression {
 
         val (name, isMandatory, defaultValue) = criteriaOperation.paramSpecs.iterator().next();
-        val operatorName = jsonMap[op__] as String;
+        val operatorName = jsonMap[op_] as String;
 
         val arg = if (isMandatory) {
             Objects.requireNonNull(
@@ -176,7 +176,7 @@ class CriteriaToTextConverterImpl(
 
     private fun getOpJsonForKey(jsonMap: JsonMap, paramSpec: ParamSpec): Any {
         val (name, isMandatory, defaultValue) = paramSpec;
-        val operatorName = jsonMap[op__] as String;
+        val operatorName = jsonMap[op_] as String;
         val opJsonMap = if (isMandatory) {
             jsonMap[name]
         } else {
