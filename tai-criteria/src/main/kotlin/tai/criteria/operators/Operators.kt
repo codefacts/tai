@@ -1,7 +1,6 @@
 package tai.criteria.operators
 
 import tai.base.JsonMap
-import tai.criteria.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*

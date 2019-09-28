@@ -1,4 +1,4 @@
-package tai.criteria
+package tai.criteria.operators
 
 const val op_ = "op";
 const val arg_ = "arg";

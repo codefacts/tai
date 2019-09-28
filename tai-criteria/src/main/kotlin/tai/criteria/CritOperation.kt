@@ -46,6 +46,7 @@ interface CriteriaDialect {
 }
 
 interface CriteriaExpression {
+    val isEmpty: Boolean;
     fun toTextRepresentation(): String;
     fun toInternalRepresentation(stringBuilder: StringBuilder): StringBuilder;
 }

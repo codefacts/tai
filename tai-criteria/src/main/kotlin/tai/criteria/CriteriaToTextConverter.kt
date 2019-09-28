@@ -3,7 +3,7 @@ package tai.criteria
 import tai.base.JsonMap
 import tai.criteria.ex.CriteriaException
 import tai.criteria.operators.OperationMap
-import java.lang.StringBuilder
+import tai.criteria.operators.op_
 import java.util.*
 
 data class SqlAndParams(

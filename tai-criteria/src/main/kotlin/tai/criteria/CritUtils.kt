@@ -14,3 +14,22 @@ class ParamsBuilderImpl(private val list: MutableList<Any>) : ParamsBuilder {
         return list.toList();
     }
 }
+
+val emptyCriteriaExpression = CriteriaExpressionBuilderImpl().build();
+
+fun joinCriteriaExpressions(criteriaExpressions: List<CriteriaExpression>, joiner: String): CriteriaExpression {
+    if (criteriaExpressions.isEmpty()) return emptyCriteriaExpression;
+    val builder = CriteriaExpressionBuilderImpl();
+    for (i in 0..criteriaExpressions.size - 2) {
+        builder.add(criteriaExpressions[i]).add(joiner);
+    }
+    builder.add(criteriaExpressions[criteriaExpressions.size - 1]);
+    return builder.build();
+}
+
+fun withParenthesis(expBuilder: CriteriaExpressionBuilder, exp: (expBuilder: CriteriaExpressionBuilder) -> Any): CriteriaExpressionBuilder {
+    expBuilder.add("(");
+    exp(expBuilder);
+    expBuilder.add(")");
+    return expBuilder;
+}
