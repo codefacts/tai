@@ -13,6 +13,10 @@ class CriteriaExpressionImpl(val criteriaExpressions: List<CriteriaExpression>) 
     override fun toTextRepresentation(): String {
         return toInternalRepresentation(StringBuilder()).toString();
     }
+
+    override fun toString(): String {
+        return criteriaExpressions.joinToString("")
+    }
 }
 
 class CriteriaExpressionBuilderImpl : CriteriaExpressionBuilder {
@@ -40,6 +44,10 @@ private class CriteExp(val text: String) : CriteriaExpression {
     }
 
     override fun toTextRepresentation(): String {
+        return text;
+    }
+
+    override fun toString(): String {
         return text;
     }
 }

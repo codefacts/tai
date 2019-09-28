@@ -1,6 +1,6 @@
 package tai.base
 
-typealias JsonMap = Map<String, Any>;
+typealias JsonMap = Map<String, Any?>;
 typealias JsonList = List<Any>;
 typealias JsonMapList = List<JsonMap>;
 

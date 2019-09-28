@@ -74,3 +74,89 @@ fun and(vararg jsonMaps: JsonMap): JsonMap {
         arg_ to jsonMaps.toList()
     );
 }
+
+fun or(vararg jsonMaps: JsonMap): JsonMap {
+    return mapOf(
+        op_ to or_,
+        arg_ to jsonMaps.toList()
+    );
+}
+
+fun not(jsonMap: JsonMap): JsonMap {
+    return mapOf(
+        op_ to not_,
+        arg_ to jsonMap
+    );
+}
+
+fun column(column: String, alias: String? = null): JsonMap {
+    return mapOf(
+        op_ to column_,
+        arg_ to column,
+        alias_ to alias
+    );
+}
+
+fun table(table: String, alias: String? = null): JsonMap {
+    return mapOf(
+        op_ to table_,
+        arg_ to table,
+        alias_ to alias
+    );
+}
+
+fun asOp(exp: JsonMap, alias: String?): JsonMap {
+    return mapOf(
+        op_ to as_,
+        arg_ to exp,
+        alias_ to alias
+    );
+}
+
+fun eq(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to eq_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun neq(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to neq_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun gt(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to gt_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun gte(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to gte_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun lt(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to lt_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun lte(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to lte_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}

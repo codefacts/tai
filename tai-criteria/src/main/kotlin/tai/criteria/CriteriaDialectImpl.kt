@@ -1,21 +1,25 @@
 package tai.criteria
 
 import tai.base.JsonMap
+import tai.criteria.operators.alias_
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.reflect.KClass
 
 class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDialect {
 
-    override fun column(column: String): CriteriaExpression {
-        return quote(column);
+    override fun column(column: String, alias: String?): CriteriaExpression {
+        return if (alias.isNullOrEmpty()) quote(column)
+        else CriteriaExpressionBuilderImpl().add(alias).add(".").add(quote(column)).build();
     }
 
-    override fun table(table: String): CriteriaExpression {
-        return quote(table);
+    override fun table(table: String, alias: String?): CriteriaExpression {
+        return if (alias.isNullOrEmpty()) quote(table)
+        else CriteriaExpressionBuilderImpl().add(alias).add(".").add(quote(table)).build();
     }
 
     override fun quote(name: String): CriteriaExpression {
@@ -23,30 +27,30 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
     }
 
     override val ctxObject: JsonMap
-        get() = throw RuntimeException("This instance of criteria dialect (${this::class.java.simpleName}) does not support ctxObject");
+        get() = throw RuntimeException("This instance of criteria dialect (${this::class.simpleName}) does not support ctxObject");
 
     override fun toExpression(param: Boolean): CriteriaExpression {
-        assertType(param, Boolean::class.java);
+        assertType(param, Boolean::class);
         return CriteriaExpressionBuilderImpl().add(param.toString()).build();
     }
 
     override fun toExpression(param: Byte): CriteriaExpression {
-        assertType(param, Byte::class.java);
+        assertType(param, Byte::class);
         return CriteriaExpressionBuilderImpl().add(param.toString()).build();
     }
 
     override fun toExpression(param: Short): CriteriaExpression {
-        assertType(param, Short::class.java);
+        assertType(param, Short::class);
         return CriteriaExpressionBuilderImpl().add(param.toString()).build();
     }
 
     override fun toExpression(param: Int): CriteriaExpression {
-        assertType(param, Int::class.java);
+        assertType(param, Int::class);
         return CriteriaExpressionBuilderImpl().add(param.toString()).build();
     }
 
     override fun toExpression(param: Long): CriteriaExpression {
-        assertType(param, Long::class.java);
+        assertType(param, Long::class);
         return CriteriaExpressionBuilderImpl().add(param.toString()).build();
     }
 
@@ -75,10 +79,10 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
         return CriteriaExpressionBuilderImpl().add("?").build();
     }
 
-    private fun <T> assertType(param: T, clazz: Class<T>) {
+    private fun <T: Any> assertType(param: T, clazz: KClass<T>) {
         val prm = param as Any;
-        assert(prm::class.java === clazz) {
-            "Invalid param, expected type = ${clazz.simpleName} | actual type = ${prm::class.java.simpleName}"
+        assert(prm::class == clazz) {
+            "Invalid param, expected type = ${clazz.simpleName} | actual type = ${prm::class.simpleName}"
         }
     }
 }

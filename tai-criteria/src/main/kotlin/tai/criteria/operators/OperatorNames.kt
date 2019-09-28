@@ -20,10 +20,12 @@ const val local_date_time_value_ = "local_date_time_value";
 
 const val column_ = "column";
 const val table_ = "table";
+const val alias_ = "alias";
+const val as_ = "as";
 
 const val and_ = "and";
-const val or_ = "and";
-const val not_ = "and";
+const val or_ = "or";
+const val not_ = "not";
 const val in_ = "in";
 const val between_ = "between";
 const val any_ = "any";
@@ -31,3 +33,10 @@ const val all_ = "all";
 const val some_ = "some";
 const val exists_ = "exists";
 const val like_ = "like";
+
+const val eq_ = "eq";
+const val neq_ = "neq";
+const val gt_ = "gt";
+const val gte_ = "gte";
+const val lt_ = "lt";
+const val lte_ = "lte";

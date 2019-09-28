@@ -31,6 +31,19 @@ val operationMap = OperationMapImpl(mapOf(
     //SqlSyntax
     column_ to ColumnNameOperator(),
     table_ to TableNameOperator(),
+    as_ to AsOperator(),
     //logical operators
-    and_ to AndOperatorImpl()
+    and_ to AndOperatorImpl(),
+    or_ to OrOperatorImpl(),
+    not_ to NotOperatorImpl(),
+    in_ to InOperatorImpl(),
+    between_ to BetweenOperatorImpl(),
+    like_ to LikeOperatorImpl(),
+    //comparision operator
+    eq_ to createGenericBiOperator(" = "),
+    neq_ to createGenericBiOperator(" <> "),
+    gt_ to createGenericBiOperator(" > "),
+    gte_ to createGenericBiOperator(" >= "),
+    lt_ to createGenericBiOperator(" < "),
+    lte_ to createGenericBiOperator(" <= ")
 ));

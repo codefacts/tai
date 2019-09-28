@@ -133,10 +133,21 @@ fun main() {
     val exp = kk.convert(
         and(
             and(
-                valueOf(Date()),
-                valueOf("Amari"),
-                valueOf(true),
-                valueOf(12)
+                eq(
+                    column("name", "u"),
+                    valueOf("Amari")
+                ),
+                eq(
+                    column("email"),
+                    valueOf("soha@kk")
+                ),
+                eq(
+                    asOp(
+                        column("age", "u"),
+                        "user_age"
+                    ),
+                    valueOf(true)
+                )
             ),
             and(
                 valueOf(Date()),
