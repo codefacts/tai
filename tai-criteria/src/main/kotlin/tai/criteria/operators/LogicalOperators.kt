@@ -137,16 +137,16 @@ fun main() {
                     column("name", "u"),
                     valueOf("Amari")
                 ),
-                eq(
+                like(
                     column("email"),
                     valueOf("soha@kk")
                 ),
-                eq(
+                gt(
                     asOp(
                         column("age", "u"),
                         "user_age"
                     ),
-                    valueOf(true)
+                    valueOf(15)
                 )
             ),
             and(

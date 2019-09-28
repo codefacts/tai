@@ -113,6 +113,14 @@ fun asOp(exp: JsonMap, alias: String?): JsonMap {
     );
 }
 
+fun like(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to like_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
 fun eq(arg1: JsonMap, arg2: JsonMap): JsonMap {
     return mapOf(
         op_ to eq_,
