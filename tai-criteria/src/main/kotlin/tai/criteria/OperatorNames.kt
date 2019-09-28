@@ -18,6 +18,9 @@ const val date_value_ = "date_value";
 const val local_date_value_ = "local_date_value";
 const val local_date_time_value_ = "local_date_time_value";
 
+const val column_ = "column";
+const val table_ = "table";
+
 const val and_ = "and";
 const val or_ = "and";
 const val not_ = "and";

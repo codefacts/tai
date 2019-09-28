@@ -10,6 +10,18 @@ import java.util.*
 
 class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDialect {
 
+    override fun column(column: String): CriteriaExpression {
+        return quote(column);
+    }
+
+    override fun table(table: String): CriteriaExpression {
+        return quote(table);
+    }
+
+    override fun quote(name: String): CriteriaExpression {
+        return CriteriaExpressionBuilderImpl().add("`$name`").build();
+    }
+
     override val ctxObject: JsonMap
         get() = throw RuntimeException("This instance of criteria dialect (${this::class.java.simpleName}) does not support ctxObject");
 

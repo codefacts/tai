@@ -2,11 +2,9 @@ package tai.criteria
 
 import tai.base.JsonMap
 import tai.criteria.ex.CriteriaException
+import tai.criteria.operators.OperationMap
 import java.lang.StringBuilder
 import java.util.*
-
-typealias OperationName = String;
-typealias OperationMap = Map<OperationName, CriteriaOperation>;
 
 data class SqlAndParams(
     val sql: String,
@@ -34,7 +32,7 @@ class CriteriaToTextConverterImpl(
     }
 
     private fun toExpression(jsonMap: JsonMap, rootCriteriaDialect: CriteriaDialect): CriteriaExpression {
-        val operationName = jsonMap[op_];
+        val operationName = jsonMap[op_] as String;
         val criteriaOperation = operationMap[operationName]
             ?: throw CriteriaException("No criteria operation found for op = '$operationName'");
 

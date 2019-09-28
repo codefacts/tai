@@ -40,6 +40,9 @@ interface CriteriaDialect {
     fun toExpression(param: Date): CriteriaExpression;
     fun toExpression(param: LocalDate): CriteriaExpression;
     fun toExpression(param: LocalDateTime): CriteriaExpression;
+    fun column(column: String): CriteriaExpression;
+    fun table(table: String): CriteriaExpression;
+    fun quote(name: String): CriteriaExpression;
 }
 
 interface CriteriaExpression {
