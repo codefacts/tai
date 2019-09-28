@@ -5,7 +5,6 @@ import java.lang.StringBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.reflect.KClass
 
 sealed class ParamSpec(
     open val name: String,
@@ -59,7 +58,7 @@ interface CriteriaOperation {
 }
 
 interface CriteriaOperationNative<T : Any> : CriteriaOperation {
-    val parameterType: KClass<T>;
+    val parameterType: Class<T>;
     fun renderExpression(
         dialect: CriteriaDialect,
         param: T
