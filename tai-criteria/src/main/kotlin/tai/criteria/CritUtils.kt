@@ -33,3 +33,9 @@ fun withParenthesis(expBuilder: CriteriaExpressionBuilder, exp: (expBuilder: Cri
     expBuilder.add(")");
     return expBuilder;
 }
+
+fun allExpEmpty(vararg criteriaExpressions: CriteriaExpression): Boolean {
+    return criteriaExpressions.fold(true) {
+        acc, criteriaExpression -> acc && criteriaExpression.isEmpty
+    };
+}

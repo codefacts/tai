@@ -33,6 +33,20 @@ fun valueOf(value: Long): JsonMap {
     );
 }
 
+fun valueOf(value: Float): JsonMap {
+    return mapOf(
+        op_ to float_value_,
+        arg_ to value
+    );
+}
+
+fun valueOf(value: Double): JsonMap {
+    return mapOf(
+        op_ to double_value_,
+        arg_ to value
+    );
+}
+
 fun valueOf(value: Boolean): JsonMap {
     return mapOf(
         op_ to boolean_value_,
@@ -164,6 +178,44 @@ fun lt(arg1: JsonMap, arg2: JsonMap): JsonMap {
 fun lte(arg1: JsonMap, arg2: JsonMap): JsonMap {
     return mapOf(
         op_ to lte_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun plus(vararg jsonMaps: JsonMap): JsonMap {
+    return mapOf(
+        op_ to plus_,
+        arg_ to jsonMaps.toList()
+    );
+}
+
+fun minus(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to minus_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun multiply(vararg jsonMaps: JsonMap): JsonMap {
+    return mapOf(
+        op_ to multiply_,
+        arg_ to jsonMaps.toList()
+    );
+}
+
+fun divide(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to divide_,
+        arg1_ to arg1,
+        arg2_ to arg2
+    );
+}
+
+fun modulo(arg1: JsonMap, arg2: JsonMap): JsonMap {
+    return mapOf(
+        op_ to modulo_,
         arg1_ to arg1,
         arg2_ to arg2
     );

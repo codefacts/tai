@@ -37,6 +37,8 @@ interface CriteriaDialect {
     fun toExpression(param: Short): CriteriaExpression;
     fun toExpression(param: Int): CriteriaExpression;
     fun toExpression(param: Long): CriteriaExpression;
+    fun toExpression(param: Float): CriteriaExpression;
+    fun toExpression(param: Double): CriteriaExpression;
     fun toExpression(param: String): CriteriaExpression;
     fun toExpression(param: Date): CriteriaExpression;
     fun toExpression(param: LocalDate): CriteriaExpression;

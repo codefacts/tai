@@ -19,7 +19,7 @@ class AndOperatorImpl : CriteriaOperation1 {
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        if (param.isEmpty) return dialect.toExpression(true);
+        if (param.isEmpty) return param;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
             expBuilder -> expBuilder.add(param)
         }.build();
@@ -42,7 +42,7 @@ class OrOperatorImpl : CriteriaOperation1 {
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        if (param.isEmpty) return dialect.toExpression(true);
+        if (param.isEmpty) return emptyCriteriaExpression;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
             expBuilder -> expBuilder.add(param);
         }.build();
@@ -153,7 +153,24 @@ fun main() {
                 valueOf(Date()),
                 valueOf("Amari"),
                 valueOf(true),
-                valueOf(12)
+                valueOf(12),
+                plus(
+                    valueOf(13),
+                    valueOf(4),
+                    valueOf(-8),
+                    divide(
+                        valueOf(9),
+                        valueOf(3)
+                    ),
+                    plus(
+                        valueOf(45.125),
+                        valueOf(-9.45),
+                        minus(
+                            valueOf(78),
+                            valueOf(-57F)
+                        )
+                    )
+                )
             )
         )
     )

@@ -12,6 +12,20 @@ import kotlin.reflect.KClass
 
 class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDialect {
 
+    override fun toExpression(param: Float): CriteriaExpression {
+        assertType(param, Float::class);
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
+    }
+
+    override fun toExpression(param: Double): CriteriaExpression {
+        assertType(param, Double::class);
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
+    }
+
     override fun column(column: String, alias: String?): CriteriaExpression {
         return if (alias.isNullOrEmpty()) quote(column)
         else CriteriaExpressionBuilderImpl().add(alias).add(".").add(quote(column)).build();
@@ -36,22 +50,30 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
 
     override fun toExpression(param: Byte): CriteriaExpression {
         assertType(param, Byte::class);
-        return CriteriaExpressionBuilderImpl().add(param.toString()).build();
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
     }
 
     override fun toExpression(param: Short): CriteriaExpression {
         assertType(param, Short::class);
-        return CriteriaExpressionBuilderImpl().add(param.toString()).build();
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
     }
 
     override fun toExpression(param: Int): CriteriaExpression {
         assertType(param, Int::class);
-        return CriteriaExpressionBuilderImpl().add(param.toString()).build();
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
     }
 
     override fun toExpression(param: Long): CriteriaExpression {
         assertType(param, Long::class);
-        return CriteriaExpressionBuilderImpl().add(param.toString()).build();
+        return CriteriaExpressionBuilderImpl().add(
+            if (param < 0) "($param)" else param.toString()
+        ).build();
     }
 
     override fun toExpression(param: String): CriteriaExpression {
@@ -79,7 +101,7 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
         return CriteriaExpressionBuilderImpl().add("?").build();
     }
 
-    private fun <T: Any> assertType(param: T, clazz: KClass<T>) {
+    private fun <T : Any> assertType(param: T, clazz: KClass<T>) {
         val prm = param as Any;
         assert(prm::class == clazz) {
             "Invalid param, expected type = ${clazz.simpleName} | actual type = ${prm::class.simpleName}"

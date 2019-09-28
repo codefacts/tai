@@ -47,7 +47,25 @@ class LongValueHolder : CriteriaOperationNative<Long> {
     override val parameterType: KClass<Long> = Long::class
 
     override fun renderExpression(dialect: CriteriaDialect, param: Long): CriteriaExpression {
-        return dialect.toExpression(param as Long);
+        return dialect.toExpression(param);
+    }
+}
+
+class FloatValueHolder : CriteriaOperationNative<Float> {
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
+    override val parameterType: KClass<Float> = Float::class
+
+    override fun renderExpression(dialect: CriteriaDialect, param: Float): CriteriaExpression {
+        return dialect.toExpression(param);
+    }
+}
+
+class DoubleValueHolder : CriteriaOperationNative<Double> {
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
+    override val parameterType: KClass<Double> = Double::class
+
+    override fun renderExpression(dialect: CriteriaDialect, param: Double): CriteriaExpression {
+        return dialect.toExpression(param);
     }
 }
 
