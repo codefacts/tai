@@ -122,3 +122,42 @@ interface CriteriaOperation5 : CriteriaOperation {
         param5: CriteriaExpression
     ): CriteriaExpression
 }
+
+interface CriteriaOperation6 : CriteriaOperation {
+    fun renderExpression(
+        dialect: CriteriaDialect,
+        param1: CriteriaExpression,
+        param2: CriteriaExpression,
+        param3: CriteriaExpression,
+        param4: CriteriaExpression,
+        param5: CriteriaExpression,
+        param6: CriteriaExpression
+    ): CriteriaExpression
+}
+
+interface CriteriaOperation7 : CriteriaOperation {
+    fun renderExpression(
+        dialect: CriteriaDialect,
+        param1: CriteriaExpression,
+        param2: CriteriaExpression,
+        param3: CriteriaExpression,
+        param4: CriteriaExpression,
+        param5: CriteriaExpression,
+        param6: CriteriaExpression,
+        param7: CriteriaExpression
+    ): CriteriaExpression
+}
+
+interface CriteriaOperation8 : CriteriaOperation {
+    fun renderExpression(
+        dialect: CriteriaDialect,
+        param1: CriteriaExpression,
+        param2: CriteriaExpression,
+        param3: CriteriaExpression,
+        param4: CriteriaExpression,
+        param5: CriteriaExpression,
+        param6: CriteriaExpression,
+        param7: CriteriaExpression,
+        param8: CriteriaExpression
+    ): CriteriaExpression
+}

@@ -52,6 +52,9 @@ class CriteriaToTextConverterImpl(
             is CriteriaOperation3 -> call3(criteriaOperation, criteriaDialect);
             is CriteriaOperation4 -> call4(criteriaOperation, criteriaDialect);
             is CriteriaOperation5 -> call5(criteriaOperation, criteriaDialect);
+            is CriteriaOperation6 -> call6(criteriaOperation, criteriaDialect);
+            is CriteriaOperation7 -> call7(criteriaOperation, criteriaDialect);
+            is CriteriaOperation8 -> call8(criteriaOperation, criteriaDialect);
             else -> throw CriteriaException("Unsupported criteria operation: $criteriaOperation");
         }
     }
@@ -65,12 +68,30 @@ class CriteriaToTextConverterImpl(
             is CriteriaOperation3 -> assertLength(3, criteriaOperation);
             is CriteriaOperation4 -> assertLength(4, criteriaOperation);
             is CriteriaOperation5 -> assertLength(5, criteriaOperation);
+            is CriteriaOperation6 -> assertLength(6, criteriaOperation);
+            is CriteriaOperation7 -> assertLength(7, criteriaOperation);
+            is CriteriaOperation8 -> assertLength(8, criteriaOperation);
             else -> throw CriteriaException("Unsupported criteria operation: $criteriaOperation");
         }
     }
 
     private fun assertLength(expectedSize: Int, criteriaOperation: CriteriaOperation) {
         assertThat(criteriaOperation.paramSpecs.size == expectedSize) { "ParamSpecs.size should be $expectedSize for criteriaOperation: $criteriaOperation" };
+    }
+
+    private fun call8(criteriaOperation: CriteriaOperation8, criteriaDialectWrapper: CriteriaDialectWrapper): CriteriaExpression {
+        val (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) = toCriteriaExpression8(criteriaDialectWrapper, criteriaOperation.paramSpecs);
+        return criteriaOperation.renderExpression(criteriaDialectWrapper, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    }
+
+    private fun call7(criteriaOperation: CriteriaOperation7, criteriaDialectWrapper: CriteriaDialectWrapper): CriteriaExpression {
+        val (arg1, arg2, arg3, arg4, arg5, arg6, arg7) = toCriteriaExpression7(criteriaDialectWrapper, criteriaOperation.paramSpecs);
+        return criteriaOperation.renderExpression(criteriaDialectWrapper, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    }
+
+    private fun call6(criteriaOperation: CriteriaOperation6, criteriaDialectWrapper: CriteriaDialectWrapper): CriteriaExpression {
+        val (arg1, arg2, arg3, arg4, arg5, arg6) = toCriteriaExpression6(criteriaDialectWrapper, criteriaOperation.paramSpecs);
+        return criteriaOperation.renderExpression(criteriaDialectWrapper, arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
     private fun call5(criteriaOperation: CriteriaOperation5, criteriaDialectWrapper: CriteriaDialectWrapper): CriteriaExpression {
@@ -131,6 +152,42 @@ class CriteriaToTextConverterImpl(
 
     private fun invalidArgumentTypeMsg(arg: Any, name: String, operatorName: String, expectedType: String): String {
         return "Argument '$arg' with invalid type '${arg::class}' provided for parameter '$name' in operator '$operatorName', expected type = $expectedType";
+    }
+
+    private fun toCriteriaExpression8(criteriaDialectWrapper: CriteriaDialectWrapper, paramSpecs: Collection<ParamSpec>): Exp8 {
+        val iterator = paramSpecs.iterator();
+        val arg1 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg2 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg3 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg4 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg5 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg6 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg7 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg8 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        return Exp8(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    }
+
+    private fun toCriteriaExpression7(criteriaDialectWrapper: CriteriaDialectWrapper, paramSpecs: Collection<ParamSpec>): Exp7 {
+        val iterator = paramSpecs.iterator();
+        val arg1 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg2 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg3 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg4 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg5 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg6 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg7 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        return Exp7(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    }
+
+    private fun toCriteriaExpression6(criteriaDialectWrapper: CriteriaDialectWrapper, paramSpecs: Collection<ParamSpec>): Exp6 {
+        val iterator = paramSpecs.iterator();
+        val arg1 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg2 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg3 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg4 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg5 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        val arg6 = argToExpression(criteriaDialectWrapper.ctxObject, criteriaDialectWrapper.root, iterator.next());
+        return Exp6(arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
     private fun toCriteriaExpression5(criteriaDialectWrapper: CriteriaDialectWrapper, paramSpecs: Collection<ParamSpec>): Exp5 {
@@ -254,6 +311,36 @@ data class Exp5(
     val arg3: CriteriaExpression,
     val arg4: CriteriaExpression,
     val arg5: CriteriaExpression
+);
+
+data class Exp6(
+    val arg1: CriteriaExpression,
+    val arg2: CriteriaExpression,
+    val arg3: CriteriaExpression,
+    val arg4: CriteriaExpression,
+    val arg5: CriteriaExpression,
+    val arg6: CriteriaExpression
+);
+
+data class Exp7(
+    val arg1: CriteriaExpression,
+    val arg2: CriteriaExpression,
+    val arg3: CriteriaExpression,
+    val arg4: CriteriaExpression,
+    val arg5: CriteriaExpression,
+    val arg6: CriteriaExpression,
+    val arg7: CriteriaExpression
+);
+
+data class Exp8(
+    val arg1: CriteriaExpression,
+    val arg2: CriteriaExpression,
+    val arg3: CriteriaExpression,
+    val arg4: CriteriaExpression,
+    val arg5: CriteriaExpression,
+    val arg6: CriteriaExpression,
+    val arg7: CriteriaExpression,
+    val arg8: CriteriaExpression
 );
 
 class CriteriaDialectWrapper(val root: CriteriaDialect, override val ctxObject: JsonMap): CriteriaDialect by root {
