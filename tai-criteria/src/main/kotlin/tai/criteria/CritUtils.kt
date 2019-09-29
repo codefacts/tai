@@ -36,6 +36,6 @@ fun withParenthesis(expBuilder: CriteriaExpressionBuilder, exp: (expBuilder: Cri
 
 fun allExpEmpty(vararg criteriaExpressions: CriteriaExpression): Boolean {
     return criteriaExpressions.fold(true) {
-        acc, criteriaExpression -> acc && criteriaExpression.isEmpty
+        acc, criteriaExpression -> acc && criteriaExpression.isBlank
     };
 }

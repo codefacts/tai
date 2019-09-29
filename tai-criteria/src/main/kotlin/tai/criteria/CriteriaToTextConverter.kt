@@ -36,7 +36,6 @@ class CriteriaToTextConverterImpl(
     private fun toExpression(jsonMap: JsonMap, rootCriteriaDialect: CriteriaDialect): CriteriaExpression {
         val operationName = jsonMap[op_] as String;
         val criteriaOperation = operationMap[operationName]
-            ?: throw CriteriaException("No criteria operation found for op = '$operationName'");
 
         validateCriteriaOperation(criteriaOperation);
 

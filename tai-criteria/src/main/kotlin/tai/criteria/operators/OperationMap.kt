@@ -13,7 +13,7 @@ interface OperationMap {
 class OperationMapImpl(override val operationMap: Map<String, CriteriaOperation>) : OperationMap {
     override fun get(key: String): CriteriaOperation {
         return Objects.requireNonNull(
-            operationMap[key], "No criteria operation found for operation name '$key'"
+            operationMap[key], "No criteria operation found for operation name '$key' in the operation map"
         )!!;
     }
 }
@@ -31,10 +31,14 @@ val operationMap = OperationMapImpl(
         date_value_ to DateValueHolder(),
         local_date_value_ to LocalDateHolder(),
         local_date_time_value_ to LocalDateTimeHolder(),
-        //SqlSyntax
+        empty_ to EmptyValueHolder(),
+        //SqlOperators
+        sql_query_ to SqlQueryOperator(),
         column_ to ColumnNameOperator(),
         table_ to TableNameOperator(),
         as_ to AsOperator(),
+        join_ to JoinOperator(),
+        order_by_ to OrderByOperator(),
         //logical operators
         and_ to AndOperatorImpl(),
         or_ to OrOperatorImpl(),
@@ -54,6 +58,12 @@ val operationMap = OperationMapImpl(
         minus_ to createGenericBiOperator(" - "),
         multiply_ to MultiplyOperator(),
         divide_ to createGenericBiOperator(" / "),
-        modulo_ to createGenericBiOperator(" % ")
+        modulo_ to createGenericBiOperator(" % "),
+        //Aggregate
+        avg_ to createOneArgFun("AVG"),
+        sum_ to createOneArgFun("SUM"),
+        min_ to createOneArgFun("MIN"),
+        max_ to createOneArgFun("MAX"),
+        count_ to createOneArgFun("COUNT")
     )
 );

@@ -23,7 +23,24 @@ const val local_date_time_value_ = "local_date_time_value";
 const val column_ = "column";
 const val table_ = "table";
 const val alias_ = "alias";
+const val src_ = "src";
+const val dest_ = "dest";
 const val as_ = "as";
+const val space_separated_ = "space_separated";
+const val on_ = "on";
+
+const val sql_query_ = "sql_query";
+
+const val select_ = "select";
+const val from_ = "from";
+const val join_ = "join";
+const val where_ = "where";
+const val group_by_ = "group_by";
+const val having_ = "having";
+const val order_by_ = "order_by";
+const val order_ = "order";
+
+const val empty_ = "empty";
 
 const val and_ = "and";
 const val or_ = "or";
@@ -48,3 +65,9 @@ const val minus_ = "minus";
 const val multiply_ = "multiply";
 const val divide_ = "divide";
 const val modulo_ = "modulo";
+
+const val sum_ = "sum";
+const val avg_ = "avg";
+const val count_ = "count";
+const val min_ = "min";
+const val max_ = "max";

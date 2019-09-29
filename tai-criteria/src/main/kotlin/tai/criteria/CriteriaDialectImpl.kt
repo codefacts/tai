@@ -1,7 +1,6 @@
 package tai.criteria
 
 import tai.base.JsonMap
-import tai.criteria.operators.alias_
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -26,14 +25,14 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
         ).build();
     }
 
-    override fun column(column: String, alias: String?): CriteriaExpression {
-        return if (alias.isNullOrEmpty()) quote(column)
-        else CriteriaExpressionBuilderImpl().add(alias).add(".").add(quote(column)).build();
+    override fun column(column: String, src: String?): CriteriaExpression {
+        return if (src.isNullOrEmpty()) quote(column)
+        else CriteriaExpressionBuilderImpl().add(src).add(".").add(quote(column)).build();
     }
 
-    override fun table(table: String, alias: String?): CriteriaExpression {
-        return if (alias.isNullOrEmpty()) quote(table)
-        else CriteriaExpressionBuilderImpl().add(alias).add(".").add(quote(table)).build();
+    override fun table(table: String, src: String?): CriteriaExpression {
+        return if (src.isNullOrEmpty()) quote(table)
+        else CriteriaExpressionBuilderImpl().add(src).add(".").add(quote(table)).build();
     }
 
     override fun quote(name: String): CriteriaExpression {

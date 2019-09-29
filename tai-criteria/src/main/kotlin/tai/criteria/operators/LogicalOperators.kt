@@ -1,6 +1,7 @@
 package tai.criteria.operators
 
 import tai.criteria.*
+import tai.criteria.ops.*
 import java.util.*
 
 class AndOperatorImpl : CriteriaOperation1 {
@@ -19,7 +20,7 @@ class AndOperatorImpl : CriteriaOperation1 {
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        if (param.isEmpty) return param;
+        if (param.isBlank) return param;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
             expBuilder -> expBuilder.add(param)
         }.build();
@@ -42,7 +43,7 @@ class OrOperatorImpl : CriteriaOperation1 {
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        if (param.isEmpty) return emptyCriteriaExpression;
+        if (param.isBlank) return emptyCriteriaExpression;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
             expBuilder -> expBuilder.add(param);
         }.build();
@@ -80,7 +81,7 @@ class InOperatorImpl : CriteriaOperation2 {
         param1: CriteriaExpression,
         param2: CriteriaExpression
     ): CriteriaExpression {
-        if (param2.isEmpty) {
+        if (param2.isBlank) {
             return dialect.toExpression(false);
         }
         return withParenthesis(CriteriaExpressionBuilderImpl()) {

@@ -1,6 +1,7 @@
-package tai.criteria.operators
+package tai.criteria.ops
 
 import tai.base.JsonMap
+import tai.criteria.operators.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -103,30 +104,6 @@ fun not(jsonMap: JsonMap): JsonMap {
     );
 }
 
-fun column(column: String, alias: String? = null): JsonMap {
-    return mapOf(
-        op_ to column_,
-        arg_ to column,
-        alias_ to alias
-    );
-}
-
-fun table(table: String, alias: String? = null): JsonMap {
-    return mapOf(
-        op_ to table_,
-        arg_ to table,
-        alias_ to alias
-    );
-}
-
-fun asOp(exp: JsonMap, alias: String?): JsonMap {
-    return mapOf(
-        op_ to as_,
-        arg_ to exp,
-        alias_ to alias
-    );
-}
-
 fun like(arg1: JsonMap, arg2: JsonMap): JsonMap {
     return mapOf(
         op_ to like_,
@@ -220,3 +197,8 @@ fun modulo(arg1: JsonMap, arg2: JsonMap): JsonMap {
         arg2_ to arg2
     );
 }
+
+val emptyOp = mapOf(
+    op_ to empty_
+)
+

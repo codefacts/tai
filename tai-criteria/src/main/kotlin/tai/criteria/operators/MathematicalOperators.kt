@@ -30,7 +30,7 @@ class PlusOperator: CriteriaOperation1 {
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        if (param.isEmpty) return param;
+        if (param.isBlank) return param;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
             expBuilder -> expBuilder.add(param)
         }.build();
@@ -47,7 +47,7 @@ class MultiplyOperator: CriteriaOperation1 {
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        if (param.isEmpty) return param;
+        if (param.isBlank) return param;
         return withParenthesis(CriteriaExpressionBuilderImpl()) {
                 expBuilder -> expBuilder.add(param)
         }.build();

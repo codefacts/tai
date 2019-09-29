@@ -43,13 +43,13 @@ interface CriteriaDialect {
     fun toExpression(param: Date): CriteriaExpression;
     fun toExpression(param: LocalDate): CriteriaExpression;
     fun toExpression(param: LocalDateTime): CriteriaExpression;
-    fun column(column: String, alias: String? = null): CriteriaExpression;
-    fun table(table: String, alias: String? = null): CriteriaExpression;
+    fun column(column: String, src: String? = null): CriteriaExpression;
+    fun table(table: String, src: String? = null): CriteriaExpression;
     fun quote(name: String): CriteriaExpression;
 }
 
 interface CriteriaExpression {
-    val isEmpty: Boolean;
+    val isBlank: Boolean;
     fun toTextRepresentation(): String;
     fun toInternalRepresentation(stringBuilder: StringBuilder): StringBuilder;
 }
