@@ -11,6 +11,10 @@ import kotlin.reflect.KClass
 
 class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDialect {
 
+    override fun nullExpression(): CriteriaExpression {
+        return CriteriaExpressionBuilderImpl().add("NULL").build();
+    }
+
     override fun toExpression(param: Float): CriteriaExpression {
         assertType(param, Float::class);
         return CriteriaExpressionBuilderImpl().add(

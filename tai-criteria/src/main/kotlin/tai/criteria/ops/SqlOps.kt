@@ -46,12 +46,21 @@ fun asSpaceSeparated(exp: JsonMap, alias: String): JsonMap {
     return asOp(exp, alias, true);
 }
 
-fun join(table1: JsonMap, table2: JsonMap, joinOn: JsonMap): JsonMap {
+fun join(table1: JsonMap, table2: JsonMap, joinOn: JsonMap, joinType: JoinType? = null): JsonMap {
+    if (joinType == null) {
+        return mapOf(
+            op_ to join_,
+            arg1_ to table1,
+            arg2_ to table2,
+            arg3_ to joinOn
+        );
+    }
     return mapOf(
         op_ to join_,
         arg1_ to table1,
         arg2_ to table2,
-        arg3_ to joinOn
+        arg3_ to joinOn,
+        join_type_ to joinType
     );
 }
 
@@ -80,5 +89,13 @@ fun sqlQuery(
         having_ to having,
         order_by_ to orderBy
     );
+}
+
+fun exists(arg: JsonMap, isNot: Boolean = false): JsonMap {
+    return mapOf(
+        op_ to exists_,
+        arg_ to arg,
+        is_not_ to isNot
+    )
 }
 

@@ -105,10 +105,18 @@ class LocalDateTimeHolder : CriteriaOperationNative<LocalDateTime> {
     }
 }
 
-class EmptyValueHolder : CriteriaOperation0 {
+class EmptyCriteriaOperator : CriteriaOperation0 {
     override val paramSpecs: Collection<ParamSpec> = listOf();
 
     override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
         return emptyCriteriaExpression;
+    }
+}
+
+class NullValueHolder: CriteriaOperation0 {
+    override val paramSpecs: Collection<ParamSpec> = listOf();
+
+    override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
+        return dialect.nullExpression();
     }
 }

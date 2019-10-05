@@ -83,6 +83,12 @@ fun valueOf(value: LocalDateTime): JsonMap {
     );
 }
 
+fun nullValue(): JsonMap {
+    return mapOf(
+        op_ to null_value_
+    );
+}
+
 fun and(vararg jsonMaps: JsonMap): JsonMap {
     return mapOf(
         op_ to and_,
@@ -101,14 +107,6 @@ fun not(jsonMap: JsonMap): JsonMap {
     return mapOf(
         op_ to not_,
         arg_ to jsonMap
-    );
-}
-
-fun like(arg1: JsonMap, arg2: JsonMap): JsonMap {
-    return mapOf(
-        op_ to like_,
-        arg1_ to arg1,
-        arg2_ to arg2
     );
 }
 
@@ -202,3 +200,16 @@ val emptyOp = mapOf(
     op_ to empty_
 )
 
+fun isNull(isNot: Boolean = false): JsonMap {
+    return mapOf(
+        op_ to is_null_,
+        is_not_ to isNot
+    );
+}
+
+fun isNotNull(): JsonMap {
+    return mapOf(
+        op_ to is_null_,
+        is_not_ to true
+    );
+}

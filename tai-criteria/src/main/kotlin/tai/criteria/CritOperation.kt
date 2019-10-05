@@ -46,6 +46,7 @@ interface CriteriaDialect {
     fun column(column: String, src: String? = null): CriteriaExpression;
     fun table(table: String, src: String? = null): CriteriaExpression;
     fun quote(name: String): CriteriaExpression;
+    fun nullExpression(): CriteriaExpression;
 }
 
 interface CriteriaExpression {

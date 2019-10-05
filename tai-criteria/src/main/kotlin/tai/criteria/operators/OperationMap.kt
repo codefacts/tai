@@ -31,7 +31,9 @@ val operationMap = OperationMapImpl(
         date_value_ to DateValueHolder(),
         local_date_value_ to LocalDateHolder(),
         local_date_time_value_ to LocalDateTimeHolder(),
-        empty_ to EmptyValueHolder(),
+        empty_ to EmptyCriteriaOperator(),
+        null_value_ to NullValueHolder(),
+
         //SqlOperators
         sql_query_ to SqlQueryOperator(),
         column_ to ColumnNameOperator(),
@@ -39,6 +41,9 @@ val operationMap = OperationMapImpl(
         as_ to AsOperator(),
         join_ to JoinOperator(),
         order_by_ to OrderByOperator(),
+        union_ to UnionOperator(),
+        exists_ to ExistsOperator(),
+
         //logical operators
         and_ to AndOperatorImpl(),
         or_ to OrOperatorImpl(),
@@ -46,24 +51,29 @@ val operationMap = OperationMapImpl(
         in_ to InOperatorImpl(),
         between_ to BetweenOperatorImpl(),
         like_ to LikeOperatorImpl(),
+        is_null_ to IsNullOperator(),
+
         //comparision operator
-        eq_ to createGenericBiOperator(" = "),
-        neq_ to createGenericBiOperator(" <> "),
-        gt_ to createGenericBiOperator(" > "),
-        gte_ to createGenericBiOperator(" >= "),
-        lt_ to createGenericBiOperator(" < "),
-        lte_ to createGenericBiOperator(" <= "),
+        eq_ to createComparisionOperator(" = "),
+        neq_ to createComparisionOperator(" <> "),
+        gt_ to createComparisionOperator(" > "),
+        gte_ to createComparisionOperator(" >= "),
+        lt_ to createComparisionOperator(" < "),
+        lte_ to createComparisionOperator(" <= "),
+
         //Arithmetic operator
         plus_ to PlusOperator(),
         minus_ to createGenericBiOperator(" - "),
         multiply_ to MultiplyOperator(),
         divide_ to createGenericBiOperator(" / "),
         modulo_ to createGenericBiOperator(" % "),
+
         //Aggregate
         avg_ to createOneArgFun("AVG"),
         sum_ to createOneArgFun("SUM"),
         min_ to createOneArgFun("MIN"),
         max_ to createOneArgFun("MAX"),
-        count_ to createOneArgFun("COUNT")
+        count_ to createOneArgFun("COUNT"),
+        distinct_ to DistinctOperator()
     )
 );

@@ -28,6 +28,7 @@ const val dest_ = "dest";
 const val as_ = "as";
 const val space_separated_ = "space_separated";
 const val on_ = "on";
+const val join_type_ = "join_type";
 
 const val sql_query_ = "sql_query";
 
@@ -41,6 +42,9 @@ const val order_by_ = "order_by";
 const val order_ = "order";
 
 const val empty_ = "empty";
+const val null_value_ = "null_value";
+const val is_not_ = "is_not";
+const val union_ = "union";
 
 const val and_ = "and";
 const val or_ = "or";
@@ -52,6 +56,9 @@ const val all_ = "all";
 const val some_ = "some";
 const val exists_ = "exists";
 const val like_ = "like";
+const val is_null_ = "is_null";
+const val is_all_ = "is_all";
+const val modifier_ = "modifier";
 
 const val eq_ = "eq";
 const val neq_ = "neq";
@@ -71,3 +78,4 @@ const val avg_ = "avg";
 const val count_ = "count";
 const val min_ = "min";
 const val max_ = "max";
+const val distinct_ = "distinct";

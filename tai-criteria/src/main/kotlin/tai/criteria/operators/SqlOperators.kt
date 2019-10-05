@@ -3,6 +3,7 @@ package tai.criteria.operators
 import tai.base.assertThat
 import tai.base.getBoolean
 import tai.criteria.*
+import tai.criteria.ex.CriteriaException
 import tai.criteria.ops.*
 import java.util.*
 import kotlin.reflect.KClass
@@ -112,14 +113,18 @@ class JoinOperator : CriteriaOperation3 {
         param2: CriteriaExpression,
         param3: CriteriaExpression
     ): CriteriaExpression {
+
+        val joinStr = when (val joinType = dialect.ctxObject[join_type_]) {
+            null -> "JOIN"
+            is JoinType -> joinType.value
+            is CharSequence -> joinType.toString();
+            else -> throw CriteriaException("Invalid join type option [${joinType::class.java.simpleName}] provided in JoinOperator")
+        };
+
         return CriteriaExpressionBuilderImpl()
-            .add(param1).add(" JOIN ").add(param2).add(" ON ").add(param3)
+            .add(param1).add(" ").add(joinStr).add(" ").add(param2).add(" ON ").add(param3)
             .build();
     }
-}
-
-enum class Order(val value: String) {
-    ASC("ASC"), DESC("DESC")
 }
 
 class OrderByOperator : CriteriaOperation1 {
@@ -133,5 +138,66 @@ class OrderByOperator : CriteriaOperation1 {
     ): CriteriaExpression {
         val order: Order = dialect.ctxObject[order_] as Order;
         return CriteriaExpressionBuilderImpl().add(param).add(" ").add(order.value).build();
+    }
+}
+
+class DistinctOperator : CriteriaOperation1 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg_)
+    );
+
+    override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
+        return CriteriaExpressionBuilderImpl()
+            .add("DISTINCT(").add(param).add(")").build();
+    }
+}
+
+class IsNullOperator : CriteriaOperation0 {
+    override val paramSpecs: Collection<ParamSpec> = listOf();
+
+    override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
+        val isNot = dialect.ctxObject[is_not_] as Boolean?
+        if (isNot != null && isNot) {
+            return CriteriaExpressionBuilderImpl().add("IS NOT ").add(dialect.nullExpression()).build()
+        } else {
+            return CriteriaExpressionBuilderImpl().add("IS ").add(dialect.nullExpression()).build()
+        }
+    }
+}
+
+class UnionOperator : CriteriaOperation2 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg1_),
+        ParamSpecSingle(arg2_)
+    );
+
+    override fun renderExpression(
+        dialect: CriteriaDialect,
+        param1: CriteriaExpression,
+        param2: CriteriaExpression
+    ): CriteriaExpression {
+        val isAll = dialect.ctxObject[is_all_] as Boolean?;
+        if (isAll != null && isAll) {
+            return CriteriaExpressionBuilderImpl()
+                .add(param1).add(" UNION ALL ").add(param2).build();
+        }
+        return CriteriaExpressionBuilderImpl()
+            .add(param1).add(" UNION ").add(param2).build();
+    }
+}
+
+class ExistsOperator : CriteriaOperation1 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg_)
+    );
+
+    override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
+        val isNot = dialect.ctxObject[is_not_] as Boolean?;
+        if (isNot != null && isNot) {
+            return CriteriaExpressionBuilderImpl()
+                .add("NOT EXISTS ").add(param).build();
+        }
+        return CriteriaExpressionBuilderImpl()
+            .add("EXISTS ").add(param).build();
     }
 }
