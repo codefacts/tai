@@ -4,15 +4,9 @@ import tai.base.JsonMap
 
 interface CoreSqlDB {
 
-    suspend fun query(query: JsonMap) {
+    suspend fun query(query: JsonMap);
 
-    }
+    suspend fun update(operation: JsonMap);
 
-    suspend fun update(operation: JsonMap) {
-
-    }
-
-    suspend fun updateAll(operations: List<JsonMap>) {
-
-    }
+    suspend fun updateAll(operations: List<JsonMap>);
 }
