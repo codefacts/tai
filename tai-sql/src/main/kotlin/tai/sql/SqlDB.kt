@@ -17,9 +17,17 @@ interface SqlDB {
 
     suspend fun insert(table: String, sqlList: Collection<JsonMap>)
 
-    suspend fun update(table: String, data: JoinData, where: Collection<CriOperation>): Int
+    suspend fun update(table: String, data: JsonMap, where: JsonMap): Int
 
-    suspend fun delete(table: String, where: Collection<CriOperation>): Int
+    suspend fun delete(table: String, where: JsonMap): Int
 
-    suspend fun update(sqlList: Collection<SqlOperation>): Int
+    suspend fun selectInto(selectInto: SqlSelectIntoOp): Int;
+
+    suspend fun insertInto(selectInto: SqlInsertIntoOp): Int;
+
+    suspend fun update(update: SqlUpdateOp): Int
+
+    suspend fun delete(update: SqlDeleteOp): Int
+
+    suspend fun updateAll(sqlList: Collection<SqlOperation>): Int
 }

@@ -22,6 +22,8 @@ const val local_date_time_value_ = "local_date_time_value";
 
 const val column_ = "column";
 const val table_ = "table";
+const val columns_ = "columns";
+const val expression_ = "expression";
 const val alias_ = "alias";
 const val src_ = "src";
 const val dest_ = "dest";
@@ -31,8 +33,10 @@ const val on_ = "on";
 const val join_type_ = "join_type";
 
 const val sql_query_ = "sql_query";
+const val delimiter_ = "delimiter";
 
 const val select_ = "select";
+const val into_ = "into";
 const val from_ = "from";
 const val join_ = "join";
 const val where_ = "where";
@@ -40,6 +44,10 @@ const val group_by_ = "group_by";
 const val having_ = "having";
 const val order_by_ = "order_by";
 const val order_ = "order";
+const val criteria_join_ = "criteria_join_";
+const val update_ = "update";
+const val delete_ = "delete";
+const val set_ = "set";
 
 const val empty_ = "empty";
 const val null_value_ = "null_value";
@@ -59,6 +67,10 @@ const val like_ = "like";
 const val is_null_ = "is_null";
 const val is_all_ = "is_all";
 const val modifier_ = "modifier";
+const val insert_into_ = "insert_into";
+const val select_into_ = "select_into";
+const val sql_values_ = "sql_values";
+const val sql_value_array_ = "sql_value_array";
 
 const val eq_ = "eq";
 const val neq_ = "neq";

@@ -37,10 +37,3 @@ fun count(arg: JsonMap): JsonMap {
         arg_ to arg
     );
 }
-
-fun distinct(arg: JsonMap): JsonMap {
-    return mapOf(
-        op_ to distinct_,
-        arg_ to arg
-    );
-}

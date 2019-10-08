@@ -35,14 +35,28 @@ val operationMap = OperationMapImpl(
         null_value_ to NullValueHolder(),
 
         //SqlOperators
-        sql_query_ to SqlQueryOperator(),
         column_ to ColumnNameOperator(),
         table_ to TableNameOperator(),
         as_ to AsOperator(),
         join_ to JoinOperator(),
         order_by_ to OrderByOperator(),
+        order_ to OrderOperator(),
         union_ to UnionOperator(),
         exists_ to ExistsOperator(),
+        insert_into_ to SqlInsertIntoOperator(),
+        select_into_ to SqlSelectIntoOperator(),
+        sql_values_ to SqlValuesOperator(),
+        sql_value_array_ to SqlValueArrayOperator(),
+
+        select_ to SelectOperator(),
+        from_ to FromOperator(),
+        where_ to WhereOperator(),
+        group_by_ to GroupByOperator(),
+        having_ to HavingOperator(),
+        criteria_join_ to CriteriaJoinOperator(),
+        update_ to UpdateOperator(),
+        delete_ to DeleteOperator(),
+        set_ to SetOperator(),
 
         //logical operators
         and_ to AndOperatorImpl(),

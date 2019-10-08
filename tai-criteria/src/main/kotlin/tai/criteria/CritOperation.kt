@@ -27,7 +27,7 @@ data class ParamSpecMulti(
     override val name: String,
     override val isMandatory: Boolean = true,
     override val defaultValue: Any? = null,
-    val combineMulti: (CriteriaDialect, List<CriteriaExpression>) -> CriteriaExpression
+    val combineMulti: (dialect: CriteriaDialect, List<CriteriaExpression>) -> CriteriaExpression
 ) : ParamSpec(name, isMandatory, defaultValue);
 
 interface CriteriaDialect {

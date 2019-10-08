@@ -1,19 +1,18 @@
 package tai.sql
 
 import tai.base.JsonMap
-import tai.criteria.CriOperation
+import tai.criteria.ops.emptyCriteriaOp
 
 /**
  * Created by sohan on 4/11/2017.
  */
 data class SqlQuery(
-    val selections: Collection<CriOperation>,
-    val from: Collection<TableAliasPair>,
-    val joins: Collection<JoinData> = listOf(),
-    val where: Collection<CriOperation> = listOf(),
-    val orderBy: Collection<CriOperation> = listOf(),
-    val groupBy: Collection<CriOperation> = listOf(),
-    val having: Collection<CriOperation> = listOf(),
+    val selections: List<JsonMap>,
+    val from: List<JsonMap>,
+    val where: JsonMap = emptyCriteriaOp,
+    val groupBy: List<JsonMap> = listOf(),
+    val having: JsonMap = emptyCriteriaOp,
+    val orderBy: List<JsonMap> = listOf(),
     val pagination: SqlPagination?
 )
 
@@ -85,3 +84,14 @@ data class SqlCondition(
     val column: String,
     val value: Any
 );
+
+data class SqlUpdateOp(
+
+);
+data class SqlDeleteOp(
+
+);
+
+data class SqlSelectIntoOp();
+
+data class SqlInsertIntoOp();
