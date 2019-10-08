@@ -5,6 +5,7 @@ enum class Order(val value: String) {
 }
 
 enum class JoinType(val value: String) {
+    JOIN("JOIN"),
     INNER_JOIN("INNER JOIN"),
     LEFT_JOIN("LEFT JOIN"),
     RIGHT_JOIN("RIGHT JOIN"),

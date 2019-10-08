@@ -1,6 +1,5 @@
 package tai.sql
 
-import io.reactivex.Single
 import tai.base.JsonList
 
 /**
@@ -20,12 +19,12 @@ interface SqlExecutor {
 
     suspend fun update(sql: String, params: JsonList): Int
 
-    suspend fun update(sqlList: List<String>): Int
+    suspend fun updateAll(sqlList: List<String>): Int
 
-    suspend fun update(sqlUpdates: Collection<UpdateData>): List<Int>
+    suspend fun updateAll(sqlUpdates: Collection<SqlAndParams>): List<Int>
 }
 
-data class UpdateData(
+data class SqlAndParams(
     val sql: String,
     val params: JsonList
 );

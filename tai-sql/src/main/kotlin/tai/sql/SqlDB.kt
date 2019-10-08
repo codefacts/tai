@@ -3,7 +3,6 @@ package tai.sql
 import io.reactivex.Completable
 import io.reactivex.Single
 import tai.base.JsonMap
-import tai.criteria.CriOperation
 import java.util.stream.Stream
 
 /**

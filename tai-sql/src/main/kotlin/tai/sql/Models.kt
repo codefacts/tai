@@ -1,56 +1,67 @@
 package tai.sql
 
 import tai.base.JsonMap
-import tai.criteria.ops.emptyCriteriaOp
+import tai.criteria.operators.JoinType
+import tai.criteria.operators.Order
 
 /**
  * Created by sohan on 4/11/2017.
  */
 data class SqlQuery(
     val selections: List<JsonMap>,
-    val from: List<JsonMap>,
-    val where: JsonMap = emptyCriteriaOp,
-    val groupBy: List<JsonMap> = listOf(),
-    val having: JsonMap = emptyCriteriaOp,
-    val orderBy: List<JsonMap> = listOf(),
-    val pagination: SqlPagination?
+    val from: List<FromSpec>,
+    val where: List<JsonMap> = listOf(),
+    val groupBy: List<AliasAndColumn> = listOf(),
+    val having: List<JsonMap> = listOf(),
+    val orderBy: List<OrderBySpec> = listOf(),
+    val pagination: SqlPagination? = null
 )
 
-data class TableAliasPair(
+data class FromSpec(
+    val database: String?,
     val table: String,
-    val alias: String
-)
-
-data class JoinData(
-    val parentAlias: String,
-    val joinType: JoinType,
-    val table: String,
-    val alias: String,
-    val columnToColumnMappings: List<ColumnToColumnMapping>
-)
-
-enum class JoinType() {
-    INNER_JOIN,
-    LEFT_JOIN,
-    RIGHT_JOIN,
-    FULL_JOIN
+    val alias: String?,
+    val joins: List<JoinSpec> = listOf()
+) {
+    constructor(table: String, alias: String) : this(null, table, alias)
+    constructor(table: String) : this(null, table, null)
 }
 
-data class ColumnToColumnMapping(
-    val srcColumn: String,
-    val dstColumn: String
+data class JoinSpec(
+    val toAlias: String,
+    val joinType: JoinType = JoinType.JOIN,
+    val database: String? = null,
+    val table: String,
+    val alias: String? = null,
+    val joinRules: List<JoinRule>
 )
 
+data class JoinRule(
+    val fromColumn: AliasAndColumn,
+    val toColumn: AliasAndColumn
+)
+
+data class OrderBySpec(
+    val alias: String?,
+    val column: String,
+    val order: Order
+) {
+    constructor(column: String, order: Order = Order.ASC) : this(null, column, order)
+    constructor(column: String) : this(null, column, Order.ASC)
+};
+
 data class SqlPagination(
-    val paginationColumn: ColumnAliasPair,
+    val pagination: AliasAndColumn,
     val offset: Long = 0,
     val size: Int
 )
 
-data class ColumnAliasPair(
-    val column: String,
-    val alias: String
-);
+data class AliasAndColumn(
+    val alias: String?,
+    val column: String
+) {
+    constructor(column: String) : this(null, column)
+};
 
 sealed class SqlOperation;
 
@@ -86,12 +97,49 @@ data class SqlCondition(
 );
 
 data class SqlUpdateOp(
-
+    val database: String? = null,
+    val table: String,
+    val from: List<FromSpec>,
+    val where: List<JsonMap> = listOf()
 );
+
 data class SqlDeleteOp(
-
+    val database: String? = null,
+    val table: String,
+    val where: List<JsonMap> = listOf()
 );
 
-data class SqlSelectIntoOp();
+data class SqlSelectIntoOp(
+    val selections: List<JsonMap>,
+    val into: IntoTableSpec,
+    val from: List<FromSpec>,
+    val where: List<JsonMap> = listOf(),
+    val groupBy: List<AliasAndColumn> = listOf(),
+    val having: List<JsonMap> = listOf(),
+    val orderBy: List<OrderBySpec> = listOf(),
+    val pagination: SqlPagination? = null
+);
 
-data class SqlInsertIntoOp();
+data class IntoTableSpec(
+    val table: String,
+    val database: String?
+);
+
+data class SqlInsertIntoOp(
+    val into: InsertTableSpec,
+    val selections: List<JsonMap>,
+    val from: List<FromSpec>,
+    val where: List<JsonMap> = listOf(),
+    val groupBy: List<AliasAndColumn> = listOf(),
+    val having: List<JsonMap> = listOf(),
+    val orderBy: List<OrderBySpec> = listOf(),
+    val pagination: SqlPagination? = null
+);
+
+data class InsertTableSpec(
+    val database: String? = null,
+    val table: String,
+    val columns: List<String>
+) {
+    constructor(table: String, columns: List<String>) : this(null, table, columns)
+}
