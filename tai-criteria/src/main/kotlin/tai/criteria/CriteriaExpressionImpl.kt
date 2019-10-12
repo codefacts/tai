@@ -7,7 +7,7 @@ class CriteriaExpressionBuilderImpl : CriteriaExpressionBuilder {
     private val list = mutableListOf<CriteriaExpression>();
 
     override fun add(text: String): CriteriaExpressionBuilder {
-        list.add(CritExp(text));
+        list.add(CritExpSingle(text));
         return this;
     }
 
@@ -38,7 +38,7 @@ data class CriteriaExpressionImpl(val criteriaExpressions: List<CriteriaExpressi
     }
 }
 
-private data class CritExp(val text: String) : CriteriaExpression {
+data class CritExpSingle(val text: String) : CriteriaExpression {
     override val isBlank: Boolean = text.isBlank();
 
     override fun toInternalRepresentation(stringBuilder: StringBuilder): StringBuilder {

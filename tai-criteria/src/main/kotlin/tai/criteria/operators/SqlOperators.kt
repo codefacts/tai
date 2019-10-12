@@ -7,31 +7,18 @@ import tai.criteria.ex.CriteriaException
 import tai.criteria.ops.*
 import kotlin.reflect.KClass
 
-class ColumnNameOperator : CriteriaOperationNative<String> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(
-        ParamSpecSingle(
-            arg_, true
+class PathExpressionOperator : CriteriaOperation0 {
+    override val paramSpecs: Collection<ParamSpec> = listOf();
+
+    override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
+        val arg = dialect.ctxObject[arg_] as List<String>?
+            ?: throw CriteriaException("No arg provided to ${this::class.simpleName}");
+        if (arg.isEmpty()) {
+            throw CriteriaException("Empty arg list provided to ${this::class.simpleName}");
+        }
+        return joinCriteriaExpressions(
+            arg.map { CritExpSingle(it) }, "."
         )
-    );
-    override val parameterType: KClass<String> = String::class;
-
-    override fun renderExpression(dialect: CriteriaDialect, param: String): CriteriaExpression {
-        val src = dialect.ctxObject[src_] as String?;
-        return dialect.column(param, src);
-    }
-}
-
-class TableNameOperator : CriteriaOperationNative<String> {
-    override val paramSpecs: Collection<ParamSpec> = listOf(
-        ParamSpecSingle(
-            arg_, true
-        )
-    );
-    override val parameterType: KClass<String> = String::class;
-
-    override fun renderExpression(dialect: CriteriaDialect, param: String): CriteriaExpression {
-        val src = dialect.ctxObject[src_] as String?;
-        return dialect.table(param, src);
     }
 }
 
@@ -59,18 +46,16 @@ class FromOperator : CriteriaOperation1 {
     }
 }
 
-class JoinOperator : CriteriaOperation3 {
+class JoinOperator : CriteriaOperation2 {
     override val paramSpecs: Collection<ParamSpec> = listOf(
         ParamSpecSingle(arg1_),
-        ParamSpecSingle(arg2_),
-        ParamSpecSingle(arg3_)
+        ParamSpecSingle(arg2_)
     );
 
     override fun renderExpression(
         dialect: CriteriaDialect,
-        param1: CriteriaExpression,
-        param2: CriteriaExpression,
-        param3: CriteriaExpression
+        joiningTable: CriteriaExpression,
+        on: CriteriaExpression
     ): CriteriaExpression {
 
         val joinStr = when (val joinType = dialect.ctxObject[join_type_]) {
@@ -81,8 +66,7 @@ class JoinOperator : CriteriaOperation3 {
         };
 
         return CriteriaExpressionBuilderImpl()
-            .add(param1).add(" ").add(joinStr).add(" ").add(param2).add(" ON ").add(param3)
-            .build();
+            .add(joinStr).add(" ").add(joiningTable).add(" ON ").add(on).build();
     }
 }
 
@@ -192,31 +176,47 @@ class SqlSelectIntoOperator : CriteriaOperation3 {
     }
 }
 
-class SqlInsertIntoOperator : CriteriaOperation3 {
+class SqlInsertIntoOperator : CriteriaOperation2 {
     override val paramSpecs: Collection<ParamSpec> = listOf(
         ParamSpecSingle(table_),
-        ParamSpecMulti(columns_, false, defaultValue = listOf<JsonMap>(), combineMulti = ::combineColumns),
-        ParamSpecSingle(expression_)
+        ParamSpecMulti(columns_, false, defaultValue = listOf<JsonMap>(), combineMulti = ::combineColumns)
     );
 
     private fun combineColumns(criteriaDialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
-        if (list.isEmpty()) return emptyCriteriaExpression;
-        return CriteriaExpressionBuilderImpl()
-            .add("(").add(joinCriteriaExpressions(list, ", ")).add(")").build();
+        return joinCriteriaExpressions(list, ", ");
     }
 
     override fun renderExpression(
         dialect: CriteriaDialect,
         table: CriteriaExpression,
-        columns: CriteriaExpression,
-        expression: CriteriaExpression
+        columns: CriteriaExpression
     ): CriteriaExpression {
         val builder = CriteriaExpressionBuilderImpl()
             .add("INSERT INTO ").add(table);
         if (!columns.isBlank) {
-            builder.add(" ").add(columns)
+            builder.add(" (").add(columns).add(")");
         }
-        return builder.add(" ").add(expression).build();
+        return builder.build();
+    }
+}
+
+class InsertOperator : CriteriaOperation2 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(table_),
+        ParamSpecMulti(columns_, combineMulti = ::combineColumns)
+    );
+
+    private fun combineColumns(dialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
+        return joinCriteriaExpressions(list, ", ")
+    }
+
+    override fun renderExpression(
+        dialect: CriteriaDialect,
+        table: CriteriaExpression,
+        columns: CriteriaExpression
+    ): CriteriaExpression {
+        return CriteriaExpressionBuilderImpl()
+            .add("INSERT INTO ").add(table).add(" (").add(columns).add(")").build();
     }
 }
 
@@ -231,12 +231,14 @@ class UpdateOperator : CriteriaOperation1 {
     }
 }
 
-class DeleteOperator : CriteriaOperation0 {
-    override val paramSpecs: Collection<ParamSpec> = listOf();
+class DeleteOperator : CriteriaOperation1 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg_)
+    );
 
-    override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
+    override fun renderExpression(dialect: CriteriaDialect, table: CriteriaExpression): CriteriaExpression {
         return CriteriaExpressionBuilderImpl()
-            .add("DELETE ").build();
+            .add("DELETE FROM ").add(table).build();
     }
 }
 
@@ -265,28 +267,35 @@ class SqlValuesOperator : CriteriaOperation1 {
 
     private fun combineValues(criteriaDialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
         return joinCriteriaExpressions(
-            list.map { exp -> CriteriaExpressionBuilderImpl().add("VALUES ").add(exp).build() }, ", "
+            list, ", "
         );
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        return param;
+        return CriteriaExpressionBuilderImpl()
+            .add("VALUES (").add(param).add(")").build();
     }
 }
 
-class SqlValueArrayOperator : CriteriaOperation1 {
+class LimitOperator : CriteriaOperation1 {
     override val paramSpecs: Collection<ParamSpec> = listOf(
-        ParamSpecMulti(arg_, true, combineMulti = ::combineValues)
-    );
-
-    private fun combineValues(criteriaDialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
-        if (list.isEmpty()) return emptyCriteriaExpression;
-        return CriteriaExpressionBuilderImpl()
-            .add("(").add(joinCriteriaExpressions(list, ", ")).add(")").build();
-    }
+        ParamSpecSingle(arg_)
+    )
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        return param;
+        return CriteriaExpressionBuilderImpl()
+            .add("LIMIT ").add(param).build()
+    }
+}
+
+class OffsetOperator : CriteriaOperation1 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg_)
+    )
+
+    override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
+        return CriteriaExpressionBuilderImpl()
+            .add("OFFSET ").add(param).build()
     }
 }
 

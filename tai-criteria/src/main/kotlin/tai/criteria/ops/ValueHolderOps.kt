@@ -5,9 +5,12 @@ import tai.criteria.CriteriaDialect
 import tai.criteria.CriteriaExpression
 import tai.criteria.CriteriaOperation0
 import tai.criteria.ParamSpec
+import tai.criteria.ex.CriteriaException
 import tai.criteria.operators.*
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 fun valueOf(value: Byte): JsonMap {
@@ -73,6 +76,20 @@ fun valueOf(value: Date): JsonMap {
     );
 }
 
+fun valueOf(value: LocalTime): JsonMap {
+    return mapOf(
+        op_ to local_time_value_,
+        arg_ to value
+    );
+}
+
+fun valueOf(value: Instant): JsonMap {
+    return mapOf(
+        op_ to instant_,
+        arg_ to value
+    );
+}
+
 fun valueOf(value: LocalDate): JsonMap {
     return mapOf(
         op_ to local_date_value_,
@@ -85,6 +102,23 @@ fun valueOf(value: LocalDateTime): JsonMap {
         op_ to local_date_time_value_,
         arg_ to value
     );
+}
+
+fun valueOf(value: Any): JsonMap {
+    return when (value) {
+        is Boolean -> valueOf(value)
+        is Byte -> valueOf(value)
+        is Short -> valueOf(value)
+        is Int -> valueOf(value)
+        is Long -> valueOf(value)
+        is Float -> valueOf(value)
+        is Double -> valueOf(value)
+        is String -> valueOf(value)
+        is Date -> valueOf(value)
+        is LocalDate -> valueOf(value)
+        is LocalDateTime -> valueOf(value)
+        else -> throw CriteriaException("value of type [${value::class.java.simpleName}] is not a supported type.")
+    }
 }
 
 val emptyCriteriaOp = mapOf(

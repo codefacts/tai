@@ -11,3 +11,9 @@ interface ResultSet {
     val results: List<JsonList>
     val rows: List<JsonMap>
 }
+
+interface UpdateResult {
+    val updatedCount: Int;
+    val columns: List<String>;
+    val result: JsonList
+}

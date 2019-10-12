@@ -1,8 +1,10 @@
 package tai.criteria.operators
 
 import tai.criteria.*
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -87,6 +89,24 @@ class DateValueHolder : CriteriaOperationNative<Date> {
     }
 }
 
+class LocalTimeValueHolder : CriteriaOperationNative<LocalTime> {
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
+    override val parameterType: KClass<LocalTime> = LocalTime::class
+
+    override fun renderExpression(dialect: CriteriaDialect, param: LocalTime): CriteriaExpression {
+        return dialect.toExpression(param);
+    }
+}
+
+class InstantValueHolder : CriteriaOperationNative<Instant> {
+    override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
+    override val parameterType: KClass<Instant> = Instant::class
+
+    override fun renderExpression(dialect: CriteriaDialect, param: Instant): CriteriaExpression {
+        return dialect.toExpression(param);
+    }
+}
+
 class LocalDateHolder : CriteriaOperationNative<LocalDate> {
     override val paramSpecs: Collection<ParamSpec> = listOf(ParamSpecSingle(arg_))
     override val parameterType: KClass<LocalDate> = LocalDate::class
@@ -113,7 +133,7 @@ class EmptyCriteriaOperator : CriteriaOperation0 {
     }
 }
 
-class NullValueHolder: CriteriaOperation0 {
+class NullValueHolder : CriteriaOperation0 {
     override val paramSpecs: Collection<ParamSpec> = listOf();
 
     override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {

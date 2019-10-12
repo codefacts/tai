@@ -7,15 +7,47 @@ import tai.criteria.operators.Order
 /**
  * Created by sohan on 4/11/2017.
  */
+
+open class QueryBase(
+    open val from: List<FromSpec>,
+    open val where: List<JsonMap> = listOf(),
+    open val groupBy: List<AliasAndColumn> = listOf(),
+    open val having: List<JsonMap> = listOf(),
+    open val orderBy: List<OrderBySpec> = listOf(),
+    open val pagination: SqlPagination? = null
+);
+
 data class SqlQuery(
     val selections: List<JsonMap>,
-    val from: List<FromSpec>,
-    val where: List<JsonMap> = listOf(),
-    val groupBy: List<AliasAndColumn> = listOf(),
-    val having: List<JsonMap> = listOf(),
-    val orderBy: List<OrderBySpec> = listOf(),
-    val pagination: SqlPagination? = null
-)
+    override val from: List<FromSpec>,
+    override val where: List<JsonMap> = listOf(),
+    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val having: List<JsonMap> = listOf(),
+    override val orderBy: List<OrderBySpec> = listOf(),
+    override val pagination: SqlPagination? = null
+) : QueryBase(from, where, groupBy, having, orderBy, pagination)
+
+data class SqlSelectIntoOp(
+    val selections: List<JsonMap>,
+    val into: IntoTableSpec,
+    override val from: List<FromSpec>,
+    override val where: List<JsonMap> = listOf(),
+    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val having: List<JsonMap> = listOf(),
+    override val orderBy: List<OrderBySpec> = listOf(),
+    override val pagination: SqlPagination? = null
+) : QueryBase(from, where, groupBy, having, orderBy, pagination)
+
+data class SqlInsertIntoOp(
+    val into: InsertTableSpec,
+    val selections: List<JsonMap>,
+    override val from: List<FromSpec>,
+    override val where: List<JsonMap> = listOf(),
+    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val having: List<JsonMap> = listOf(),
+    override val orderBy: List<OrderBySpec> = listOf(),
+    override val pagination: SqlPagination? = null
+) : QueryBase(from, where, groupBy, having, orderBy, pagination)
 
 data class FromSpec(
     val database: String?,
@@ -51,7 +83,6 @@ data class OrderBySpec(
 };
 
 data class SqlPagination(
-    val pagination: AliasAndColumn,
     val offset: Long = 0,
     val size: Int
 )
@@ -66,6 +97,7 @@ data class AliasAndColumn(
 sealed class SqlOperation;
 
 data class SqlInsert(
+    val database: String?,
     val table: String,
     val data: JsonMap
 ) : SqlOperation() {
@@ -73,6 +105,7 @@ data class SqlInsert(
 }
 
 data class SqlUpdate(
+    val database: String?,
     val table: String,
     val data: JsonMap,
     val sqlConditions: Collection<SqlCondition>
@@ -81,6 +114,7 @@ data class SqlUpdate(
 }
 
 data class SqlDelete(
+    val database: String?,
     val table: String,
     val sqlConditions: Collection<SqlCondition>
 ) : SqlOperation() {
@@ -99,8 +133,14 @@ data class SqlCondition(
 data class SqlUpdateOp(
     val database: String? = null,
     val table: String,
-    val from: List<FromSpec>,
+    val values: List<ColumnAndValue>,
+    val from: List<FromSpec>? = null,
     val where: List<JsonMap> = listOf()
+);
+
+data class ColumnAndValue(
+    val column: String,
+    val valueExpression: JsonMap
 );
 
 data class SqlDeleteOp(
@@ -109,31 +149,9 @@ data class SqlDeleteOp(
     val where: List<JsonMap> = listOf()
 );
 
-data class SqlSelectIntoOp(
-    val selections: List<JsonMap>,
-    val into: IntoTableSpec,
-    val from: List<FromSpec>,
-    val where: List<JsonMap> = listOf(),
-    val groupBy: List<AliasAndColumn> = listOf(),
-    val having: List<JsonMap> = listOf(),
-    val orderBy: List<OrderBySpec> = listOf(),
-    val pagination: SqlPagination? = null
-);
-
 data class IntoTableSpec(
     val table: String,
     val database: String?
-);
-
-data class SqlInsertIntoOp(
-    val into: InsertTableSpec,
-    val selections: List<JsonMap>,
-    val from: List<FromSpec>,
-    val where: List<JsonMap> = listOf(),
-    val groupBy: List<AliasAndColumn> = listOf(),
-    val having: List<JsonMap> = listOf(),
-    val orderBy: List<OrderBySpec> = listOf(),
-    val pagination: SqlPagination? = null
 );
 
 data class InsertTableSpec(

@@ -2,8 +2,10 @@ package tai.criteria
 
 import tai.base.JsonMap
 import java.lang.StringBuilder
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -27,7 +29,7 @@ data class ParamSpecMulti(
     override val name: String,
     override val isMandatory: Boolean = true,
     override val defaultValue: Any? = null,
-    val combineMulti: (dialect: CriteriaDialect, List<CriteriaExpression>) -> CriteriaExpression
+    val combineMulti: (CriteriaDialect, List<CriteriaExpression>) -> CriteriaExpression
 ) : ParamSpec(name, isMandatory, defaultValue);
 
 interface CriteriaDialect {
@@ -47,6 +49,8 @@ interface CriteriaDialect {
     fun table(table: String, src: String? = null): CriteriaExpression;
     fun quote(name: String): CriteriaExpression;
     fun nullExpression(): CriteriaExpression;
+    fun toExpression(param: Instant): CriteriaExpression
+    fun toExpression(param: LocalTime): CriteriaExpression
 }
 
 interface CriteriaExpression {

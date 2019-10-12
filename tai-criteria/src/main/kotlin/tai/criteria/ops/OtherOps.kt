@@ -3,13 +3,13 @@ package tai.criteria.ops
 import tai.base.JsonMap
 import tai.criteria.operators.*
 
-fun asOp(exp: JsonMap, alias: String, spaceSeparated: Boolean = false): JsonMap {
-    val baseMap = mapOf(
+fun asOp(exp: JsonMap, alias: String?, spaceSeparated: Boolean = true): JsonMap {
+    return mapOf(
         op_ to as_,
         arg_ to exp,
-        alias_ to alias
+        alias_ to alias,
+        space_separated_ to spaceSeparated
     );
-    return if (spaceSeparated) baseMap + (space_separated_ to true) else baseMap;
 }
 
 fun asSpaceSeparated(exp: JsonMap, alias: String): JsonMap {
@@ -23,16 +23,19 @@ fun distinct(arg: JsonMap): JsonMap {
     );
 }
 
-fun isNull(isNot: Boolean = false): JsonMap {
+fun isOp(column: JsonMap, type: JsonMap, isNot: Boolean = false): JsonMap {
     return mapOf(
-        op_ to is_null_,
+        op_ to is_,
+        arg1_ to column,
+        arg2_ to type,
         is_not_ to isNot
     );
 }
 
-fun isNotNull(): JsonMap {
-    return mapOf(
-        op_ to is_null_,
-        is_not_ to true
-    );
+fun isNull(column: JsonMap): JsonMap {
+    return isOp(column, nullValue());
+}
+
+fun isNotNull(column: JsonMap): JsonMap {
+    return isOp(column, nullValue(), isNot = true);
 }

@@ -1,35 +1,37 @@
 package tai.criteria.ops
 
 import tai.base.JsonMap
+import tai.base.assertOrThrow
+import tai.criteria.ex.CriteriaException
 import tai.criteria.operators.*
 
-fun column(src: String, column: String): JsonMap {
-    return mapOf(
-        op_ to column_,
-        arg_ to column,
-        src_ to src
-    );
+fun column(src: String?, column: String): JsonMap {
+    if (src == null) {
+        return column(column);
+    }
+    return pathExpression(src, column);
 }
 
 fun column(column: String): JsonMap {
-    return mapOf(
-        op_ to column_,
-        arg_ to column
-    );
+    return pathExpression(column);
 }
 
-fun table(db: String, table: String): JsonMap {
-    return mapOf(
-        op_ to table_,
-        arg_ to table,
-        src_ to db
-    );
+fun table(database: String?, table: String): JsonMap {
+    if (database == null) {
+        return table(table);
+    }
+    return pathExpression(database, table);
 }
 
 fun table(table: String): JsonMap {
+    return pathExpression(table);
+}
+
+fun pathExpression(vararg parts: String): JsonMap {
+    assertOrThrow(parts.isNotEmpty()) { CriteriaException("No argument provided to pathExpression") }
     return mapOf(
-        op_ to table_,
-        arg_ to table
+        op_ to path_expression_,
+        arg_ to parts
     );
 }
 
@@ -47,20 +49,11 @@ fun from(arg: List<JsonMap>): JsonMap {
     );
 }
 
-fun join(table1: JsonMap, table2: JsonMap, joinOn: JsonMap, joinType: JoinType? = null): JsonMap {
-    if (joinType == null) {
-        return mapOf(
-            op_ to join_,
-            arg1_ to table1,
-            arg2_ to table2,
-            arg3_ to joinOn
-        );
-    }
+fun join(joiningTable: JsonMap, joinOn: JsonMap, joinType: JoinType = JoinType.JOIN): JsonMap {
     return mapOf(
         op_ to join_,
-        arg1_ to table1,
-        arg2_ to table2,
-        arg3_ to joinOn,
+        arg1_ to joiningTable,
+        arg2_ to joinOn,
         join_type_ to joinType
     );
 }
@@ -101,9 +94,13 @@ fun order(column: JsonMap, order: Order): JsonMap {
     );
 }
 
-fun criteriaJoin(arg: List<JsonMap>): JsonMap {
+fun joinExpressions(vararg jsonMaps: JsonMap): JsonMap {
+    return joinExpressions(jsonMaps.toList());
+}
+
+fun joinExpressions(arg: List<JsonMap>): JsonMap {
     return mapOf(
-        op_ to criteria_join_,
+        op_ to join_expressions_,
         arg_ to arg
     );
 }
@@ -117,12 +114,19 @@ fun selectInto(select: List<JsonMap>, into: JsonMap, inOp: JsonMap = emptyCriter
     );
 }
 
-fun insertInto(table: JsonMap, columns: List<JsonMap>, expression: JsonMap): JsonMap {
+fun insertInto(table: JsonMap, columns: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to insert_into_,
         table_ to table,
-        columns_ to columns,
-        expression_ to expression
+        columns_ to columns
+    );
+}
+
+fun insert(table: JsonMap, columns: List<JsonMap>): JsonMap {
+    return mapOf(
+        op_ to insert_,
+        table_ to table,
+        columns_ to columns
     );
 }
 
@@ -133,9 +137,10 @@ fun update(table: JsonMap): JsonMap {
     );
 }
 
-fun delete(): JsonMap {
+fun delete(table: JsonMap): JsonMap {
     return mapOf(
-        op_ to delete_
+        op_ to delete_,
+        arg_ to table
     );
 }
 
@@ -153,11 +158,18 @@ fun sqlValues(arg: List<JsonMap>): JsonMap {
     );
 }
 
-fun sqlValueArray(arg: List<JsonMap>): JsonMap {
+fun limit(arg: JsonMap): JsonMap {
     return mapOf(
-        op_ to sql_value_array_,
+        op_ to limit_,
         arg_ to arg
-    );
+    )
+}
+
+fun offset(arg: JsonMap): JsonMap {
+    return mapOf(
+        op_ to offset_,
+        arg_ to arg
+    )
 }
 
 fun union(arg1: JsonMap, arg2: JsonMap): JsonMap {
@@ -183,11 +195,12 @@ fun sqlQuery(
     groupBy: JsonMap = emptyCriteriaOp,
     having: JsonMap = emptyCriteriaOp,
     orderBy: JsonMap = emptyCriteriaOp,
-    pagination: JsonMap = emptyCriteriaOp
+    limit: JsonMap = emptyCriteriaOp,
+    offset: JsonMap = emptyCriteriaOp
 ): JsonMap {
-    return criteriaJoin(
+    return joinExpressions(
         arg = listOf(
-            select, from, where, groupBy, having, orderBy, pagination
+            select, from, where, groupBy, having, orderBy, limit, offset
         )
     )
 }

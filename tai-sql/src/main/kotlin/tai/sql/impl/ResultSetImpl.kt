@@ -10,7 +10,7 @@ class ResultSetImpl(
     override val columnNames: List<String>,
     private val resultAsJsonArrays: List<JsonList>? = null,
     private val resultAsJsonObjects: List<JsonMap>? = null,
-    private val outputAsJsonArray: JsonList?
+    private val outputAsJsonArray: JsonList? = null
 ) : ResultSet {
     init {
         assertThat(resultAsJsonArrays != null || resultAsJsonObjects != null) { "resultAsJsonArrays and resultAsJsonObjects can not be null at the same time" };
@@ -34,18 +34,18 @@ class ResultSetImpl(
         if (resultAsJsonArrays != null) {
             return resultAsJsonArrays
         }
-        return resultAsJsonObjects!!.map { jsonObject -> joToJsonArray(jsonObject); }.toList();
+        return resultAsJsonObjects!!.map { jsonObject -> joToJsonArray(jsonObject); };
     }
 
     private fun joToJsonArray(jsonObject: JsonMap): JsonList {
-        return columnNames.map { name -> jsonObject[name] }.toList();
+        return columnNames.map { name -> jsonObject[name] };
     }
 
     private fun jsonObjects(): List<JsonMap> {
         if (resultAsJsonObjects != null) {
             return resultAsJsonObjects;
         }
-        return resultAsJsonArrays!!.map { ja -> jaToJsonObject(ja) }.toList();
+        return resultAsJsonArrays!!.map { ja -> jaToJsonObject(ja) };
     }
 
     private fun jaToJsonObject(jsonArray: JsonList): JsonMap {

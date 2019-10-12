@@ -17,10 +17,13 @@ class AsOperator : CriteriaOperation1 {
         param: CriteriaExpression
     ): CriteriaExpression {
         val alias = dialect.ctxObject[alias_] as String?;
-        Objects.requireNonNull(alias, "Alias is missing in AS operator");
         val spaceSeparated = dialect.ctxObject.getBoolean(space_separated_);
-        return CriteriaExpressionBuilderImpl().add(param).add(if (spaceSeparated == true) " " else " AS ").add(alias!!)
-            .build()
+        if (alias == null) {
+            return CriteriaExpressionBuilderImpl()
+                .add(param).build()
+        }
+        return CriteriaExpressionBuilderImpl()
+            .add(param).add(if (spaceSeparated == true) " " else " AS ").add(alias).build()
     }
 }
 
@@ -35,15 +38,21 @@ class DistinctOperator : CriteriaOperation1 {
     }
 }
 
-class IsNullOperator : CriteriaOperation0 {
-    override val paramSpecs: Collection<ParamSpec> = listOf();
+class IsOperator : CriteriaOperation2 {
+    override val paramSpecs: Collection<ParamSpec> = listOf(
+        ParamSpecSingle(arg1_), ParamSpecSingle(arg2_)
+    );
 
-    override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
+    override fun renderExpression(
+        dialect: CriteriaDialect,
+        param1: CriteriaExpression,
+        param2: CriteriaExpression
+    ): CriteriaExpression {
         val isNot = dialect.ctxObject[is_not_] as Boolean?
-        if (isNot != null && isNot) {
-            return CriteriaExpressionBuilderImpl().add("IS NOT ").add(dialect.nullExpression()).build()
+        return if (isNot != null && isNot) {
+            CriteriaExpressionBuilderImpl().add(param1).add(" IS NOT ").add(param2).build()
         } else {
-            return CriteriaExpressionBuilderImpl().add("IS ").add(dialect.nullExpression()).build()
+            CriteriaExpressionBuilderImpl().add(param1).add(" IS ").add(param2).build()
         }
     }
 }

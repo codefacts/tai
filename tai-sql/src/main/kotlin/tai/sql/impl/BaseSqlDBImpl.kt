@@ -1,30 +1,92 @@
 package tai.sql.impl
 
+import tai.criteria.ops.*
 import tai.sql.*
 
-class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB) : BaseSqlDB {
+class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSqlDB {
 
     override suspend fun query(sqlQuery: SqlQuery): ResultSet {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return coreSqlDB.query(
+            dialect.toPaginatedQuery(sqlQuery)
+        );
     }
 
-    override suspend fun selectInto(selectInto: SqlSelectIntoOp): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult {
+        return coreSqlDB.execute(
+            dialect.toPaginatedQuery(selectInto)
+        );
     }
 
-    override suspend fun insertInto(selectInto: SqlInsertIntoOp): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun insertInto(insertInto: SqlInsertIntoOp): UpdateResult {
+        return coreSqlDB.execute(
+            dialect.toPaginatedQuery(insertInto)
+        )
     }
 
-    override suspend fun update(update: SqlUpdateOp): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun insert(insert: SqlInsert): UpdateResult {
+        return execute(insert);
     }
 
-    override suspend fun delete(update: SqlDeleteOp): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun update(updateOp: SqlUpdateOp): UpdateResult {
+
+        return coreSqlDB.execute(
+            joinExpressions(
+                listOf(
+                    tai.criteria.ops.update(
+                        table(
+                            db = updateOp.database, table = updateOp.table
+                        )
+                    ),
+                    set(
+                        updateOp.values.map { columnAndValue ->
+                            eq(
+                                column(columnAndValue.column), columnAndValue.valueExpression
+                            )
+                        }
+                    ),
+                    if (updateOp.from != null)
+                        from(
+                            updateOp.from.map { toCriteriaExp(it) }
+                        )
+                    else emptyCriteriaOp,
+                    where(
+                        and(
+                            updateOp.where
+                        )
+                    )
+                )
+            )
+        );
     }
 
-    override suspend fun updateAll(sqlList: Collection<SqlUpdate>): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun delete(deleteOp: SqlDeleteOp): UpdateResult {
+        return coreSqlDB.execute(
+            joinExpressions(
+                listOf(
+                    tai.criteria.ops.delete(
+                        table(
+                            db = deleteOp.database, table = deleteOp.table
+                        )
+                    ),
+                    where(
+                        and(
+                            deleteOp.where
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    override suspend fun execute(operation: SqlOperation): UpdateResult {
+        return coreSqlDB.execute(
+            toCriteriaExp(operation)
+        )
+    }
+
+    override suspend fun executeAll(sqlList: Collection<SqlOperation>): List<UpdateResult> {
+        return coreSqlDB.executeAll(
+            sqlList.map { toCriteriaExp(it) }
+        )
     }
 }

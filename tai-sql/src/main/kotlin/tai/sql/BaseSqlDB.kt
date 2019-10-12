@@ -9,13 +9,17 @@ interface BaseSqlDB {
 
     suspend fun query(sqlQuery: SqlQuery): ResultSet
 
-    suspend fun selectInto(selectInto: SqlSelectIntoOp): Int;
+    suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult;
 
-    suspend fun insertInto(selectInto: SqlInsertIntoOp): Int;
+    suspend fun insertInto(insertInto: SqlInsertIntoOp): UpdateResult;
 
-    suspend fun update(update: SqlUpdateOp): Int
+    suspend fun insert(insert: SqlInsert): UpdateResult
 
-    suspend fun delete(update: SqlDeleteOp): Int
+    suspend fun update(updateOp: SqlUpdateOp): UpdateResult
 
-    suspend fun updateAll(sqlList: Collection<SqlUpdate>): Int
+    suspend fun delete(deleteOp: SqlDeleteOp): UpdateResult
+
+    suspend fun execute(operation: SqlOperation): UpdateResult;
+
+    suspend fun executeAll(sqlList: Collection<SqlOperation>): List<UpdateResult>
 }

@@ -7,16 +7,24 @@ import java.time.LocalDateTime
 import java.util.*
 
 fun and(vararg jsonMaps: JsonMap): JsonMap {
+    return and(jsonMaps.toList());
+}
+
+fun and(jsonMaps: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to and_,
-        arg_ to jsonMaps.toList()
+        arg_ to jsonMaps
     );
 }
 
 fun or(vararg jsonMaps: JsonMap): JsonMap {
+    return or(jsonMaps.toList());
+}
+
+fun or(jsonMaps: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to or_,
-        arg_ to jsonMaps.toList()
+        arg_ to jsonMaps
     );
 }
 
