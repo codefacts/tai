@@ -2,9 +2,7 @@ package tai.criteria
 
 import tai.base.JsonMap
 import java.lang.RuntimeException
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.reflect.KClass
@@ -80,26 +78,30 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
     }
 
     override fun toExpression(param: String): CriteriaExpression {
-        return addParam(param);
+        return addEscapedParam(param);
     }
 
     override fun toExpression(param: Date): CriteriaExpression {
-        return addParam(DateTimeFormatter.ISO_INSTANT.format(param.toInstant()));
+        return addEscapedParam(param);
     }
 
     override fun toExpression(param: LocalDate): CriteriaExpression {
-        return addParam(
-            DateTimeFormatter.ISO_INSTANT.format(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC))
-        );
+        return addEscapedParam(param);
     }
 
     override fun toExpression(param: LocalDateTime): CriteriaExpression {
-        return addParam(
-            DateTimeFormatter.ISO_INSTANT.format(param.toInstant(ZoneOffset.UTC))
-        );
+        return addEscapedParam(param);
     }
 
-    private fun addParam(param: Any): CriteriaExpression {
+    override fun toExpression(param: Instant): CriteriaExpression {
+        return addEscapedParam(param);
+    }
+
+    override fun toExpression(param: LocalTime): CriteriaExpression {
+        return addEscapedParam(param);
+    }
+
+    private fun addEscapedParam(param: Any): CriteriaExpression {
         paramsBuilder.add(param);
         return CriteriaExpressionBuilderImpl().add("?").build();
     }

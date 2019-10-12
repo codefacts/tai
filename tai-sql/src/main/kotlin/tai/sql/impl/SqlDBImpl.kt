@@ -13,14 +13,14 @@ class SqlDBImpl(val baseSqlDB: BaseSqlDB) : SqlDB, BaseSqlDB by baseSqlDB {
     override suspend fun insert(table: String, jsonObject: JsonMap): UpdateResult {
         return baseSqlDB.execute(
             SqlInsert(
-                table, jsonObject
+                table = table, data = jsonObject
             )
         )
     }
 
     override suspend fun insert(table: String, sqlList: Collection<JsonMap>): List<UpdateResult> {
         return baseSqlDB.executeAll(
-            sqlList.map { jo -> SqlInsert(table, jo) }
+            sqlList.map { jo -> SqlInsert(table = table, data = jo) }
         )
     }
 

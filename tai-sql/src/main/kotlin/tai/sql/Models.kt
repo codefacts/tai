@@ -97,7 +97,7 @@ data class AliasAndColumn(
 sealed class SqlOperation;
 
 data class SqlInsert(
-    val database: String?,
+    val database: String? = null,
     val table: String,
     val data: JsonMap
 ) : SqlOperation() {

@@ -33,9 +33,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
             joinExpressions(
                 listOf(
                     tai.criteria.ops.update(
-                        table(
-                            db = updateOp.database, table = updateOp.table
-                        )
+                        table(updateOp.database, updateOp.table)
                     ),
                     set(
                         updateOp.values.map { columnAndValue ->
@@ -64,9 +62,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
             joinExpressions(
                 listOf(
                     tai.criteria.ops.delete(
-                        table(
-                            db = deleteOp.database, table = deleteOp.table
-                        )
+                        table(deleteOp.database, deleteOp.table)
                     ),
                     where(
                         and(
