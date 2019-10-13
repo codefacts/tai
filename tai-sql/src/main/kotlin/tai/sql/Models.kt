@@ -11,7 +11,7 @@ import tai.criteria.operators.Order
 open class QueryBase(
     open val from: List<FromSpec>,
     open val where: List<JsonMap> = listOf(),
-    open val groupBy: List<AliasAndColumn> = listOf(),
+    open val groupBy: List<ColumnSpec> = listOf(),
     open val having: List<JsonMap> = listOf(),
     open val orderBy: List<OrderBySpec> = listOf(),
     open val pagination: SqlPagination? = null
@@ -21,7 +21,7 @@ data class SqlQuery(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val groupBy: List<ColumnSpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -32,7 +32,7 @@ data class SqlSelectIntoOp(
     val into: IntoTableSpec,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val groupBy: List<ColumnSpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -43,24 +43,20 @@ data class SqlInsertIntoOp(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<AliasAndColumn> = listOf(),
+    override val groupBy: List<ColumnSpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
 ) : QueryBase(from, where, groupBy, having, orderBy, pagination)
 
 data class FromSpec(
-    val database: String?,
+    val database: String? = null,
     val table: String,
-    val alias: String?,
+    val alias: String? = null,
     val joins: List<JoinSpec> = listOf()
-) {
-    constructor(table: String, alias: String) : this(null, table, alias)
-    constructor(table: String) : this(null, table, null)
-}
+)
 
 data class JoinSpec(
-    val toAlias: String,
     val joinType: JoinType = JoinType.JOIN,
     val database: String? = null,
     val table: String,
@@ -69,8 +65,8 @@ data class JoinSpec(
 )
 
 data class JoinRule(
-    val fromColumn: AliasAndColumn,
-    val toColumn: AliasAndColumn
+    val from: ColumnSpec,
+    val to: ColumnSpec
 )
 
 data class OrderBySpec(
@@ -87,7 +83,7 @@ data class SqlPagination(
     val size: Int
 )
 
-data class AliasAndColumn(
+data class ColumnSpec(
     val alias: String?,
     val column: String
 ) {

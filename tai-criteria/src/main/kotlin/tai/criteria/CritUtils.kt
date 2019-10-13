@@ -17,17 +17,24 @@ class ParamsBuilderImpl(private val list: MutableList<Any>) : ParamsBuilder {
 
 val emptyCriteriaExpression = CriteriaExpressionBuilderImpl().build();
 
-fun joinCriteriaExpressions(criteriaExpressions: List<CriteriaExpression>, joiner: String): CriteriaExpression {
+fun joinCriteriaExpressions(criteriaExpressions: List<CriteriaExpression>, delimiter: String): CriteriaExpression {
     if (criteriaExpressions.isEmpty()) return emptyCriteriaExpression;
     val builder = CriteriaExpressionBuilderImpl();
     for (i in 0..criteriaExpressions.size - 2) {
-        builder.add(criteriaExpressions[i]).add(joiner);
+        val criteriaExpression = criteriaExpressions[i];
+        if (criteriaExpression.isBlank) {
+            continue;
+        }
+        builder.add(criteriaExpression).add(delimiter);
     }
     builder.add(criteriaExpressions[criteriaExpressions.size - 1]);
     return builder.build();
 }
 
-fun withParenthesis(expBuilder: CriteriaExpressionBuilder, exp: (expBuilder: CriteriaExpressionBuilder) -> Any): CriteriaExpressionBuilder {
+fun withParenthesis(
+    expBuilder: CriteriaExpressionBuilder,
+    exp: (expBuilder: CriteriaExpressionBuilder) -> Any
+): CriteriaExpressionBuilder {
     expBuilder.add("(");
     exp(expBuilder);
     expBuilder.add(")");
@@ -35,7 +42,7 @@ fun withParenthesis(expBuilder: CriteriaExpressionBuilder, exp: (expBuilder: Cri
 }
 
 fun allExpEmpty(vararg criteriaExpressions: CriteriaExpression): Boolean {
-    return criteriaExpressions.fold(true) {
-        acc, criteriaExpression -> acc && criteriaExpression.isBlank
+    return criteriaExpressions.fold(true) { acc, criteriaExpression ->
+        acc && criteriaExpression.isBlank
     };
 }

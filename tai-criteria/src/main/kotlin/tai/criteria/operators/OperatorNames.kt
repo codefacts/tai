@@ -98,3 +98,5 @@ const val count_ = "count";
 const val min_ = "min";
 const val max_ = "max";
 const val distinct_ = "distinct";
+
+const val star_ = "star";

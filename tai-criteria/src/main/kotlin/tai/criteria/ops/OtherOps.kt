@@ -39,3 +39,15 @@ fun isNull(column: JsonMap): JsonMap {
 fun isNotNull(column: JsonMap): JsonMap {
     return isOp(column, nullValue(), isNot = true);
 }
+
+fun star(src: String? = null): JsonMap {
+    if (src == null) {
+        return mapOf(
+            op_ to star_
+        )
+    }
+    return mapOf(
+        op_ to star_,
+        src_ to src
+    )
+}

@@ -69,7 +69,7 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
             )
         ),
         orderBy(
-            sqlQuery.orderBy.map { order(column(it.column), it.order) }
+            sqlQuery.orderBy.map { order(column(it.alias, it.column), it.order) }
         )
     );
 }

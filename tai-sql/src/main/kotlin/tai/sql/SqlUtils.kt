@@ -26,8 +26,8 @@ fun toJoin(joinSpec: JoinSpec): JsonMap {
 }
 
 fun toJoinRuleExp(joinRule: JoinRule): JsonMap {
-    val fromColumn = joinRule.fromColumn;
-    val toColumn = joinRule.toColumn;
+    val fromColumn = joinRule.from;
+    val toColumn = joinRule.to;
     return eq(
         column(fromColumn.alias, fromColumn.column),
         column(toColumn.alias, toColumn.column)

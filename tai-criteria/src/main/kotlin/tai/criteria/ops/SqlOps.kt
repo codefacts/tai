@@ -31,7 +31,7 @@ fun pathExpression(vararg parts: String): JsonMap {
     assertOrThrow(parts.isNotEmpty()) { CriteriaException("No argument provided to pathExpression") }
     return mapOf(
         op_ to path_expression_,
-        arg_ to parts
+        arg_ to parts.toList()
     );
 }
 

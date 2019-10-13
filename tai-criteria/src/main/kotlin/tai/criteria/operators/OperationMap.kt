@@ -53,7 +53,7 @@ val operationMap = OperationMapImpl(
         where_ to WhereOperator(),
         group_by_ to GroupByOperator(),
         having_ to HavingOperator(),
-        join_expressions_ to CriteriaJoinOperator(),
+        join_expressions_ to JoinExpressionsOperator(),
         insert_ to InsertOperator(),
         update_ to UpdateOperator(),
         delete_ to DeleteOperator(),
@@ -91,6 +91,9 @@ val operationMap = OperationMapImpl(
         min_ to createOneArgFun("MIN"),
         max_ to createOneArgFun("MAX"),
         count_ to createOneArgFun("COUNT"),
-        distinct_ to DistinctOperator()
+        distinct_ to DistinctOperator(),
+
+        //Others
+        star_ to StartOperator()
     )
 );

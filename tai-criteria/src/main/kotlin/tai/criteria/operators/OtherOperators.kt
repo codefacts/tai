@@ -56,3 +56,14 @@ class IsOperator : CriteriaOperation2 {
         }
     }
 }
+
+class StartOperator : CriteriaOperation0 {
+    override val paramSpecs: Collection<ParamSpec> = listOf();
+
+    override fun renderExpression(
+        dialect: CriteriaDialect
+    ): CriteriaExpression {
+        val src = dialect.ctxObject[src_] as String? ?: return CriteriaExpressionBuilderImpl().add("*").build();
+        return CriteriaExpressionBuilderImpl().add(src).add(".*").build()
+    }
+}

@@ -133,7 +133,7 @@ class OrderOperator : CriteriaOperation1 {
     }
 }
 
-class CriteriaJoinOperator : CriteriaOperation1 {
+class JoinExpressionsOperator : CriteriaOperation1 {
     override val paramSpecs: Collection<ParamSpec> = listOf(
         ParamSpecMulti(arg_, true, combineMulti = ::combineExpressions)
     );
@@ -142,8 +142,8 @@ class CriteriaJoinOperator : CriteriaOperation1 {
         criteriaDialect: CriteriaDialect,
         list: List<CriteriaExpression>
     ): CriteriaExpression {
-        val delimiter = criteriaDialect.ctxObject[delimiter_] as String?;
-        return joinCriteriaExpressions(list, delimiter ?: " ");
+        val delimiter = criteriaDialect.ctxObject[delimiter_] as String? ?: " ";
+        return joinCriteriaExpressions(list, delimiter);
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
