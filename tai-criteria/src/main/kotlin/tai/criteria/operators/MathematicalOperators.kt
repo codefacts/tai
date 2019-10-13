@@ -13,9 +13,9 @@ fun createGenericBiOperator(operatorSymbol: String): CriteriaOperation2 {
             param1: CriteriaExpression,
             param2: CriteriaExpression
         ): CriteriaExpression {
-            return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                expBuilder.add(param1).add(operatorSymbol).add(param2);
-            }.build();
+            return withParenthesis(
+                CriteriaExpressionBuilderImpl().add(param1).add(operatorSymbol).add(param2).build()
+            )
         }
     }
 }
@@ -31,15 +31,18 @@ fun createComparisionOperator(operatorSymbol: String): CriteriaOperation2 {
             param1: CriteriaExpression,
             param2: CriteriaExpression
         ): CriteriaExpression {
-            val modifier = dialect.ctxObject[modifier_] as ComparisonModifier?;
-            if (modifier != null) {
-                return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                    expBuilder.add(param1).add(operatorSymbol).add(" ").add(modifier.value).add(" ").add(param2);
-                }.build();
-            }
-            return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                expBuilder.add(param1).add(operatorSymbol).add(param2);
-            }.build();
+            val modifier = dialect.ctxObject[modifier_] as ComparisonModifier?
+            val parenthesis = dialect.ctxObject[is_parenthesis_] as Boolean? ?: true;
+
+            return withParenthesis(
+                if (modifier != null) {
+                    CriteriaExpressionBuilderImpl().add(param1).add(operatorSymbol).add(" ").add(modifier.value)
+                        .add(" ").add(param2).build()
+                } else {
+                    CriteriaExpressionBuilderImpl().add(param1).add(operatorSymbol).add(param2).build()
+                },
+                parenthesis
+            )
         }
     }
 }
@@ -54,10 +57,7 @@ class PlusOperator : CriteriaOperation1 {
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        if (param.isBlank) return param;
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param)
-        }.build();
+        return withParenthesis(param)
     }
 }
 
@@ -71,9 +71,6 @@ class MultiplyOperator : CriteriaOperation1 {
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        if (param.isBlank) return param;
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param)
-        }.build();
+        return withParenthesis(param);
     }
 }

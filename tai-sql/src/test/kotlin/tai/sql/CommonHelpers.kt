@@ -1,6 +1,13 @@
 package tai.sql
 
 import com.mysql.cj.jdbc.MysqlDataSource
+import tai.criteria.CriteriaDialectBuilderImpl
+import tai.criteria.CriteriaToTextConverterImpl
+import tai.criteria.operators.operationMap
+import tai.sql.impl.BaseSqlDBImpl
+import tai.sql.impl.CoreSqlDBImpl
+import tai.sql.impl.SqlDBImpl
+import tai.sql.impl.SqlDialectImpl
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -21,4 +28,19 @@ fun getMySQLDataSource(): DataSource {
     }
 
     return mysqlDS
+}
+
+fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
+    return SqlDBImpl(
+        BaseSqlDBImpl(
+            CoreSqlDBImpl(
+                sqlExecutor,
+                CriteriaToTextConverterImpl(
+                    operationMap,
+                    CriteriaDialectBuilderImpl()
+                )
+            ),
+            SqlDialectImpl()
+        )
+    )
 }

@@ -21,9 +21,7 @@ class AndOperatorImpl : CriteriaOperation1 {
         param: CriteriaExpression
     ): CriteriaExpression {
         if (param.isBlank) return param;
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param)
-        }.build();
+        return withParenthesis(param);
     }
 }
 
@@ -43,10 +41,7 @@ class OrOperatorImpl : CriteriaOperation1 {
         dialect: CriteriaDialect,
         param: CriteriaExpression
     ): CriteriaExpression {
-        if (param.isBlank) return emptyCriteriaExpression;
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param);
-        }.build();
+        return withParenthesis(param);
     }
 }
 
@@ -85,14 +80,13 @@ class InOperatorImpl : CriteriaOperation2 {
         if (param2.isBlank) {
             return dialect.toExpression(isNot != null && isNot);
         }
-        if (isNot != null && isNot) {
-            return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                expBuilder.add(param1).add(" NOT IN ").add(param2)
-            }.build();
-        }
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param1).add(" IN ").add(param2)
-        }.build();
+        return withParenthesis(
+            if (isNot != null && isNot) {
+                CriteriaExpressionBuilderImpl().add(param1).add(" NOT IN ").add(param2).build()
+            } else {
+                CriteriaExpressionBuilderImpl().add(param1).add(" IN ").add(param2).build();
+            }
+        )
     }
 }
 
@@ -110,14 +104,16 @@ class BetweenOperatorImpl : CriteriaOperation3 {
         param3: CriteriaExpression
     ): CriteriaExpression {
         val isNot = dialect.ctxObject[is_not_] as Boolean?;
-        if (isNot != null && isNot) {
-            return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                expBuilder.add(param1).add(" NOT BETWEEN ").add(param2).add(" AND ").add(param3);
-            }.build();
-        }
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param1).add(" BETWEEN ").add(param2).add(" AND ").add(param3);
-        }.build();
+        return withParenthesis(
+            if (isNot != null && isNot) {
+                CriteriaExpressionBuilderImpl().add(param1).add(" NOT BETWEEN ").add(param2).add(" AND ")
+                    .add(param3)
+                    .build()
+            } else {
+                CriteriaExpressionBuilderImpl().add(param1).add(" BETWEEN ").add(param2).add(" AND ").add(param3)
+                    .build()
+            }
+        )
     }
 }
 
@@ -133,14 +129,13 @@ class LikeOperatorImpl : CriteriaOperation2 {
         param2: CriteriaExpression
     ): CriteriaExpression {
         val isNot = dialect.ctxObject[is_not_] as Boolean?;
-        if (isNot != null && isNot) {
-            return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-                expBuilder.add(param1).add(" NOT LIKE ").add(param2);
-            }.build();
-        }
-        return withParenthesis(CriteriaExpressionBuilderImpl()) { expBuilder ->
-            expBuilder.add(param1).add(" LIKE ").add(param2);
-        }.build();
+        return withParenthesis(
+            if (isNot != null && isNot) {
+                CriteriaExpressionBuilderImpl().add(param1).add(" NOT LIKE ").add(param2).build()
+            } else {
+                CriteriaExpressionBuilderImpl().add(param1).add(" LIKE ").add(param2).build()
+            }
+        )
     }
 }
 

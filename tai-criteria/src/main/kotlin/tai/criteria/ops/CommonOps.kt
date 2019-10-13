@@ -2,9 +2,6 @@ package tai.criteria.ops
 
 import tai.base.JsonMap
 import tai.criteria.operators.*
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.*
 
 fun and(vararg jsonMaps: JsonMap): JsonMap {
     return and(jsonMaps.toList());
@@ -35,11 +32,12 @@ fun not(jsonMap: JsonMap): JsonMap {
     );
 }
 
-fun eq(arg1: JsonMap, arg2: JsonMap): JsonMap {
+fun eq(arg1: JsonMap, arg2: JsonMap, isParenthesis: Boolean = true): JsonMap {
     return mapOf(
         op_ to eq_,
         arg1_ to arg1,
-        arg2_ to arg2
+        arg2_ to arg2,
+        is_parenthesis_ to isParenthesis
     );
 }
 

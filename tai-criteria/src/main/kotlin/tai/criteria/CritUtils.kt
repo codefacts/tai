@@ -31,14 +31,19 @@ fun joinCriteriaExpressions(criteriaExpressions: List<CriteriaExpression>, delim
     return builder.build();
 }
 
-fun withParenthesis(
-    expBuilder: CriteriaExpressionBuilder,
-    exp: (expBuilder: CriteriaExpressionBuilder) -> Any
-): CriteriaExpressionBuilder {
-    expBuilder.add("(");
-    exp(expBuilder);
-    expBuilder.add(")");
-    return expBuilder;
+fun withParenthesis(expression: CriteriaExpression, isParenthesis: Boolean): CriteriaExpression {
+    return when {
+        expression.isBlank -> return emptyCriteriaExpression
+        isParenthesis -> return CriteriaExpressionBuilderImpl().add("(").add(expression).add(")").build()
+        else -> expression
+    };
+}
+
+fun withParenthesis(expression: CriteriaExpression): CriteriaExpression {
+    return when {
+        expression.isBlank -> emptyCriteriaExpression
+        else -> CriteriaExpressionBuilderImpl().add("(").add(expression).add(")").build()
+    };
 }
 
 fun allExpEmpty(vararg criteriaExpressions: CriteriaExpression): Boolean {

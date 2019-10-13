@@ -5,9 +5,9 @@ import tai.criteria.CriteriaDialectBuilderImpl
 import tai.criteria.CriteriaToTextConverterImpl
 import tai.criteria.operators.operationMap
 import tai.sql.impl.*
-import javax.sql.DataSource
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
+import tai.base.JsonList
 import tai.criteria.operators.Order
 import tai.criteria.ops.*
 
@@ -16,7 +16,7 @@ class SqlDBTest {
     @Test
     fun queryTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -58,7 +58,7 @@ class SqlDBTest {
     @Test
     fun queryTest2() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -97,7 +97,7 @@ class SqlDBTest {
     @Test
     fun queryWithEmptyWhereTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -134,7 +134,7 @@ class SqlDBTest {
     @Test
     fun queryWithEmptyWhereNoGroupByTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -168,7 +168,7 @@ class SqlDBTest {
     @Test
     fun queryWithJoinsWithoutAliasTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -218,7 +218,7 @@ class SqlDBTest {
     @Test
     fun queryWithJoinsTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -298,7 +298,7 @@ class SqlDBTest {
     @Test
     fun havingTest() {
         runBlocking {
-            val testSqlExecutoer = TestSqlExecutoer()
+            val testSqlExecutoer = ExecutorMock(SqlExecutorMock())
             val db = createSqlDb(testSqlExecutoer);
 
             val resultSet = db.query(
@@ -343,21 +343,12 @@ class SqlDBTest {
     }
 }
 
-private fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
-    return SqlDBImpl(
-        BaseSqlDBImpl(
-            CoreSqlDBImpl(
-                sqlExecutor,
-                CriteriaToTextConverterImpl(
-                    operationMap,
-                    CriteriaDialectBuilderImpl()
-                )
-            ),
-            SqlDialectImpl()
-        )
-    )
-}
-
-private fun createDataSource(): DataSource {
-    return getMySQLDataSource();
+class ExecutorMock(executor: SqlExecutor) : SqlExecutor by executor {
+    var sql = "";
+    var params: JsonList = listOf();
+    override suspend fun query(sql: String, params: JsonList): ResultSet {
+        this.sql = sql;
+        this.params = params;
+        return ResultSetImpl(listOf(), listOf());
+    }
 }
