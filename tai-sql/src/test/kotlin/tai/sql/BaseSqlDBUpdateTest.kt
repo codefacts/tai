@@ -532,7 +532,7 @@ class BaseSqlDBUpdateTest {
             println(PARAMS.map { "\"$it\"" })
 
             Assert.assertEquals(
-                "INSERT INTO test_sales_db.Customers (CustomerName, City, Country) SELECT SupplierName, City, Country FROM test_sales_db.Suppliers",
+                "SELECT * INTO CustomersBackup2017 IN test_sales_db FROM test_sales_db.Customers",
                 SQL.trim()
             )
             Assert.assertEquals(
