@@ -27,10 +27,10 @@ class SqlDBImpl(val baseSqlDB: BaseSqlDB) : SqlDB, BaseSqlDB by baseSqlDB {
     override suspend fun update(table: String, data: JsonMap, where: JsonMap): UpdateResult {
         return baseSqlDB.update(
             SqlUpdateOp(
-                table = table,
-                values = data.entries.map { (key, value) ->
+                tables = listOf(TableSpec(table = table)),
+                values = data.entries.map { (column, value) ->
                     ColumnAndValue(
-                        key, if (value != null) valueOf(value) else nullValue()
+                        column(column), if (value != null) valueOf(value) else nullValue()
                     )
                 },
                 where = where.map { (key, value) ->

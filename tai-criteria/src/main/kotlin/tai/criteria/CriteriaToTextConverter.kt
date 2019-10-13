@@ -3,7 +3,7 @@ package tai.criteria
 import tai.base.JsonList
 import tai.base.JsonMap
 import tai.base.assertThat
-import tai.criteria.ex.CriteriaException
+import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.operators.OperationMap
 import tai.criteria.operators.op_
 import java.lang.Exception
@@ -55,7 +55,7 @@ class CriteriaToTextConverterImpl(
             is CriteriaOperation6 -> call6(criteriaOperation, criteriaDialect);
             is CriteriaOperation7 -> call7(criteriaOperation, criteriaDialect);
             is CriteriaOperation8 -> call8(criteriaOperation, criteriaDialect);
-            else -> throw CriteriaException("Unsupported criteria operation: $criteriaOperation");
+            else -> throw TaiCriteriaException("Unsupported criteria operation: $criteriaOperation");
         }
     }
 
@@ -71,7 +71,7 @@ class CriteriaToTextConverterImpl(
             is CriteriaOperation6 -> assertLength(6, criteriaOperation);
             is CriteriaOperation7 -> assertLength(7, criteriaOperation);
             is CriteriaOperation8 -> assertLength(8, criteriaOperation);
-            else -> throw CriteriaException("Unsupported criteria operation: $criteriaOperation");
+            else -> throw TaiCriteriaException("Unsupported criteria operation: $criteriaOperation");
         }
     }
 
@@ -381,7 +381,7 @@ class CriteriaToTextConverterImpl(
         actualType: String,
         jsonMap: Map<String, Any?>
     ): Nothing {
-        throw CriteriaException("Invalid argument type for key '$name' in jsonMap = $jsonMap, expected type = $expectedType but actual type = $actualType");
+        throw TaiCriteriaException("Invalid argument type for key '$name' in jsonMap = $jsonMap, expected type = $expectedType but actual type = $actualType");
     }
 }
 

@@ -19,8 +19,7 @@ class AsOperator : CriteriaOperation1 {
         val alias = dialect.ctxObject[alias_] as String?;
         val spaceSeparated = dialect.ctxObject.getBoolean(space_separated_);
         if (alias == null) {
-            return CriteriaExpressionBuilderImpl()
-                .add(param).build()
+            return param;
         }
         return CriteriaExpressionBuilderImpl()
             .add(param).add(if (spaceSeparated == true) " " else " AS ").add(alias).build()

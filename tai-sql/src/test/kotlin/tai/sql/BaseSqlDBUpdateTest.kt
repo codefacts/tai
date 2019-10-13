@@ -4,6 +4,9 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import tai.base.JsonList
+import tai.criteria.ops.column
+import tai.criteria.ops.eq
+import tai.criteria.ops.valueOf
 import tai.sql.impl.UpdateResultImpl
 
 interface BaseTable {
@@ -33,6 +36,8 @@ interface UserTable {
         val active = "active"
     }
 }
+
+const val TEST_DB_NAME = "test_sales_db";
 
 class BaseSqlDBUpdateTest {
 
@@ -117,22 +122,194 @@ class BaseSqlDBUpdateTest {
             )
             println(SQL)
             println(PARAMS)
+            Assert.assertEquals(
+                "UPDATE test_sales_db.users SET phone = ?, password = ? WHERE (user_type = ? AND username = ?)",
+                SQL
+            )
+            Assert.assertEquals(
+                listOf(
+                    "015872412", "1542", "sec", "Khan"
+                ),
+                PARAMS
+            )
         }
     }
 
     @Test
     fun executeSqlOperationDeleteTest() {
-        var SQL = "";
-        var PARAMS: JsonList = listOf();
-        class Executor(executor: SqlExecutor) : SqlExecutor by executor {
-            override suspend fun execute(sql: String, params: JsonList): UpdateResult {
-                SQL = sql;
-                PARAMS = params;
-                return UpdateResultImpl(0, listOf(), listOf())
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
             }
-        }
 
-        val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            val update = sqlDB.execute(
+                SqlDelete(
+                    database = "test_sales_db",
+                    table = "users",
+                    sqlConditions = listOf(
+                        SqlCondition(UserTable.user_type, "sec"),
+                        SqlCondition(UserTable.username, "Khan")
+                    )
+                )
+            )
+            println(SQL)
+            println(PARAMS)
+            Assert.assertEquals(
+                "DELETE FROM test_sales_db.users WHERE ((user_type = ?) AND (username = ?))",
+                SQL
+            )
+            Assert.assertEquals(
+                listOf("sec", "Khan"),
+                PARAMS
+            )
+        }
     }
+
+    @Test
+    fun updateOpWithoutFromAndWithoutWhereTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.update(
+                SqlUpdateOp(
+                    tables = listOf(TableSpec(table = "users")),
+                    values = listOf(
+                        ColumnAndValue(UserTable.phone, valueOf("01985421218")),
+                        ColumnAndValue(UserTable.password, valueOf("123"))
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS)
+
+            Assert.assertEquals(
+                "UPDATE test_sales_db.users SET phone = ?, password = ?",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf("01985421218", "123"),
+                PARAMS
+            )
+        }
+    }
+
+    @Test
+    fun updateOpWithoutFromAndWithWhereTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.update(
+                SqlUpdateOp(
+                    tables = listOf(
+                        TableSpec(
+                            database = TEST_DB_NAME,
+                            table = "users"
+                        )
+                    ),
+                    values = listOf(
+                        ColumnAndValue(UserTable.phone, valueOf("01985421218")),
+                        ColumnAndValue(UserTable.password, valueOf("123"))
+                    ),
+                    where = listOf(
+                        eq(column(UserTable.user_type), valueOf("sec")),
+                        eq(column(UserTable.username), valueOf("Khan"))
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS)
+
+            Assert.assertEquals(
+                "UPDATE test_sales_db.users SET phone = ?, password = ? WHERE ((user_type = ?) AND (username = ?))",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf("01985421218", "123", "sec", "Khan"),
+                PARAMS
+            )
+        }
+    }
+
+    @Test
+    fun updateOpWithFromAndWithWhereTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.update(
+                SqlUpdateOp(
+                    tables = listOf(
+                        TableSpec(
+                            database = TEST_DB_NAME,
+                            table = "users"
+                        )
+                    ),
+                    values = listOf(
+                        ColumnAndValue(UserTable.phone, valueOf("01985421218")),
+                        ColumnAndValue(UserTable.password, valueOf("123"))
+                    ),
+                    where = listOf(
+                        eq(column(UserTable.user_type), valueOf("sec")),
+                        eq(column(UserTable.username), valueOf("Khan"))
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS)
+
+            Assert.assertEquals(
+                "UPDATE test_sales_db.users SET phone = ?, password = ? WHERE ((user_type = ?) AND (username = ?))",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf("01985421218", "123", "sec", "Khan"),
+                PARAMS
+            )
+        }
+    }
+
 }
 

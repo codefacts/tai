@@ -3,6 +3,7 @@ package tai.sql
 import tai.base.JsonMap
 import tai.criteria.operators.JoinType
 import tai.criteria.operators.Order
+import tai.criteria.ops.valueOf
 
 /**
  * Created by sohan on 4/11/2017.
@@ -11,7 +12,7 @@ import tai.criteria.operators.Order
 open class QueryBase(
     open val from: List<FromSpec>,
     open val where: List<JsonMap> = listOf(),
-    open val groupBy: List<ColumnSpec> = listOf(),
+    open val groupBy: List<KeySpec> = listOf(),
     open val having: List<JsonMap> = listOf(),
     open val orderBy: List<OrderBySpec> = listOf(),
     open val pagination: SqlPagination? = null
@@ -21,7 +22,7 @@ data class SqlQuery(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<ColumnSpec> = listOf(),
+    override val groupBy: List<KeySpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -32,7 +33,7 @@ data class SqlSelectIntoOp(
     val into: IntoTableSpec,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<ColumnSpec> = listOf(),
+    override val groupBy: List<KeySpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -43,7 +44,7 @@ data class SqlInsertIntoOp(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<ColumnSpec> = listOf(),
+    override val groupBy: List<KeySpec> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -69,13 +70,18 @@ data class JoinRule(
     val to: ColumnSpec
 )
 
+data class KeySpec(val columnExpression: JsonMap) {
+    constructor(column: String) : this(tai.criteria.ops.column(column))
+    constructor(alias: String?, column: String) : this(tai.criteria.ops.column(alias, column))
+}
+
 data class OrderBySpec(
-    val alias: String?,
-    val column: String,
+    val columnExpression: JsonMap,
     val order: Order
 ) {
-    constructor(column: String, order: Order = Order.ASC) : this(null, column, order)
-    constructor(column: String) : this(null, column, Order.ASC)
+    constructor(column: String) : this(tai.criteria.ops.column(column), Order.ASC)
+    constructor(column: String, order: Order) : this(tai.criteria.ops.column(column), order)
+    constructor(alias: String?, column: String, order: Order) : this(tai.criteria.ops.column(alias, column), order)
 };
 
 data class SqlPagination(
@@ -127,17 +133,37 @@ data class SqlCondition(
 );
 
 data class SqlUpdateOp(
-    val database: String? = null,
-    val table: String,
+    val tables: List<TableSpec>,
     val values: List<ColumnAndValue>,
-    val from: List<FromSpec>? = null,
+    val from: List<FromSpec> = listOf(),
     val where: List<JsonMap> = listOf()
 );
 
+data class TableSpec(
+    val database: String? = null,
+    val table: String,
+    val asAlias: String? = null
+)
+
 data class ColumnAndValue(
-    val column: String,
+    val columnExpression: JsonMap,
     val valueExpression: JsonMap
-);
+) {
+    constructor(alias: String?, column: String, value: NativeValue) : this(
+        tai.criteria.ops.column(alias, column),
+        valueOf(value)
+    )
+
+    constructor(column: String, value: NativeValue) : this(
+        tai.criteria.ops.column(column),
+        valueOf(value)
+    )
+
+    constructor(column: String, valueExpression: JsonMap) : this(
+        tai.criteria.ops.column(column),
+        valueExpression
+    )
+}
 
 data class SqlDeleteOp(
     val database: String? = null,

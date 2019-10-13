@@ -2,7 +2,7 @@ package tai.criteria.ops
 
 import tai.base.JsonMap
 import tai.base.assertOrThrow
-import tai.criteria.ex.CriteriaException
+import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.operators.*
 
 fun column(src: String?, column: String): JsonMap {
@@ -28,7 +28,7 @@ fun table(table: String): JsonMap {
 }
 
 fun pathExpression(vararg parts: String): JsonMap {
-    assertOrThrow(parts.isNotEmpty()) { CriteriaException("No argument provided to pathExpression") }
+    assertOrThrow(parts.isNotEmpty()) { TaiCriteriaException("No argument provided to pathExpression") }
     return mapOf(
         op_ to path_expression_,
         arg_ to parts.toList()
@@ -130,10 +130,14 @@ fun insert(table: JsonMap, columns: List<JsonMap>): JsonMap {
     );
 }
 
-fun update(table: JsonMap): JsonMap {
+fun update(vararg tables: JsonMap): JsonMap {
+    return update(tables.toList());
+}
+
+fun update(tables: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to update_,
-        table_ to table
+        table_ to tables
     );
 }
 

@@ -1,11 +1,7 @@
 package tai.criteria.ops
 
 import tai.base.JsonMap
-import tai.criteria.CriteriaDialect
-import tai.criteria.CriteriaExpression
-import tai.criteria.CriteriaOperation0
-import tai.criteria.ParamSpec
-import tai.criteria.ex.CriteriaException
+import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.operators.*
 import java.time.Instant
 import java.time.LocalDate
@@ -117,7 +113,7 @@ fun valueOf(value: Any): JsonMap {
         is Date -> valueOf(value)
         is LocalDate -> valueOf(value)
         is LocalDateTime -> valueOf(value)
-        else -> throw CriteriaException("value of type [${value::class.java.simpleName}] is not a supported type.")
+        else -> throw TaiCriteriaException("value of type [${value::class.java.simpleName}] is not a supported type.")
     }
 }
 

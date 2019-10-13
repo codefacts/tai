@@ -8,44 +8,18 @@ import tai.sql.ex.TaiSqlException
 
 class ResultSetImpl(
     override val columnNames: List<String>,
-    private val resultAsJsonArrays: List<JsonList>? = null,
-    private val resultAsJsonObjects: List<JsonMap>? = null,
-    private val outputAsJsonArray: JsonList? = null
+    override val results: List<JsonList>,
+    override val output: JsonList? = null
 ) : ResultSet {
-    init {
-        assertThat(resultAsJsonArrays != null || resultAsJsonObjects != null) { "resultAsJsonArrays and resultAsJsonObjects can not be null at the same time" };
-    }
+    override val columnCount: Int = columnNames.size
+    override val rowCount: Int = results.size
 
-    private val rowCount0 = resultAsJsonObjects?.size ?: resultAsJsonArrays?.size
-    ?: throw TaiSqlException("resultAsJsonArrays and resultAsJsonObjects can not be null at the same time");
-
-    override val columnCount: Int
-        get() = columnNames.size
-    override val rowCount: Int
-        get() = rowCount0
-    override val output: JsonList?
-        get() = outputAsJsonArray;
-    override val results: List<JsonList>
-        get() = jsonArrays();
-    override val rows: List<JsonMap>
-        get() = jsonObjects();
-
-    private fun jsonArrays(): List<JsonList> {
-        if (resultAsJsonArrays != null) {
-            return resultAsJsonArrays
-        }
-        return resultAsJsonObjects!!.map { jsonObject -> joToJsonArray(jsonObject); };
-    }
-
-    private fun joToJsonArray(jsonObject: JsonMap): JsonList {
-        return columnNames.map { name -> jsonObject[name] };
+    override fun toJsonMaps(): List<JsonMap> {
+        return jsonObjects()
     }
 
     private fun jsonObjects(): List<JsonMap> {
-        if (resultAsJsonObjects != null) {
-            return resultAsJsonObjects;
-        }
-        return resultAsJsonArrays!!.map { ja -> jaToJsonObject(ja) };
+        return results.map { ja -> jaToJsonObject(ja) };
     }
 
     private fun jaToJsonObject(jsonArray: JsonList): JsonMap {

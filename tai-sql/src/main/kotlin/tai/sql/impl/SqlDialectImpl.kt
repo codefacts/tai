@@ -62,14 +62,14 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
         where(
             and(sqlQuery.where)
         ),
-        groupBy(sqlQuery.groupBy.map { column(it.alias, it.column) }),
+        groupBy(sqlQuery.groupBy.map { it.columnExpression }),
         having(
             and(
                 sqlQuery.having
             )
         ),
         orderBy(
-            sqlQuery.orderBy.map { order(column(it.alias, it.column), it.order) }
+            sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
         )
     );
 }

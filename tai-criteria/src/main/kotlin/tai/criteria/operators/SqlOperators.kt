@@ -1,20 +1,20 @@
 package tai.criteria.operators
 
 import tai.base.JsonMap
+import tai.base.assertOrThrow
 import tai.base.assertThat
 import tai.criteria.*
-import tai.criteria.ex.CriteriaException
+import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.ops.*
-import kotlin.reflect.KClass
 
 class PathExpressionOperator : CriteriaOperation0 {
     override val paramSpecs: Collection<ParamSpec> = listOf();
 
     override fun renderExpression(dialect: CriteriaDialect): CriteriaExpression {
         val arg = dialect.ctxObject[arg_] as List<String>?
-            ?: throw CriteriaException("No arg provided to ${this::class.simpleName}");
+            ?: throw TaiCriteriaException("No arg provided to ${this::class.simpleName}");
         if (arg.isEmpty()) {
-            throw CriteriaException("Empty arg list provided to ${this::class.simpleName}");
+            throw TaiCriteriaException("Empty arg list provided to ${this::class.simpleName}");
         }
         return joinCriteriaExpressions(
             arg.map { CritExpSingle(it) }, "."
@@ -40,7 +40,7 @@ class FromOperator : CriteriaOperation1 {
     );
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {
-        assertThat(!param.isBlank) { "Mandatory From is empty" };
+        assertOrThrow(!param.isBlank) { TaiCriteriaException("Mandatory From is empty") };
         return CriteriaExpressionBuilderImpl()
             .add("FROM ").add(param).build();
     }
@@ -62,7 +62,7 @@ class JoinOperator : CriteriaOperation2 {
             null -> "JOIN"
             is JoinType -> joinType.value
             is CharSequence -> joinType.toString();
-            else -> throw CriteriaException("Invalid join type option [${joinType::class.java.simpleName}] provided in JoinOperator")
+            else -> throw TaiCriteriaException("Invalid join type option [${joinType::class.java.simpleName}] provided in JoinOperator")
         };
 
         return CriteriaExpressionBuilderImpl()
@@ -222,12 +222,16 @@ class InsertOperator : CriteriaOperation2 {
 
 class UpdateOperator : CriteriaOperation1 {
     override val paramSpecs: Collection<ParamSpec> = listOf(
-        ParamSpecSingle(table_)
+        ParamSpecMulti(tables_, combineMulti = ::combineMulti)
     );
 
-    override fun renderExpression(dialect: CriteriaDialect, table: CriteriaExpression): CriteriaExpression {
+    private fun combineMulti(criteriaDialect: CriteriaDialect, list: List<CriteriaExpression>): CriteriaExpression {
+        return joinCriteriaExpressions(list, ", ")
+    }
+
+    override fun renderExpression(dialect: CriteriaDialect, tables: CriteriaExpression): CriteriaExpression {
         return CriteriaExpressionBuilderImpl()
-            .add("UPDATE ").add(table).build();
+            .add("UPDATE ").add(tables).build();
     }
 }
 
@@ -329,9 +333,9 @@ class ExistsOperator : CriteriaOperation1 {
         val isNot = dialect.ctxObject[is_not_] as Boolean?;
         if (isNot != null && isNot) {
             return CriteriaExpressionBuilderImpl()
-                .add("NOT EXISTS ").add(param).build();
+                .add("NOT EXISTS (").add(param).add(")").build();
         }
         return CriteriaExpressionBuilderImpl()
-            .add("EXISTS ").add(param).build();
+            .add("EXISTS (").add(param).add(")").build();
     }
 }

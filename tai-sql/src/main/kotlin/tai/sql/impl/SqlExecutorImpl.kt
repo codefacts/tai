@@ -122,7 +122,7 @@ fun toResultSet(rs: java.sql.ResultSet): ResultSet {
     }
 
     return ResultSetImpl(
-        columnNames = columnNames(rs), resultAsJsonArrays = rows
+        columnNames = columnNames(rs), results = rows
     );
 }
 

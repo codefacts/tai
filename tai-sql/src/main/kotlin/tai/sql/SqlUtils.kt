@@ -4,6 +4,8 @@ import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.impl.ResultSetImpl
 
+typealias NativeValue = Any
+
 fun toCriteriaExp(fromSpec: FromSpec): JsonMap {
     return joinExpressions(
         listOf(
@@ -65,14 +67,15 @@ fun toCritExp(operation: SqlUpdate): JsonMap {
                 operation.data.map { (key, value) ->
                     eq(
                         column(key),
-                        if (value != null) valueOf(value) else nullValue()
+                        if (value != null) valueOf(value) else nullValue(),
+                        isParenthesis = false
                     )
                 }
             ),
             where(
                 and(
                     operation.sqlConditions.map {
-                        eq(arg1 = column(it.column), arg2 = valueOf(it.value))
+                        eq(arg1 = column(it.column), arg2 = valueOf(it.value), isParenthesis = false)
                     }
                 )
             )
@@ -94,6 +97,6 @@ fun toCritExp(operation: SqlInsert): JsonMap {
 
 fun emptyResultSet(): ResultSet {
     return ResultSetImpl(
-        listOf(), listOf(), listOf(), null
+        listOf(), listOf(), listOf()
     );
 }

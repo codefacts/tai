@@ -33,25 +33,21 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
             joinExpressions(
                 listOf(
                     tai.criteria.ops.update(
-                        table(updateOp.database, updateOp.table)
+                        updateOp.tables.map { asOp(table(it.database, it.table), it.asAlias) }
                     ),
                     set(
                         updateOp.values.map { columnAndValue ->
                             eq(
-                                column(columnAndValue.column), columnAndValue.valueExpression
+                                columnAndValue.columnExpression, columnAndValue.valueExpression, isParenthesis = false
                             )
                         }
                     ),
-                    if (updateOp.from != null)
+                    if (updateOp.from.isNotEmpty())
                         from(
                             updateOp.from.map { toCriteriaExp(it) }
                         )
                     else emptyCriteriaOp,
-                    where(
-                        and(
-                            updateOp.where
-                        )
-                    )
+                    where(and(updateOp.where))
                 )
             )
         );
