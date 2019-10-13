@@ -1,8 +1,9 @@
 package tai.base
 
-typealias JsonMap = Map<String, Any?>;
-typealias JsonList = List<Any?>;
+typealias PrimitiveValue = Any
+typealias JsonMap = Map<String, PrimitiveValue?>;
+typealias JsonList = List<PrimitiveValue?>;
 typealias JsonMapList = List<JsonMap>;
 
-typealias JsonCollection = Collection<Any?>;
+typealias JsonCollection = Collection<PrimitiveValue?>;
 typealias JsonMapCollection = Collection<JsonMap>;

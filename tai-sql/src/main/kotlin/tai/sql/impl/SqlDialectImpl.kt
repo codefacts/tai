@@ -45,7 +45,7 @@ class SqlDialectImpl : SqlDialect {
     }
 }
 
-private fun withOffsetLimit(exps: List<JsonMap>, pagination: SqlPagination): Map<String, Any?> {
+private fun withOffsetLimit(exps: List<JsonMap>, pagination: SqlPagination): JsonMap {
     return joinExpressions(
         exps + listOf(
             limit(valueOf(pagination.size)),

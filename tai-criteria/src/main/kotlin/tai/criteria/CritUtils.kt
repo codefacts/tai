@@ -1,16 +1,18 @@
 package tai.criteria
 
+import tai.base.PrimitiveValue
+
 interface ParamsBuilder {
-    fun add(param: Any);
-    fun build(): List<Any>;
+    fun add(param: PrimitiveValue);
+    fun build(): List<PrimitiveValue>;
 }
 
-class ParamsBuilderImpl(private val list: MutableList<Any>) : ParamsBuilder {
-    override fun add(param: Any) {
+class ParamsBuilderImpl(private val list: MutableList<PrimitiveValue>) : ParamsBuilder {
+    override fun add(param: PrimitiveValue) {
         list.add(param);
     }
 
-    override fun build(): List<Any> {
+    override fun build(): List<PrimitiveValue> {
         return list.toList();
     }
 }

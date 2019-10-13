@@ -1,6 +1,7 @@
 package tai.sql
 
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
 import tai.criteria.operators.JoinType
 import tai.criteria.operators.Order
 import tai.criteria.ops.valueOf
@@ -129,7 +130,7 @@ enum class SqlOperationType {
 
 data class SqlCondition(
     val column: String,
-    val value: Any
+    val value: PrimitiveValue
 );
 
 data class SqlUpdateOp(
@@ -149,12 +150,12 @@ data class ColumnAndValue(
     val columnExpression: JsonMap,
     val valueExpression: JsonMap
 ) {
-    constructor(alias: String?, column: String, value: NativeValue) : this(
+    constructor(alias: String?, column: String, value: PrimitiveValue) : this(
         tai.criteria.ops.column(alias, column),
         valueOf(value)
     )
 
-    constructor(column: String, value: NativeValue) : this(
+    constructor(column: String, value: PrimitiveValue) : this(
         tai.criteria.ops.column(column),
         valueOf(value)
     )

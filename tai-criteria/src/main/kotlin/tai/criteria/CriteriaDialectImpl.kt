@@ -1,6 +1,7 @@
 package tai.criteria
 
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
 import java.lang.RuntimeException
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -101,7 +102,7 @@ class CriteriaDialectImpl(private val paramsBuilder: ParamsBuilder) : CriteriaDi
         return addEscapedParam(param);
     }
 
-    private fun addEscapedParam(param: Any): CriteriaExpression {
+    private fun addEscapedParam(param: PrimitiveValue): CriteriaExpression {
         paramsBuilder.add(param);
         return CriteriaExpressionBuilderImpl().add("?").build();
     }

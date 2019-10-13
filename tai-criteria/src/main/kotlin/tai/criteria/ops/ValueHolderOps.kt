@@ -1,6 +1,7 @@
 package tai.criteria.ops
 
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
 import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.operators.*
 import java.time.Instant
@@ -100,7 +101,7 @@ fun valueOf(value: LocalDateTime): JsonMap {
     );
 }
 
-fun valueOf(value: Any): JsonMap {
+fun valueOf(value: PrimitiveValue): JsonMap {
     return when (value) {
         is Boolean -> valueOf(value)
         is Byte -> valueOf(value)

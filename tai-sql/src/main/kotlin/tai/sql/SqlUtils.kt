@@ -4,8 +4,6 @@ import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.impl.ResultSetImpl
 
-typealias NativeValue = Any
-
 fun toCriteriaExp(fromSpec: FromSpec): JsonMap {
     return joinExpressions(
         listOf(

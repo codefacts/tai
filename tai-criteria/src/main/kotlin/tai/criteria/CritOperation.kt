@@ -1,6 +1,7 @@
 package tai.criteria
 
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
 import java.lang.StringBuilder
 import java.time.Instant
 import java.time.LocalDate
@@ -69,7 +70,7 @@ interface CriteriaOperation {
     val paramSpecs: Collection<ParamSpec>;
 }
 
-interface CriteriaOperationNative<T : Any> : CriteriaOperation {
+interface CriteriaOperationNative<T : PrimitiveValue> : CriteriaOperation {
     val parameterType: KClass<T>;
     fun renderExpression(
         dialect: CriteriaDialect,

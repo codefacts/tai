@@ -2,6 +2,7 @@ package tai.criteria
 
 import tai.base.JsonList
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
 import tai.base.assertThat
 import tai.criteria.ex.TaiCriteriaException
 import tai.criteria.operators.OperationMap
@@ -202,7 +203,7 @@ class CriteriaToTextConverterImpl(
         }
 
         try {
-            return (criteriaOperation as CriteriaOperationNative<Any>).renderExpression(criteriaDialectWrapper, arg);
+            return (criteriaOperation as CriteriaOperationNative<PrimitiveValue>).renderExpression(criteriaDialectWrapper, arg);
         } catch (e: Exception) {
             print(e);
             return null!!;
@@ -379,7 +380,7 @@ class CriteriaToTextConverterImpl(
         name: String,
         expectedType: String,
         actualType: String,
-        jsonMap: Map<String, Any?>
+        jsonMap: JsonMap
     ): Nothing {
         throw TaiCriteriaException("Invalid argument type for key '$name' in jsonMap = $jsonMap, expected type = $expectedType but actual type = $actualType");
     }
