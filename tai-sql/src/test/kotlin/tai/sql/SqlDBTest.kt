@@ -294,6 +294,53 @@ class SqlDBTest {
             )
         }
     }
+
+    @Test
+    fun havingTest() {
+        runBlocking {
+            val testSqlExecutoer = TestSqlExecutoer()
+            val db = createSqlDb(testSqlExecutoer);
+
+            val resultSet = db.query(
+                SqlQuery(
+                    selections = listOf(
+                        column("u", "username")
+                    ),
+                    from = listOf(
+                        FromSpec(
+                            table = "users",
+                            alias = "u"
+                        )
+                    ),
+                    where = listOf(),
+                    groupBy = listOf(
+                        ColumnSpec("u", "username")
+                    ),
+                    having = listOf(
+                        gte(
+                            sum(column("u", "salary")), valueOf(150000)
+                        ),
+                        gte(
+                            sum(column("u", "income")), valueOf(500)
+                        )
+                    ),
+                    orderBy = listOf(
+                        OrderBySpec("u", "username", Order.ASC)
+                    )
+                )
+            )
+            println(testSqlExecutoer.sql);
+            println(testSqlExecutoer.params)
+            Assert.assertEquals(
+                "SELECT u.username FROM users u GROUP BY u.username HAVING ((SUM(u.salary) >= 150000) AND (SUM(u.income) >= 500)) ORDER BY u.username ASC",
+                testSqlExecutoer.sql.trim()
+            )
+            Assert.assertEquals(
+                listOf<String>(),
+                testSqlExecutoer.params
+            )
+        }
+    }
 }
 
 private fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
