@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import tai.base.JsonList
+import tai.base.PrimitiveValue
 import tai.criteria.operators.JoinType
 import tai.criteria.ops.*
 import tai.sql.impl.UpdateResultImpl
@@ -388,6 +389,57 @@ class BaseSqlDBUpdateTest {
             )
             Assert.assertEquals(
                 listOf(""),
+                PARAMS
+            )
+        }
+    }
+
+    @Test
+    fun deleteWhereExistsSelectTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.delete(
+                SqlDeleteOp(
+                    database = TEST_DB_NAME,
+                    table = "Suppliers",
+                    where = listOf(
+                        exists(
+                            joinExpressions(
+                                select(listOf(column("ProductName"))),
+                                from(listOf(table(TEST_DB_NAME, "Products"))),
+                                where(
+                                    and(
+                                        eq(column("Products", "SupplierID"), column("Suppliers", "supplierID")),
+                                        lt(column("Price"), valueOf(20))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS.map { "\"$it\"" })
+
+            Assert.assertEquals(
+                "DELETE FROM test_sales_db.Suppliers WHERE (EXISTS (SELECT ProductName FROM test_sales_db.Products WHERE ((Products.SupplierID = Suppliers.supplierID) AND (Price < 20))))",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf<PrimitiveValue>(),
                 PARAMS
             )
         }
