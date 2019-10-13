@@ -6,7 +6,7 @@ import tai.sql.SqlQuery
 import tai.sql.SqlSelectIntoOp
 
 interface SqlDialect {
-    fun toPaginatedQuery(sqlQuery: SqlQuery): JsonMap
-    fun toPaginatedQuery(sqlQuery: SqlSelectIntoOp): JsonMap;
-    fun toPaginatedQuery(insertInto: SqlInsertIntoOp): JsonMap
+    fun toExecutePaginated(sqlQuery: SqlQuery): JsonMap
+    fun toExecutePaginated(sqlQuery: SqlSelectIntoOp): JsonMap;
+    fun toExecutePaginated(insertInto: SqlInsertIntoOp): JsonMap
 }

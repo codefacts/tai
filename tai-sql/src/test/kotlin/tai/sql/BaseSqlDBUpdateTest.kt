@@ -445,5 +445,102 @@ class BaseSqlDBUpdateTest {
         }
     }
 
+    @Test
+    fun insertIntoSelectTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.insertInto(
+                SqlInsertIntoOp(
+                    into = InsertTableSpec(
+                        database = TEST_DB_NAME,
+                        table = "Customers",
+                        columns = listOf(
+                            "CustomerName",
+                            "City",
+                            "Country"
+                        )
+                    ),
+                    selections = listOf(
+                        column("SupplierName"),
+                        column("City"),
+                        column("Country")
+                    ),
+                    from = listOf(
+                        FromSpec(database = TEST_DB_NAME, table = "Suppliers")
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS.map { "\"$it\"" })
+
+            Assert.assertEquals(
+                "INSERT INTO test_sales_db.Customers (CustomerName, City, Country) SELECT SupplierName, City, Country FROM test_sales_db.Suppliers",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf<PrimitiveValue>(),
+                PARAMS
+            )
+        }
+    }
+
+    @Test
+    fun selectIntoTableTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.selectInto(
+                SqlSelectIntoOp(
+                    selections = listOf(
+                        star()
+                    ),
+                    into = IntoTableSpec(
+                        table = "CustomersBackup2017",
+                        database = TEST_DB_NAME
+                    ),
+                    from = listOf(
+                        FromSpec(database = TEST_DB_NAME, table = "Customers")
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS.map { "\"$it\"" })
+
+            Assert.assertEquals(
+                "INSERT INTO test_sales_db.Customers (CustomerName, City, Country) SELECT SupplierName, City, Country FROM test_sales_db.Suppliers",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf<PrimitiveValue>(),
+                PARAMS
+            )
+        }
+    }
+
 }
 

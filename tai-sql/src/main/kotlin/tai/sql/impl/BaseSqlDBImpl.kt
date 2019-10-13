@@ -7,19 +7,19 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
 
     override suspend fun query(sqlQuery: SqlQuery): ResultSet {
         return coreSqlDB.query(
-            dialect.toPaginatedQuery(sqlQuery)
+            dialect.toExecutePaginated(sqlQuery)
         );
     }
 
     override suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult {
         return coreSqlDB.execute(
-            dialect.toPaginatedQuery(selectInto)
+            dialect.toExecutePaginated(selectInto)
         );
     }
 
     override suspend fun insertInto(insertInto: SqlInsertIntoOp): UpdateResult {
         return coreSqlDB.execute(
-            dialect.toPaginatedQuery(insertInto)
+            dialect.toExecutePaginated(insertInto)
         )
     }
 

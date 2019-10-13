@@ -6,7 +6,7 @@ import tai.sql.*
 
 class SqlDialectImpl : SqlDialect {
 
-    override fun toPaginatedQuery(sqlQuery: SqlQuery): JsonMap {
+    override fun toExecutePaginated(sqlQuery: SqlQuery): JsonMap {
         val exps = listOf(select(sqlQuery.selections)) + createQueryExpressions(sqlQuery);
 
         if (sqlQuery.pagination == null) {
@@ -15,7 +15,7 @@ class SqlDialectImpl : SqlDialect {
         return withOffsetLimit(exps, sqlQuery.pagination);
     }
 
-    override fun toPaginatedQuery(sqlQuery: SqlSelectIntoOp): JsonMap {
+    override fun toExecutePaginated(sqlQuery: SqlSelectIntoOp): JsonMap {
         val exps = listOf(
             selectInto(
                 sqlQuery.selections,
@@ -30,13 +30,13 @@ class SqlDialectImpl : SqlDialect {
         return withOffsetLimit(exps, sqlQuery.pagination)
     }
 
-    override fun toPaginatedQuery(insertInto: SqlInsertIntoOp): JsonMap {
+    override fun toExecutePaginated(insertInto: SqlInsertIntoOp): JsonMap {
         val exps = listOf(
             insertInto(
                 table(insertInto.into.database, insertInto.into.table),
                 insertInto.into.columns.map { column(it) }
             )
-        ) + createQueryExpressions(insertInto);
+        ) + listOf(select(insertInto.selections)) + createQueryExpressions(insertInto);
 
         if (insertInto.pagination == null) {
             return joinExpressions(exps)
