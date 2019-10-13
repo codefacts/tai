@@ -134,17 +134,11 @@ data class SqlCondition(
 );
 
 data class SqlUpdateOp(
-    val tables: List<TableSpec>,
+    val tables: List<FromSpec>,
     val values: List<ColumnAndValue>,
     val from: List<FromSpec> = listOf(),
     val where: List<JsonMap> = listOf()
 );
-
-data class TableSpec(
-    val database: String? = null,
-    val table: String,
-    val asAlias: String? = null
-)
 
 data class ColumnAndValue(
     val columnExpression: JsonMap,

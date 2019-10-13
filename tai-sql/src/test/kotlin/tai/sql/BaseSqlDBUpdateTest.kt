@@ -4,9 +4,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import tai.base.JsonList
-import tai.criteria.ops.column
-import tai.criteria.ops.eq
-import tai.criteria.ops.valueOf
+import tai.criteria.operators.JoinType
+import tai.criteria.ops.*
 import tai.sql.impl.UpdateResultImpl
 
 interface BaseTable {
@@ -191,7 +190,7 @@ class BaseSqlDBUpdateTest {
 
             sqlDB.update(
                 SqlUpdateOp(
-                    tables = listOf(TableSpec(table = "users")),
+                    tables = listOf(FromSpec(database = TEST_DB_NAME, table = "users")),
                     values = listOf(
                         ColumnAndValue(UserTable.phone, valueOf("01985421218")),
                         ColumnAndValue(UserTable.password, valueOf("123"))
@@ -232,7 +231,7 @@ class BaseSqlDBUpdateTest {
             sqlDB.update(
                 SqlUpdateOp(
                     tables = listOf(
-                        TableSpec(
+                        FromSpec(
                             database = TEST_DB_NAME,
                             table = "users"
                         )
@@ -281,18 +280,40 @@ class BaseSqlDBUpdateTest {
             sqlDB.update(
                 SqlUpdateOp(
                     tables = listOf(
-                        TableSpec(
-                            database = TEST_DB_NAME,
-                            table = "users"
+                        FromSpec(
+                            table = "table_a"
                         )
                     ),
                     values = listOf(
-                        ColumnAndValue(UserTable.phone, valueOf("01985421218")),
-                        ColumnAndValue(UserTable.password, valueOf("123"))
+                        ColumnAndValue(
+                            column("table_a", "col_1"), column("table_b", "col_1")
+                        ),
+                        ColumnAndValue(
+                            column("table_a", "col_2"), column("table_b", "col_2")
+                        )
+                    ),
+                    from = listOf(
+                        FromSpec(
+                            database = TEST_DB_NAME,
+                            table = "some_table",
+                            alias = "table_a",
+                            joins = listOf(
+                                JoinSpec(
+                                    joinType = JoinType.INNER_JOIN,
+                                    database = TEST_DB_NAME,
+                                    table = "other_table",
+                                    alias = "table_b",
+                                    joinRules = listOf(
+                                        JoinRule(
+                                            ColumnSpec("table_a", "id"), ColumnSpec("table_b", "id")
+                                        )
+                                    )
+                                )
+                            )
+                        )
                     ),
                     where = listOf(
-                        eq(column(UserTable.user_type), valueOf("sec")),
-                        eq(column(UserTable.username), valueOf("Khan"))
+                        eq(column("table_a", "col_3"), valueOf("cool"))
                     )
                 )
             )
@@ -301,11 +322,72 @@ class BaseSqlDBUpdateTest {
             println(PARAMS)
 
             Assert.assertEquals(
-                "UPDATE test_sales_db.users SET phone = ?, password = ? WHERE ((user_type = ?) AND (username = ?))",
+                "UPDATE table_a SET table_a.col_1 = table_b.col_1, table_a.col_2 = table_b.col_2 FROM test_sales_db.some_table table_a JOIN test_sales_db.other_table table_b ON ((table_a.id = table_b.id)) WHERE ((table_a.col_3 = ?))",
                 SQL.trim()
             )
             Assert.assertEquals(
-                listOf("01985421218", "123", "sec", "Khan"),
+                listOf("cool"),
+                PARAMS
+            )
+        }
+    }
+
+    @Test
+    fun mysqlUpdateSyntaxTest() {
+        runBlocking {
+            var SQL = "";
+            var PARAMS: JsonList = listOf();
+
+            class Executor(executor: SqlExecutor) : SqlExecutor by executor {
+                override suspend fun execute(sql: String, params: JsonList): UpdateResult {
+                    SQL = sql;
+                    PARAMS = params;
+                    return UpdateResultImpl(0, listOf(), listOf())
+                }
+            }
+
+            val sqlDB = createSqlDb(Executor(SqlExecutorMock()))
+
+            sqlDB.update(
+                SqlUpdateOp(
+                    tables = listOf(
+                        FromSpec(
+                            table = "business", alias = "b",
+                            joins = listOf(
+                                JoinSpec(
+                                    table = "business_geocode", alias = "g",
+                                    joinRules = listOf(
+                                        JoinRule(ColumnSpec("b", "b_business_id"), ColumnSpec("g", "g_business_id"))
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    values = listOf(
+                        ColumnAndValue(column("b", "mapx"), column("g", "latitude")),
+                        ColumnAndValue(column("b", "mapy"), column("g", "longitude"))
+                    ),
+                    where = listOf(
+                        and(
+                            or(
+                                eq(column("b", "mapx"), valueOf(0)),
+                                eq(column("b", "mapx"), valueOf(""))
+                            ),
+                            gt(column("g", "latitude"), valueOf(0))
+                        )
+                    )
+                )
+            )
+
+            println(SQL)
+            println(PARAMS.map { "\"$it\"" })
+
+            Assert.assertEquals(
+                "UPDATE business b JOIN business_geocode g ON ((b.b_business_id = g.g_business_id)) SET b.mapx = g.latitude, b.mapy = g.longitude WHERE ((((b.mapx = 0) OR (b.mapx = ?)) AND (g.latitude > 0)))",
+                SQL.trim()
+            )
+            Assert.assertEquals(
+                listOf(""),
                 PARAMS
             )
         }

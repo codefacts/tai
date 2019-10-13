@@ -137,7 +137,7 @@ fun update(vararg tables: JsonMap): JsonMap {
 fun update(tables: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to update_,
-        table_ to tables
+        tables_ to tables
     );
 }
 

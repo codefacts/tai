@@ -33,7 +33,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
             joinExpressions(
                 listOf(
                     tai.criteria.ops.update(
-                        updateOp.tables.map { asOp(table(it.database, it.table), it.asAlias) }
+                        updateOp.tables.map { toCriteriaExp(it) }
                     ),
                     set(
                         updateOp.values.map { columnAndValue ->

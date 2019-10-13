@@ -27,7 +27,7 @@ class SqlDBImpl(val baseSqlDB: BaseSqlDB) : SqlDB, BaseSqlDB by baseSqlDB {
     override suspend fun update(table: String, data: JsonMap, where: JsonMap): UpdateResult {
         return baseSqlDB.update(
             SqlUpdateOp(
-                tables = listOf(TableSpec(table = table)),
+                tables = listOf(FromSpec(table = table)),
                 values = data.entries.map { (column, value) ->
                     ColumnAndValue(
                         column(column), if (value != null) valueOf(value) else nullValue()
