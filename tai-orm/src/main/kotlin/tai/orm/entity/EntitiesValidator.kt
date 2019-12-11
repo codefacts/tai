@@ -9,23 +9,12 @@ import java.util.*
  */
 @FunctionalInterface
 interface EntitiesValidator {
-    fun validate(params: Params?)
-    class Params(
-        entities: Collection<Entity>,
-        tableToTableDependencyMap: Map<String, TableDependency>,
-        entityNameToEntityMap: Map<String, Entity>
-    ) {
-        val entities: Collection<Entity>
-        val tableToTableDependencyMap: Map<String, TableDependency>
-        val entityNameToEntityMap: Map<String, Entity>
 
-        init {
-            Objects.requireNonNull(entities)
-            Objects.requireNonNull(tableToTableDependencyMap)
-            Objects.requireNonNull(entityNameToEntityMap)
-            this.entities = entities
-            this.tableToTableDependencyMap = tableToTableDependencyMap
-            this.entityNameToEntityMap = entityNameToEntityMap
-        }
-    }
+    fun validate(params: Params)
+
+    data class Params(
+        val entities: Collection<Entity>,
+        val tableToTableDependencyMap: Map<String, TableDependency>,
+        val entityNameToEntityMap: Map<String, Entity>
+    )
 }

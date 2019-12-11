@@ -9,28 +9,19 @@ import java.util.function.Consumer
 /**
  * Created by sohan on 3/17/2017.
  */
-class EntitiesValidatorImpl(entityValidator: EntityValidator) : EntitiesValidator {
-    val entityValidator: EntityValidator
-    override fun validate(params: EntitiesValidator.Params?) {
-        params!!.entities.forEach(
-            Consumer { entity: Entity? ->
+data class EntitiesValidatorImpl(val entityValidator: EntityValidator) : EntitiesValidator {
+
+    override fun validate(params: EntitiesValidator.Params) {
+        params.entities.forEach(
+            Consumer { entity: Entity ->
                 entityValidator.validate(
-                    EntityValidator.ParamsBuilder()
-                        .setEntity(entity)
-                        .setDependencyMap(
-                            params.tableToTableDependencyMap
-                        )
-                        .setEntityNameToEntityMap(
-                            params.entityNameToEntityMap
-                        )
-                        .createParams()
+                    EntityValidator.Params(
+                        entity = entity,
+                        tableToTabledependencyMap = params.tableToTableDependencyMap,
+                        entityNameToEntityMap = params.entityNameToEntityMap
+                    )
                 )
             }
         )
-    }
-
-    init {
-        Objects.requireNonNull(entityValidator)
-        this.entityValidator = entityValidator
     }
 }

@@ -39,11 +39,7 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
         }
         if (Utils.not(fieldToRelationMappingMap.containsKey(field.name))) {
             val mapping = fieldToColumnMappingMap[field.name]
-            val typeIsOk =
-                field.javaType != JavaType.OBJECT && field.javaType != JavaType.ARRAY
-            if (Utils.not(typeIsOk)) {
-                throw EntityValidationException("Type '" + field.javaType + "' of Field '" + field.name + "' is not supported for mapping '" + ColumnMapping::class.java.simpleName + "'")
-            }
+
             if (field.relationship != null) {
                 throw EntityValidationException("Field '" + field.name + "' can not have relationship '" + field.relationship + "' with ColumnMapping '" + mapping + "'")
             }
@@ -155,7 +151,7 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
             ?: return Optional.empty()
         //                throw new EntityValidationException("No TableDependency found for table '" + entity.getDbMapping().getReferencingTable() + " that has a mapping '" + mapping + "'");
         val tableToDependencyInfoMap =
-            tableDependency.getTableToDependencyInfoMap()
+            tableDependency.tableToDependencyInfoMap
         val dependencyTpl = tableToDependencyInfoMap[mapping.referencingTable]
         if (dependencyTpl == null && mapping.columnType == RelationType.VIRTUAL) {
             throw EntityValidationException(
@@ -170,28 +166,10 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
         if (Utils.not(containsKey)) {
             throw EntityValidationException("Fields of Entity '" + entity.name + "' does not contains primaryKey '" + entity.primaryKey + "'")
         }
-        val field = fieldNameToFieldMap[entity.primaryKey]
-        val typeIsOk = (field!!.javaType != JavaType.OBJECT
-                && field.javaType != JavaType.ARRAY)
-        if (Utils.not(typeIsOk)) {
-            throw EntityValidationException("Primary column type '" + field.javaType + "' is unsupported")
-        }
+        val field = fieldNameToFieldMap[entity.primaryKey]!!
         val containsDbColumn = fieldToColumnMappingMap.containsKey(field.name)
         if (Utils.not(containsDbColumn)) {
             throw EntityValidationException("No DbColumnMapping found for primary key '" + entity.primaryKey + "'")
-        }
-    }
-
-    fun checkFieldTypeAndName(relationship: Relationship, field: Field) {
-        if (Utils.not(
-                (field.javaType == JavaType.OBJECT
-                        && relationship.name == Relationship.Name.HAS_ONE) || (field.javaType == JavaType.ARRAY
-                        && relationship.name == Relationship.Name.HAS_MANY)
-            )
-        ) {
-            throw EntityValidationException(
-                "javaType '" + field.javaType + "' is not valid for relationship name '" + relationship.name + "' in column '" + field.name + "'"
-            )
         }
     }
 

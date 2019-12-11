@@ -27,9 +27,8 @@ internal class IndirectColumnMappingValidator(
     val field: Field
     val mapping: IndirectRelationMapping
     fun validate() {
-        checkFieldType()
+
         val relationship = field.relationship ?: throw EntityValidationException("No relationship present for mapping '" + mapping + "' in table '" + entity.dbMapping.table + "'")
-        internalEntityValidator.checkFieldTypeAndName(relationship, field)
         if (Utils.not(tableToTableDependencyMap.containsKey(entity.dbMapping.table))) {
             val referencingEntity =
                 entityNameToEntityMap[mapping.referencingEntity]
@@ -44,7 +43,7 @@ internal class IndirectColumnMappingValidator(
         val dependencyTplOptional = internalEntityValidator.checkRelationalValidity(mapping)
         val info =
             dependencyTplOptional.flatMap { dependencyTpl: DependencyTpl ->
-                dependencyTpl.getFieldToDependencyInfoMap()!!.values.stream()
+                dependencyTpl.fieldToDependencyInfoMap!!.values.stream()
                     .filter { dependencyInfo: DependencyInfo ->
                         findDependencyInfoInOppositeSide(
                             dependencyInfo
@@ -68,25 +67,6 @@ internal class IndirectColumnMappingValidator(
                 entityNameToEntityMap[mapping.referencingEntity]!!.name,
                 mapping.dstForeignColumnMappingList
             )
-        }
-        info.ifPresent { dependencyInfo: DependencyInfo ->
-            val relationshipOther =
-                dependencyInfo.field.relationship ?: throw EntityValidationException("No relationship present for mapping '" + mapping + "' in table '" + entity.dbMapping.table + "'")
-            if (Utils.not(
-                    (relationship.type == Relationship.Type.ONE_TO_ONE
-                            && relationshipOther.type == Relationship.Type.ONE_TO_ONE)
-                            || (relationship.type == Relationship.Type.ONE_TO_MANY
-                            && relationshipOther.type == Relationship.Type.MANY_TO_ONE)
-                            || (relationship.type == Relationship.Type.MANY_TO_ONE
-                            && relationshipOther.type == Relationship.Type.ONE_TO_MANY)
-                            || (relationship.type == Relationship.Type.MANY_TO_MANY
-                            && relationshipOther.type == Relationship.Type.MANY_TO_MANY)
-                )
-            ) {
-                throw EntityValidationException(
-                    "Relationship type '" + relationship.type + "' is invalid for mapping type '" + mapping.columnType + "'"
-                )
-            }
         }
     }
 
@@ -116,17 +96,6 @@ internal class IndirectColumnMappingValidator(
         }
     }
 
-    private fun checkFieldType() {
-        val isFieldTypeOk =
-            field.javaType == JavaType.OBJECT || field.javaType == JavaType.ARRAY
-        if (Utils.not(isFieldTypeOk)) {
-            throw EntityValidationException(
-                "Field '" + field.name + "' has an invalid type '" + field.javaType + "' for dbColumnMappingType '"
-                        + mapping.columnType + "'"
-            )
-        }
-    }
-
     private fun checkMappingValidity(
         mapping: IndirectRelationMapping,
         depMapping: IndirectRelationMapping,
@@ -141,13 +110,13 @@ internal class IndirectColumnMappingValidator(
             depMapping.srcForeignColumnMappingList
         val dstForeignColumnMappingList1 =
             depMapping.dstForeignColumnMappingList
-        if (srcForeignColumnMappingList.size > 0 && dstForeignColumnMappingList1.size > 0 && Utils.not(
+        if (srcForeignColumnMappingList.isNotEmpty() && dstForeignColumnMappingList1.isNotEmpty() && Utils.not(
                 internalEntityValidator.isEqualBothSide(srcForeignColumnMappingList, dstForeignColumnMappingList1)
             )
         ) {
             throw EntityValidationException("srcForeignColumnMappingList and dstForeignColumnMappingList does not match in relationship '" + entity.name + "." + field.name + "' <-> '" + dependencyTpl.entity!!.name + "." + dependencyInfo.field.name + "'")
         }
-        if (srcForeignColumnMappingList1.size > 0 && dstForeignColumnMappingList.size > 0 && Utils.not(
+        if (srcForeignColumnMappingList1.isNotEmpty() && dstForeignColumnMappingList.isNotEmpty() && Utils.not(
                 internalEntityValidator.isEqualBothSide(srcForeignColumnMappingList1, dstForeignColumnMappingList)
             )
         ) {
@@ -165,11 +134,11 @@ internal class IndirectColumnMappingValidator(
         }
         checkAllSrcColumnsExistsInCombinedColumns(
             entity.name,
-            if (srcForeignColumnMappingList.size > 0) srcForeignColumnMappingList else dstForeignColumnMappingList1
+            if (srcForeignColumnMappingList.isNotEmpty()) srcForeignColumnMappingList else dstForeignColumnMappingList1
         )
         checkAllSrcColumnsExistsInCombinedColumns(
             dependencyTpl.entity!!.name,
-            if (dstForeignColumnMappingList.size > 0) dstForeignColumnMappingList else srcForeignColumnMappingList1
+            if (dstForeignColumnMappingList.isNotEmpty()) dstForeignColumnMappingList else srcForeignColumnMappingList1
         )
     }
 

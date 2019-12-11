@@ -9,22 +9,10 @@ import java.util.*
  */
 interface EntitiesPreprocessor {
     fun process(params: Params): List<Entity>
-    class Params(
-        entities: Collection<Entity>,
-        tableToTableDependencyMap: Map<String, TableDependency>,
-        entityNameToEntityMap: Map<String, Entity>
-    ) {
-        val entities: Collection<Entity>
-        val tableToTableDependencyMap: Map<String, TableDependency>
-        val entityNameToEntityMap: Map<String, Entity>
 
-        init {
-            Objects.requireNonNull(entities)
-            Objects.requireNonNull(tableToTableDependencyMap)
-            Objects.requireNonNull(entityNameToEntityMap)
-            this.entities = entities
-            this.tableToTableDependencyMap = tableToTableDependencyMap
-            this.entityNameToEntityMap = entityNameToEntityMap
-        }
-    }
+    data class Params(
+        val entities: Collection<Entity>,
+        val tableToTableDependencyMap: Map<String, TableDependency>,
+        val entityNameToEntityMap: Map<String, Entity>
+    )
 }

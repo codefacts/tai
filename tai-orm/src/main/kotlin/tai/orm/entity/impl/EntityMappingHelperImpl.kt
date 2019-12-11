@@ -10,9 +10,8 @@ import tai.orm.entity.core.Entity
 import tai.orm.entity.core.Field
 import tai.orm.entity.core.columnmapping.ColumnMapping
 import tai.orm.entity.core.columnmapping.RelationMapping
-import tai.orm.entity.ex.EntityMappingHelperExcpetion
+import tai.orm.entity.ex.EntityMappingHelperException
 import java.util.*
-import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
 import java.util.stream.Stream
@@ -32,7 +31,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         return tableToEntityMap[table] ?: throw NullPointerException("No Entity found for dependentTable '$table'")
     }
 
-    override fun getFields(entity: String): Array<Field> {
+    override fun getFields(entity: String): List<Field> {
         return getEntity(entity).fields
     }
 
@@ -40,7 +39,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         return getEntity(entity).dbMapping
     }
 
-    override fun getColumnMappings(entity: String): Array<ColumnMapping> {
+    override fun getColumnMappings(entity: String): List<ColumnMapping> {
         return getEntity(entity).dbMapping.columnMappings
     }
 
@@ -57,16 +56,16 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getField(entity: String, field: String): Field {
-        return Arrays.stream(getEntity(entity).fields)
+        return getEntity(entity).fields.stream()
             .filter { ff: Field ->
                 ff.name == field
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperExcpetion("Field '$field' does not exists in '$entity'") }
+            .orElseThrow { EntityMappingHelperException("Field '$field' does not exists in '$entity'") }
     }
 
     override fun getFieldByColumn(entity: String, column: String): Field {
-        return Stream.of(*getDbMapping(entity).columnMappings)
+        return getDbMapping(entity).columnMappings.stream()
             .map { dbColumnMapping: ColumnMapping -> dbColumnMapping }
             .filter(Predicate<ColumnMapping> { simpleDbColumnMapping: ColumnMapping ->
                 simpleDbColumnMapping.column.equals(
@@ -80,29 +79,29 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
                 )
             })
             .findAny()
-            .orElseThrow { EntityMappingHelperExcpetion("No column found for column '$column' in entity '$entity'") }
+            .orElseThrow { EntityMappingHelperException("No column found for column '$column' in entity '$entity'") }
     }
 
     override fun getColumnMapping(entity: String, field: String): ColumnMapping {
-        return Arrays.stream(getEntity(entity).dbMapping.columnMappings)
+        return getEntity(entity).dbMapping.columnMappings.stream()
             .filter { dbColumnMapping: ColumnMapping ->
                 dbColumnMapping.field.equals(
                     field
                 )
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperExcpetion("No ColumnMapping found for column '$entity.$field'") }
+            .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '$entity.$field'") }
     }
 
     override fun getRelationMapping(entity: String, field: String): RelationMapping {
-        return Arrays.stream(getEntity(entity).dbMapping.relationMappings)
+        return getEntity(entity).dbMapping.relationMappings.stream()
             .filter { dbColumnMapping: RelationMapping ->
                 dbColumnMapping.field.equals(
                     field
                 )
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperExcpetion("No ColumnMapping found for column '$entity.$field'") }
+            .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '$entity.$field'") }
     }
 
     override fun getReferencingEntity(
@@ -154,7 +153,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         for (i in 1 until parts.size) {
             val field = parts[i]
             val mapping = getRelationMapping(entity1, field)
-            if (Utils.not(mapping!!.options!!.isMandatory)) {
+            if (Utils.not(mapping.options.isMandatory)) {
                 return false
             }
             entity1 = mapping.referencingEntity
@@ -163,7 +162,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getRelationMappings(entity: String): List<RelationMapping> {
-        return Arrays.asList(*getDbMapping(entity).relationMappings)
+        return getDbMapping(entity).relationMappings
     }
 
     init {

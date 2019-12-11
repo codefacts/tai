@@ -17,14 +17,13 @@ import java.util.stream.Stream
 internal class EntityToCombinedColumnsMap(entityNameToEntityMap: Map<String, Entity>) {
     val entityNameToEntityMap: Map<String, Entity>
     val entityToCombinedColumnsMap: MutableMap<String, Set<String>>
+
     fun exists(entity: String, column: String): Boolean {
         var combinedColumns: Set<String> = entityToCombinedColumnsMap[entity]!!
-        if (combinedColumns == null) {
-            entityToCombinedColumnsMap[entity] = combinedColumns(entity).also {
-                combinedColumns = it
-            }
+        entityToCombinedColumnsMap[entity] = combinedColumns(entity).also {
+            combinedColumns = it
         }
-        return combinedColumns!!.contains(column)
+        return combinedColumns.contains(column)
     }
 
     private fun combinedColumns(entity: String): Set<String> {
@@ -43,9 +42,8 @@ internal class EntityToCombinedColumnsMap(entityNameToEntityMap: Map<String, Ent
     }
 
     private fun columnMappings(dbMapping: DbMapping): Set<String> {
-        return Arrays.stream(dbMapping.columnMappings)
-            .map<String>(ColumnMapping::column)
-            .collect(Collectors.toSet())
+        return dbMapping.columnMappings
+            .map(ColumnMapping::column).toSet()
     }
 
     init {

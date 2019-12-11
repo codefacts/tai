@@ -8,7 +8,7 @@ import tai.orm.entity.core.Entity
 import tai.orm.entity.core.RelationType
 import tai.orm.entity.core.columnmapping.IndirectRelationMapping
 import tai.orm.entity.core.columnmapping.RelationMapping
-import tai.orm.entity.core.columnmapping.impl.IndirectRelationMappingImpl
+import tai.orm.entity.core.columnmapping.IndirectRelationMappingImpl
 import java.util.*
 import java.util.stream.Collectors
 
@@ -29,14 +29,14 @@ class EntitiesPreprocessorImpl : EntitiesPreprocessor {
         }
 
         private fun processEntity(entity: Entity): Entity {
-            val mappingList = Arrays.stream(entity.dbMapping.relationMappings)
+            val mappingList = entity.dbMapping.relationMappings
                 .map { dbColumnMapping: RelationMapping ->
                     processColumnMapping(
                         entity,
                         dbColumnMapping
                     )
                 }
-                .collect(Collectors.toList())
+
             return Entity(
                 entity.name,
                 entity.primaryKey,
@@ -45,7 +45,7 @@ class EntitiesPreprocessorImpl : EntitiesPreprocessor {
                     entity.dbMapping.table,
                     entity.dbMapping.primaryColumn,
                     entity.dbMapping.columnMappings,
-                    mappingList.toTypedArray()
+                    mappingList
                 )
             )
         }
@@ -61,7 +61,7 @@ class EntitiesPreprocessorImpl : EntitiesPreprocessor {
                         checkCommonRelationalValidity(entity.dbMapping.table, mapping)
                     return dependencyTplOptional
                         .flatMap { dependencyTpl: DependencyTpl ->
-                            dependencyTpl.getFieldToDependencyInfoMap()!!.values.stream()
+                            dependencyTpl.fieldToDependencyInfoMap.values.stream()
                                 .filter { dependencyInfo: DependencyInfo ->
                                     if (dependencyInfo.relationMapping.columnType === RelationType.INDIRECT) {
                                         val depMapping =
@@ -95,8 +95,8 @@ class EntitiesPreprocessorImpl : EntitiesPreprocessor {
                 mapping.referencingTable,
                 mapping.referencingEntity,
                 mapping.relationTable!!,
-                if (mapping.srcForeignColumnMappingList!!.size > 0) mapping.srcForeignColumnMappingList else mappingOther.dstForeignColumnMappingList,
-                if (mapping.dstForeignColumnMappingList!!.size > 0) mapping.dstForeignColumnMappingList else mappingOther.srcForeignColumnMappingList,
+                if (mapping.srcForeignColumnMappingList.isNotEmpty()) mapping.srcForeignColumnMappingList else mappingOther.dstForeignColumnMappingList,
+                if (mapping.dstForeignColumnMappingList.isNotEmpty()) mapping.dstForeignColumnMappingList else mappingOther.srcForeignColumnMappingList,
                 mapping.field,
                 mapping.options
             )
@@ -108,7 +108,7 @@ class EntitiesPreprocessorImpl : EntitiesPreprocessor {
         ): Optional<DependencyTpl> {
             val tableDependency = tableToTableDependencyMap[table] ?: return Optional.empty()
             val tableToDependencyInfoMap =
-                tableDependency.getTableToDependencyInfoMap()
+                tableDependency.tableToDependencyInfoMap
             return Optional.of(
                 tableToDependencyInfoMap[mapping.referencingTable]!!
             )

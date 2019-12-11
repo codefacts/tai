@@ -28,7 +28,7 @@ class TableToTableDependenyMapBuilder {
     fun build(entities: Collection<Entity>): TableMapAndDependencyMappingInfo {
         entities.forEach(Consumer { entity: Entity ->
             entityNameToEntityMap[entity.name] = entity
-            val relationMappings: Array<RelationMapping> = entity.dbMapping.relationMappings
+            val relationMappings: List<RelationMapping> = entity.dbMapping.relationMappings
             for (columnIndex in relationMappings.indices) {
                 val dbColumnMapping = relationMappings[columnIndex]
                 try {

@@ -14,7 +14,8 @@ import java.util.stream.Collectors
  * Created by Jango on 2017-01-21.
  */
 interface EntityUtils {
-    class TableMapAndDependencyMappingInfo(
+
+    data class TableMapAndDependencyMappingInfo(
         val tableToTableDependencyMap: Map<String, TableDependency>,
         val entityNameToEntityMap: Map<String, Entity>
     )
@@ -33,19 +34,19 @@ interface EntityUtils {
             return TableToTableDependenyMapBuilder().build(entities)
         }
 
-        fun toFieldNameToFieldMap(fields: Array<Field>): Map<String, Field> {
+        fun toFieldNameToFieldMap(fields: List<Field>): Map<String, Field> {
             return fields.asSequence().map { field -> field.name to field }.toMap()
         }
 
-        fun toFieldToColumnMappingMap(dbColumnMappings: Array<ColumnMapping>): Map<String, ColumnMapping> {
+        fun toFieldToColumnMappingMap(dbColumnMappings: List<ColumnMapping>): Map<String, ColumnMapping> {
             return dbColumnMappings.asSequence().map { it.field to it }.toMap()
         }
 
-        fun toFieldToRelationMappingMap(relationMappings: Array<RelationMapping>): Map<String, RelationMapping> {
+        fun toFieldToRelationMappingMap(relationMappings: List<RelationMapping>): Map<String, RelationMapping> {
             return relationMappings.asSequence().map { it.field to it }.toMap()
         }
 
-        fun toColumnNameToColumnMapingMap(columnMappings: Array<ColumnMapping>): Map<String, ColumnMapping> {
+        fun toColumnNameToColumnMapingMap(columnMappings: List<ColumnMapping>): Map<String, ColumnMapping> {
             return columnMappings.asSequence().map { it.column to it }.toMap()
         }
 

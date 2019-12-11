@@ -12,11 +12,12 @@ import tai.orm.entity.core.columnmapping.RelationMapping
  * Created by Jango on 2017-01-08.
  */
 interface EntityMappingHelper {
+
     fun getEntity(entity: String): Entity
     fun getEntityByTable(table: String): Entity
-    fun getFields(entity: String): Array<Field>
+    fun getFields(entity: String): List<Field>
     fun getDbMapping(entity: String): DbMapping
-    fun getColumnMappings(entity: String): Array<ColumnMapping>
+    fun getColumnMappings(entity: String): List<ColumnMapping>
     fun getFieldNameToFieldMap(entity: String): Map<String, Field>
     fun getColumnNameToColumnMappingMap(entity: String): Map<String, ColumnMapping>
     fun getFieldToColumnMappingMap(entity: String): Map<String, ColumnMapping>
