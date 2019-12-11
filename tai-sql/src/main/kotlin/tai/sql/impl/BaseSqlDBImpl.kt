@@ -1,5 +1,7 @@
 package tai.sql.impl
 
+import tai.base.JsonList
+import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
 
@@ -9,6 +11,14 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
         return coreSqlDB.query(
             dialect.toExecutePaginated(sqlQuery)
         );
+    }
+
+    override suspend fun queryForArrays(sqlQuery: SqlQuery): List<JsonList> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryForObjects(sqlQuery: SqlQuery): List<JsonMap> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult {
