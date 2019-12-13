@@ -28,7 +28,7 @@ interface EntityUtils {
             val entityMap = toEntityNameToEntityMap(entities)
             EntitiesValidatorImpl(EntityValidatorImpl()).validate(
                 EntitiesValidator.Params(
-                    entities = entities,
+                    entities = EntityPreprocessor().process(entities),
                     entityNameToEntityMap = entityMap
                 )
             )

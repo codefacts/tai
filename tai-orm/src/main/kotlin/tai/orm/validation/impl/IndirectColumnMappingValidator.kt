@@ -34,6 +34,12 @@ internal class IndirectColumnMappingValidator(
     )
 
     fun validate() {
+        if (mapping.srcForeignColumnMappingList.isEmpty()) {
+            throw EntityValidationException("No source foreign column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+        }
+        if (mapping.dstForeignColumnMappingList.isEmpty()) {
+            throw EntityValidationException("No source destination column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+        }
         checkAllOwnColumnsExists()
         checkAllOtherColumnsExists()
     }

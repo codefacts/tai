@@ -2,6 +2,7 @@ package tai.orm.entity.columnmapping
 
 import tai.orm.entity.ForeignColumnMapping
 import tai.orm.entity.RelationType
+import tai.orm.validation.ex.EntityValidationException
 
 /**
  * Created by Jango on 2017-01-12.

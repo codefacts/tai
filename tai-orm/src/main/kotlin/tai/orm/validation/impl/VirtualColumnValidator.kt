@@ -32,6 +32,9 @@ internal class VirtualColumnValidator(
     )
 
     fun validate() {
+        if (mapping.foreignColumnMappingList.isEmpty()) {
+            throw EntityValidationException("No foreign column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+        }
         checkAllForeignColumnExistsInOppositeEntityDbMapping()
     }
 

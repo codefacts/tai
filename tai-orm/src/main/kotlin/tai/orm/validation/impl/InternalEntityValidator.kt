@@ -41,7 +41,7 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
 
     private fun validateField(field: Field) {
 
-        checkFieldAndColumnMappingConsistent(field)
+        checkCorrespondingColumnMappingExistsForScalerField(field)
         checkRelationshipAndRelationMappingConsistent(field)
 
         if (field.relationship == null) {
@@ -87,15 +87,25 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
         mapping: RelationMapping
     ) {
         if (relationship.entity != mapping.referencingEntity) {
-            throw EntityValidationException("Invalid state: relationship.entity != relationMapping.referencingEntity where relationship.entity = '${relationship.entity}' " +
-                    "and relationMapping.referencingEntity = '${mapping.referencingEntity}' and field = '${entity.name}.${field.name}'")
+            throw EntityValidationException("Invalid referencing entity '${mapping.referencingEntity}' provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
         }
 
         val refEntity = entityNameToEntityMap[mapping.referencingEntity]
             ?: throw EntityValidationException("Referencing entity in relationship '${entity.name}.${field.name}' -> '${relationship.entity}' does not exist")
 
-        if (mapping.referencingTable == refEntity.dbMapping.table) {
+        if (mapping.referencingTable != refEntity.dbMapping.table) {
             throw EntityValidationException("Invalid referencing table '${mapping.referencingTable}' provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+        }
+
+        if (relationship.name == Relationship.Name.HAS_ONE) {
+            if (mapping is IndirectRelationMapping) {
+                throw EntityValidationException("Relationship name '${Relationship.Name.HAS_ONE}' in ${entity.name}.${field.name} -> ${relationship.entity} can not have mapping type '${IndirectRelationMapping::class.java.simpleName}'")
+            }
+        }
+        if (relationship.name == Relationship.Name.HAS_MANY) {
+            if (mapping is DirectRelationMapping) {
+                throw EntityValidationException("Relationship name '${Relationship.Name.HAS_MANY}' in ${entity.name}.${field.name} -> ${relationship.entity} can not have mapping type '${DirectRelationMapping::class.java.simpleName}'")
+            }
         }
     }
 
@@ -108,10 +118,12 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
         }
     }
 
-    private fun checkFieldAndColumnMappingConsistent(field: Field) {
-        val isConsistent = field.relationship == null && getColumnMapping(field.name) != null
-        if (!isConsistent) {
-            throw EntityValidationException("Field '${entity.name}.${field.name}' is not consistent with column mapping")
+    private fun checkCorrespondingColumnMappingExistsForScalerField(field: Field) {
+        if (field.relationship != null) {
+            return
+        }
+        if (getColumnMapping(field.name) == null) {
+            throw EntityValidationException("Corresponding column mapping does not exists for field ${entity.name}.${field.name}")
         }
     }
 

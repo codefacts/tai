@@ -19,6 +19,11 @@ internal class DirectColumnValidator(
     val relationship = field.relationship!!
 
     fun validate() {
+
+        if (mapping.foreignColumnMappingList.isEmpty()) {
+            throw EntityValidationException("No foreign column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+        }
+
         val otherEntityColumns = internalEntityValidator.combinedColumns(
             internalEntityValidator.entityNameToEntityMap[mapping.referencingEntity]
                 ?: throw EntityValidationException("Referencing entity '${mapping.referencingEntity}' not found in relation ${entity.name}.${field.name} -> ${mapping.referencingEntity}")
