@@ -6,4 +6,6 @@ include 'tai-orm'
 include 'tai-validation'
 include 'tai-security'
 include 'tai-convertion'
+include 'module'
+include 'tai-module'
 
