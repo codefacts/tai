@@ -20,6 +20,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "users",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id")
 //                    ColumnMapping("name", "name")
@@ -30,6 +31,51 @@ class ValidationTest {
 
         EntityUtils.validateAndPreProcess(listOf(
             user
+        ))
+    }
+
+    @Test(expected = EntityValidationException::class)
+    fun testDuplicateShortCode() {
+        val a = Entity(
+            name = "A",
+            primaryKey = "id",
+            fields = listOf(
+                Field("id"),
+                Field("name")
+            ),
+            dbMapping = DbMapping(
+                table = "a",
+                primaryColumn = "id",
+                tableShortCode = "a",
+                columnMappings = listOf(
+                    ColumnMapping("id", "id"),
+                    ColumnMapping("name", "name")
+                ),
+                relationMappings = listOf()
+            )
+        )
+
+        val b = Entity(
+            name = "B",
+            primaryKey = "id",
+            fields = listOf(
+                Field("id"),
+                Field("name")
+            ),
+            dbMapping = DbMapping(
+                table = "b",
+                primaryColumn = "id",
+                tableShortCode = "A",
+                columnMappings = listOf(
+                    ColumnMapping("id", "id"),
+                    ColumnMapping("name", "name")
+                ),
+                relationMappings = listOf()
+            )
+        )
+
+        EntityUtils.validateAndPreProcess(listOf(
+            a, b
         ))
     }
 
@@ -45,6 +91,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "users",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -70,6 +117,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "users",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -95,6 +143,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "users",
                 primaryColumn = "idx",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -120,6 +169,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -148,6 +198,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -176,6 +227,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -204,6 +256,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -232,6 +285,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -260,6 +314,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -288,6 +343,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -316,6 +372,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -344,6 +401,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -372,6 +430,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -401,6 +460,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("aId", "a_id"),
@@ -430,6 +490,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "a",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("name", "name")
@@ -464,6 +525,7 @@ class ValidationTest {
             dbMapping = DbMapping(
                 table = "b",
                 primaryColumn = "id",
+                tableShortCode = "a",
                 columnMappings = listOf(
                     ColumnMapping("id", "id"),
                     ColumnMapping("aId", "a_id"),

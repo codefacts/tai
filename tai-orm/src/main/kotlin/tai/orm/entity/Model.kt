@@ -18,6 +18,7 @@ data class Field(
 data class DbMapping(
     val table: String,
     val primaryColumn: String,
+    val tableShortCode: String,
     val columnMappings: List<ColumnMapping>,
     val relationMappings: List<RelationMapping>
 )
