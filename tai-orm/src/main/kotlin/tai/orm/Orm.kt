@@ -1,6 +1,5 @@
 package tai.orm
 
-import tai.base.JsonList
 import tai.base.JsonMap
 
 interface Orm {
@@ -13,11 +12,11 @@ interface Orm {
 
     suspend fun findAll(param: QueryParam): List<JsonMap>
 
-    suspend fun findAll(params: QueryParam, countKey: String): DataAndCount<JsonMap>
+    suspend fun findAll(param: QueryParam, countKey: String): DataAndCount<JsonMap>
 
-    suspend fun queryForArrays(param: QueryArrayParam): List<JsonList>
+    suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid
 
-    suspend fun queryForArrays(param: QueryArrayParam, countKey: String): DataAndCount<JsonList>
+    suspend fun queryForDataGrid(param: QueryArrayParam, countKey: String): DataGridAndCount
 
     suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap>
 

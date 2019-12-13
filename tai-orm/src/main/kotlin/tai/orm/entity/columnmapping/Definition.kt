@@ -1,7 +1,7 @@
-package tai.orm.entity.core.columnmapping
+package tai.orm.entity.columnmapping
 
-import tai.orm.entity.core.ForeignColumnMapping
-import tai.orm.entity.core.RelationType
+import tai.orm.entity.ForeignColumnMapping
+import tai.orm.entity.RelationType
 
 data class ColumnMapping (
     val field: String,
@@ -13,7 +13,6 @@ interface RelationMapping {
     val columnType: RelationType
     val referencingTable: String
     val referencingEntity: String
-    val options: RelationMappingOptions
 }
 
 interface DirectRelationMapping : RelationMapping {
@@ -28,18 +27,4 @@ interface IndirectRelationMapping : RelationMapping {
 
 interface VirtualRelationMapping : RelationMapping {
     val foreignColumnMappingList: List<ForeignColumnMapping>
-}
-
-interface RelationMappingOptions {
-    val cascadeUpsert: CascadeUpsert
-    val cascadeDelete: CascadeDelete
-    val isMandatory: Boolean
-
-    enum class CascadeUpsert {
-        YES, NO
-    }
-
-    enum class CascadeDelete {
-        YES, NO
-    }
 }

@@ -1,20 +1,20 @@
 package tai.orm.entity.impl
 
+import tai.orm.OrmException
 import tai.orm.Utils
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.entity.EntityUtils
-import tai.orm.entity.core.DbMapping
-import tai.orm.entity.core.Entity
-import tai.orm.entity.core.Field
-import tai.orm.entity.core.columnmapping.ColumnMapping
-import tai.orm.entity.core.columnmapping.RelationMapping
-import tai.orm.entity.ex.EntityMappingHelperException
+import tai.orm.entity.DbMapping
+import tai.orm.entity.Entity
+import tai.orm.entity.Field
+import tai.orm.entity.columnmapping.ColumnMapping
+import tai.orm.entity.columnmapping.RelationMapping
+import tai.orm.validation.ex.EntityMappingHelperException
 import java.util.*
 import java.util.function.Function
 import java.util.function.Predicate
-import java.util.stream.Stream
 
 /**
  * Created by Jango on 2017-01-21.
@@ -23,6 +23,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     EntityMappingHelper {
     val entityMap: Map<String, Entity>
     val tableToEntityMap: Map<String, Entity>
+
     override fun getEntity(entity: String): Entity {
         return entityMap[entity] ?: throw NullPointerException("No Entity found for key '$entity'")
     }
@@ -151,12 +152,11 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         var entity1 = entity
         val parts = pathExpression.parts()
         for (i in 1 until parts.size) {
-            val field = parts[i]
-            val mapping = getRelationMapping(entity1, field)
-            if (Utils.not(mapping.options.isMandatory)) {
+            val field = getField(entity1, parts[i])
+            if (Utils.not(field.relationship?.options?.isNonNull == true)) {
                 return false
             }
-            entity1 = mapping.referencingEntity
+            entity1 = field.relationship?.entity ?: throw OrmException("Relationship does not exists on field $field in $entity.$pathExpression")
         }
         return true
     }

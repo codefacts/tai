@@ -2,11 +2,8 @@ package tai.orm.entity
 
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
-import tai.orm.entity.core.DbMapping
-import tai.orm.entity.core.Entity
-import tai.orm.entity.core.Field
-import tai.orm.entity.core.columnmapping.ColumnMapping
-import tai.orm.entity.core.columnmapping.RelationMapping
+import tai.orm.entity.columnmapping.ColumnMapping
+import tai.orm.entity.columnmapping.RelationMapping
 
 /**
  * Created by Jango on 2017-01-08.

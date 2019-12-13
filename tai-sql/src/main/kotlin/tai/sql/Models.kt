@@ -13,17 +13,48 @@ import tai.criteria.ops.valueOf
 open class QueryBase(
     open val from: List<FromSpec>,
     open val where: List<JsonMap> = listOf(),
-    open val groupBy: List<KeySpec> = listOf(),
+    open val groupBy: List<JsonMap> = listOf(),
     open val having: List<JsonMap> = listOf(),
     open val orderBy: List<OrderBySpec> = listOf(),
     open val pagination: SqlPagination? = null
-);
+
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as QueryBase
+
+        if (from != other.from) return false
+        if (where != other.where) return false
+        if (groupBy != other.groupBy) return false
+        if (having != other.having) return false
+        if (orderBy != other.orderBy) return false
+        if (pagination != other.pagination) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = from.hashCode()
+        result = 31 * result + where.hashCode()
+        result = 31 * result + groupBy.hashCode()
+        result = 31 * result + having.hashCode()
+        result = 31 * result + orderBy.hashCode()
+        result = 31 * result + (pagination?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "QueryBase(from=$from, where=$where, groupBy=$groupBy, having=$having, orderBy=$orderBy, pagination=$pagination)"
+    }
+};
 
 data class SqlQuery(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<KeySpec> = listOf(),
+    override val groupBy: List<JsonMap> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -34,7 +65,7 @@ data class SqlSelectIntoOp(
     val into: IntoTableSpec,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<KeySpec> = listOf(),
+    override val groupBy: List<JsonMap> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -45,7 +76,7 @@ data class SqlInsertIntoOp(
     val selections: List<JsonMap>,
     override val from: List<FromSpec>,
     override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<KeySpec> = listOf(),
+    override val groupBy: List<JsonMap> = listOf(),
     override val having: List<JsonMap> = listOf(),
     override val orderBy: List<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -71,7 +102,7 @@ data class JoinRule(
     val to: ColumnSpec
 )
 
-data class KeySpec(val columnExpression: JsonMap) {
+data class GroupBySpec(val columnExpression: JsonMap) {
     constructor(column: String) : this(tai.criteria.ops.column(column))
     constructor(alias: String?, column: String) : this(tai.criteria.ops.column(alias, column))
 }

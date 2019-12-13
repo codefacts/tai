@@ -1,8 +1,6 @@
-package tai.orm.entity
+package tai.orm.validation
 
-import tai.orm.entity.core.Entity
-import tai.orm.entity.impl.TableDependency
-import java.util.*
+import tai.orm.entity.Entity
 
 /**
  * Created by sohan on 3/17/2017.
@@ -14,7 +12,6 @@ interface EntitiesValidator {
 
     data class Params(
         val entities: Collection<Entity>,
-        val tableToTableDependencyMap: Map<String, TableDependency>,
         val entityNameToEntityMap: Map<String, Entity>
     )
 }

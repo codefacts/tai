@@ -62,7 +62,7 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
         where(
             and(sqlQuery.where)
         ),
-        groupBy(sqlQuery.groupBy.map { it.columnExpression }),
+        groupBy(sqlQuery.groupBy),
         having(
             and(
                 sqlQuery.having

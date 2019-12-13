@@ -1,9 +1,6 @@
 package tai.sql
 
 import org.junit.Test
-import tai.criteria.CriteriaDialectBuilderImpl
-import tai.criteria.CriteriaToTextConverterImpl
-import tai.criteria.operators.operationMap
 import tai.sql.impl.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -33,8 +30,8 @@ class SqlDBTest {
                         eq(column("active"), valueOf(true))
                     ),
                     groupBy = listOf(
-                        KeySpec("username"),
-                        KeySpec("password")
+                        column("username"),
+                        column("password")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC),
@@ -74,7 +71,7 @@ class SqlDBTest {
                         eq(column("user_type"), valueOf("foe"))
                     ),
                     groupBy = listOf(
-                        KeySpec("username")
+                        column("username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC)
@@ -111,7 +108,7 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        KeySpec("username")
+                        column("username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC)
@@ -273,8 +270,8 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        KeySpec("u1", "username"),
-                        KeySpec("u2", "username")
+                        column("u1", "username"),
+                        column("u2", "username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("u1", "username", Order.ASC),
@@ -314,7 +311,7 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        KeySpec("u", "username")
+                        column("u", "username")
                     ),
                     having = listOf(
                         gte(

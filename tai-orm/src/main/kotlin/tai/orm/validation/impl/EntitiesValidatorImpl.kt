@@ -1,15 +1,15 @@
-package tai.orm.entity.impl
+package tai.orm.validation.impl
 
-import tai.orm.entity.EntitiesValidator
-import tai.orm.entity.EntityValidator
-import tai.orm.entity.core.Entity
-import java.util.*
+import tai.orm.validation.EntitiesValidator
+import tai.orm.validation.EntityValidator
+import tai.orm.entity.Entity
 import java.util.function.Consumer
 
 /**
  * Created by sohan on 3/17/2017.
  */
-data class EntitiesValidatorImpl(val entityValidator: EntityValidator) : EntitiesValidator {
+data class EntitiesValidatorImpl(val entityValidator: EntityValidator) :
+    EntitiesValidator {
 
     override fun validate(params: EntitiesValidator.Params) {
         params.entities.forEach(
@@ -17,7 +17,6 @@ data class EntitiesValidatorImpl(val entityValidator: EntityValidator) : Entitie
                 entityValidator.validate(
                     EntityValidator.Params(
                         entity = entity,
-                        tableToTabledependencyMap = params.tableToTableDependencyMap,
                         entityNameToEntityMap = params.entityNameToEntityMap
                     )
                 )

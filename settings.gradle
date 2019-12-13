@@ -3,4 +3,7 @@ include 'tai-base'
 include 'tai-sql'
 include 'tai-criteria'
 include 'tai-orm'
+include 'tai-validation'
+include 'tai-security'
+include 'tai-convertion'
 

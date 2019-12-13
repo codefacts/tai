@@ -1,19 +1,21 @@
 package tai.orm
 
-import sun.tools.tree.FieldExpression
+import tai.base.JsonList
 import tai.base.JsonMap
 import tai.criteria.operators.JoinType
+import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
+import tai.sql.OrderBySpec
 import java.util.*
 
 data class CountDistinctParam(
-    val countingKey: FieldExpression,
+    val countingKey: PathExpression,
     val entity: String,
     val alias: String,
-    val joinParams: Collection<JoinParam>,
-    val criteria: JsonMap? = null,
-    val groupBy: JsonMap,
-    val having: JsonMap? = null
+    val joinParams: Collection<JoinParam> = emptyList(),
+    val criteria: List<JsonMap> = emptyList(),
+    val groupBy: List<JsonMap> = emptyList(),
+    val having: List<JsonMap> = emptyList()
 )
 
 data class JoinParam(
@@ -24,16 +26,34 @@ data class JoinParam(
 
 data class DataAndCount<T>(val data: List<T>, val count: Long)
 
+interface DataGridBase {
+    val columns: List<String>
+    val data: List<JsonList>
+}
+
+data class DataGrid(override val columns: List<String>, override val data: List<JsonList>): DataGridBase
+
+data class DataGridAndCount(
+    override val columns: List<String>,
+    override val data: List<JsonList>,
+    val count: Long
+): DataGridBase
+
 open class QueryParamBase(
     open val entity: String,
     open val alias: String,
     open val joinParams: Collection<JoinParam>,
-    open val criteria: JsonMap? = null,
-    open val orderBy: JsonMap? = null,
-    open val groupBy: JsonMap? = null,
-    open val having: JsonMap? = null,
+    open val criteria: List<JsonMap>,
+    open val orderBy: List<OrderBySpec>,
+    open val groupBy: List<JsonMap>,
+    open val having: List<JsonMap>,
     open val pagination: Pagination? = null
 ) {
+
+    override fun toString(): String {
+        return "QueryParamBase(entity='$entity', alias='$alias', joinParams=$joinParams, criteria=$criteria, orderBy=$orderBy, groupBy=$groupBy, having=$having, pagination=$pagination)"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -56,16 +76,12 @@ open class QueryParamBase(
         var result = entity.hashCode()
         result = 31 * result + alias.hashCode()
         result = 31 * result + joinParams.hashCode()
-        result = 31 * result + (criteria?.hashCode() ?: 0)
-        result = 31 * result + (orderBy?.hashCode() ?: 0)
-        result = 31 * result + (groupBy?.hashCode() ?: 0)
-        result = 31 * result + (having?.hashCode() ?: 0)
+        result = 31 * result + criteria.hashCode()
+        result = 31 * result + orderBy.hashCode()
+        result = 31 * result + groupBy.hashCode()
+        result = 31 * result + having.hashCode()
         result = 31 * result + (pagination?.hashCode() ?: 0)
         return result
-    }
-
-    override fun toString(): String {
-        return "QueryParamBase(entity='$entity', alias='$alias', joinParams=$joinParams, criteria=$criteria, orderBy=$orderBy, groupBy=$groupBy, having=$having, pagination=$pagination)"
     }
 
 }
@@ -73,12 +89,12 @@ open class QueryParamBase(
 data class QueryParam(
     override val entity: String,
     override val alias: String,
-    override val joinParams: Collection<JoinParam>,
+    override val joinParams: Collection<JoinParam> = emptyList(),
     val selections: Collection<FieldExpression>,
-    override val criteria: JsonMap? = null,
-    override val orderBy: JsonMap? = null,
-    override val groupBy: JsonMap? = null,
-    override val having: JsonMap? = null,
+    override val criteria: List<JsonMap> = emptyList(),
+    override val orderBy: List<OrderBySpec> = emptyList(),
+    override val groupBy: List<JsonMap> = emptyList(),
+    override val having: List<JsonMap> = emptyList(),
     override val pagination: Pagination? = null
 ): QueryParamBase(entity, alias, joinParams, criteria, orderBy, groupBy, having, pagination)
 
@@ -91,12 +107,12 @@ data class Pagination(
 data class QueryArrayParam(
     override val entity: String,
     override val alias: String,
-    override val joinParams: Collection<JoinParam>,
+    override val joinParams: Collection<JoinParam> = emptyList(),
     val selections: Collection<JsonMap>,
-    override val criteria: JsonMap? = null,
-    override val orderBy: JsonMap? = null,
-    override val groupBy: JsonMap? = null,
-    override val having: JsonMap? = null,
+    override val criteria: List<JsonMap> = emptyList(),
+    override val orderBy: List<OrderBySpec> = emptyList(),
+    override val groupBy: List<JsonMap> = emptyList(),
+    override val having: List<JsonMap> = emptyList(),
     override val pagination: Pagination? = null
 ): QueryParamBase(entity, alias, joinParams, criteria, orderBy, groupBy, having)
 

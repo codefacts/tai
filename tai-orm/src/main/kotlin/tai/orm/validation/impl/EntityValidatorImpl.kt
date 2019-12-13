@@ -1,6 +1,6 @@
-package tai.orm.entity.impl
+package tai.orm.validation.impl
 
-import tai.orm.entity.EntityValidator
+import tai.orm.validation.EntityValidator
 
 /**
  * Created by sohan on 3/17/2017.
