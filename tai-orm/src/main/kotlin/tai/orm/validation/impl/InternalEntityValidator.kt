@@ -53,6 +53,8 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
 
         checkFieldRelationAndReferencingEntityConsistent(field, field.relationship, relationMapping)
 
+        checkFieldNameInBothFieldAndMappingSame(field, relationMapping)
+
         when (relationMapping.columnType) {
             RelationType.INDIRECT -> {
                 IndirectColumnMappingValidator(
@@ -75,6 +77,12 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
                     relationMapping as DirectRelationMapping
                 ).validate()
             }
+        }
+    }
+
+    private fun checkFieldNameInBothFieldAndMappingSame(field: Field, relationMapping: RelationMapping) {
+        if (field.name != relationMapping.field) {
+            throw EntityValidationException("Field name '${relationMapping.field}' in ${entity.name}.${field.name} -> ${field.relationship?.entity} must be same in both field and relation mapping")
         }
     }
 
@@ -136,57 +144,6 @@ internal class InternalEntityValidator(params: EntityValidator.Params) {
                 entity.dbMapping.relationMappings.asSequence().filter { it is DirectRelationMapping }
                     .map { it as DirectRelationMapping }
                     .flatMap { it.foreignColumnMappingList.asSequence().map { it.srcColumn } }.toSet()
-    }
-
-    fun isEqualDirectAndVirtual(
-        directForeignColumnMappingList: List<ForeignColumnMapping>,
-        virtualForeignColumnMappingList: List<ForeignColumnMapping>
-    ): Boolean {
-        if (directForeignColumnMappingList === virtualForeignColumnMappingList) {
-            return true
-        }
-        if (directForeignColumnMappingList.size != virtualForeignColumnMappingList.size) {
-            return false
-        }
-        for (i in directForeignColumnMappingList.indices) {
-            val mapping1 = directForeignColumnMappingList[i]
-            val mapping2 = virtualForeignColumnMappingList[i]
-            val equals = mapping1
-                .srcColumn ==
-                    mapping2.srcColumn && mapping1.dstColumn ==
-                    mapping2.dstColumn
-            if (Utils.not(equals)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    fun isEqualBothSide(
-        srcForeignColumnMappingList: List<ForeignColumnMapping>,
-        dstForeignColumnMappingList: List<ForeignColumnMapping>
-    ): Boolean {
-        if (srcForeignColumnMappingList === dstForeignColumnMappingList) {
-            return true
-        }
-        if (srcForeignColumnMappingList.size != dstForeignColumnMappingList.size) {
-            return false
-        }
-        for (i in srcForeignColumnMappingList.indices) {
-            val srcMapping = srcForeignColumnMappingList[i]
-            val dstMapping = dstForeignColumnMappingList[i]
-            val equalBoth = isEqualBoth(srcMapping, dstMapping)
-            if (Utils.not(equalBoth)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun isEqualBoth(srcMapping: ForeignColumnMapping, dstMapping: ForeignColumnMapping): Boolean {
-        return srcMapping.srcColumn ==
-                dstMapping.srcColumn && srcMapping.dstColumn ==
-                dstMapping.dstColumn
     }
 
     private fun validatePrimaryKey() {

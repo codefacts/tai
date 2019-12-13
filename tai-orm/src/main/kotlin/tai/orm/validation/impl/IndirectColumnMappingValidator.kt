@@ -38,7 +38,7 @@ internal class IndirectColumnMappingValidator(
             throw EntityValidationException("No source foreign column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
         }
         if (mapping.dstForeignColumnMappingList.isEmpty()) {
-            throw EntityValidationException("No source destination column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
+            throw EntityValidationException("No destination foreign column mapping is provided in relation mapping ${entity.name}.${field.name} -> ${relationship.entity}")
         }
         checkAllOwnColumnsExists()
         checkAllOtherColumnsExists()
@@ -47,7 +47,7 @@ internal class IndirectColumnMappingValidator(
     private fun checkAllOtherColumnsExists() {
         mapping.dstForeignColumnMappingList.forEach {
             if (!otherCombinedColumns.contains(it.dstColumn)) {
-                throw EntityValidationException("Column ${it.dstColumn} in mapping ${mapping.relationTable}.${it.srcColumn} -> ${mapping.referencingTable}.${it.dstColumn} " +
+                throw EntityValidationException("Column '${it.dstColumn} 'in mapping ${mapping.relationTable}.${it.srcColumn} -> ${mapping.referencingTable}.${it.dstColumn} " +
                         "does not exists in entity ${mapping.referencingEntity}")
             }
         }
