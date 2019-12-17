@@ -41,12 +41,12 @@ internal class ReaderBuilder(
             val pathInfo: PathInfo = getOrCreatePathInfo(pathExpression.subPath(0, i))
             when (field.relationship?.name) {
                 Relationship.Name.HAS_ONE -> {
-                    pathInfo.directRelationsBuilder.add(
+                    pathInfo.directRelations.add(
                         pathExpression.subPath(0, i + 1)
                     )
                 }
                 Relationship.Name.HAS_MANY -> {
-                    pathInfo.indirectRelationsBuilder.add(
+                    pathInfo.indirectRelations.add(
                         pathExpression.subPath(0, i + 1)
                     )
                 }
@@ -59,7 +59,7 @@ internal class ReaderBuilder(
         if (helper.getPrimaryKey(entity) == field.name) {
             pathInfo.setPrimaryKeyIndex(index)
         }
-        pathInfo.fieldAndIndexPairsBuilder.add(
+        pathInfo.fieldAndIndexPairs.add(
                 FieldAndIndexPair(field.name, index)
             )
     }
