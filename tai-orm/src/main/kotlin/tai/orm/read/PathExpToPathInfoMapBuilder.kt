@@ -12,26 +12,27 @@ import java.util.*
 typealias Index = Int
 
 @ThreadUnsafe
-internal class ReaderBuilder(
+internal class PathExpToPathInfoMapBuilder(
     val fieldExpressionToIndexMap: Map<FieldExpression, Index>,
     val rootAlias: String,
     val rootEntity: String,
     val helper: EntityMappingHelper,
     val aliasToFullPathExpressionMap: Map<String, PathExpression>
 ) {
-    val map: MutableMap<PathExpression, PathInfo> = HashMap()
-
     fun build(): Map<PathExpression, PathInfo> {
+
+        val map: MutableMap<PathExpression, PathInfo> = HashMap()
+
         for ((fieldExp, index) in fieldExpressionToIndexMap) {
             val pathExpression: PathExpression = toFullPathExp(
                 fieldExp.toPathExpression()
             )
-            process(pathExpression, index)
+            process(pathExpression, index, map)
         }
         return map
     }
 
-    private fun process(pathExpression: PathExpression, index: Int) {
+    private fun process(pathExpression: PathExpression, index: Int, map: MutableMap<PathExpression, PathInfo>) {
         val parts: List<String> = pathExpression.parts()
         var entity: String = rootEntity
         var i = 1
@@ -39,7 +40,7 @@ internal class ReaderBuilder(
         while (i < end) {
             val fieldName = parts[i]
             val field: Field = helper.getField(entity, fieldName)
-            val pathInfo: PathInfo = getOrCreatePathInfo(pathExpression.subPath(0, i))
+            val pathInfo: PathInfo = getOrCreatePathInfo(pathExpression.subPath(0, i), map)
             when (field.relationship?.name) {
                 Relationship.Name.HAS_ONE -> {
                     pathInfo.directRelations.add(
@@ -56,7 +57,7 @@ internal class ReaderBuilder(
             i++
         }
         val field: Field = helper.getField(entity, pathExpression.last())
-        val pathInfo: PathInfo = getOrCreatePathInfo(pathExpression.subPath(0, pathExpression.size() - 1))
+        val pathInfo: PathInfo = getOrCreatePathInfo(pathExpression.subPath(0, pathExpression.size() - 1), map)
         if (helper.getPrimaryKey(entity) == field.name) {
             pathInfo.setPrimaryKeyIndex(index)
         }
@@ -76,7 +77,7 @@ internal class ReaderBuilder(
         return pathExpression
     }
 
-    private fun getOrCreatePathInfo(pathExpression: PathExpression): PathInfo {
+    private fun getOrCreatePathInfo(pathExpression: PathExpression, map: MutableMap<PathExpression, PathInfo>): PathInfo {
         var pathInfo: PathInfo? = map[pathExpression]
         if (pathInfo == null) {
             map[pathExpression] =

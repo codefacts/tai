@@ -4,7 +4,7 @@ import tai.orm.core.PathExpression
 import tai.orm.entity.*
 import tai.orm.entity.impl.EntityMappingHelperImpl
 import tai.orm.read.PathInfo
-import tai.orm.read.ReaderBuilder
+import tai.orm.read.PathExpToPathInfoMapBuilder
 
 class ReadTest {
     val helper = EntityMappingHelperImpl(entities())
@@ -29,7 +29,7 @@ class ReadTest {
             FieldExpression.parse("r.aList.b.b_name")
         ).mapIndexed { index, fieldExpression -> fieldExpression to index }.toMap()
 
-        val readerBuilder = ReaderBuilder(
+        val readerBuilder = PathExpToPathInfoMapBuilder(
             fieldExpressionToIndexMap = fieldMap,
             rootAlias = "r",
             rootEntity = "A",

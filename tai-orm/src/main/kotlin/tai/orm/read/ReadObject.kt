@@ -2,10 +2,26 @@ package tai.orm.read
 
 import tai.base.JsonMap
 import tai.base.MutableJsonMap
+import tai.orm.core.FieldExpression
+import tai.orm.core.PathExpression
+import tai.orm.entity.EntityMappingHelper
 import tai.orm.read.ex.ObjectReaderException
-import java.util.function.Function
-import java.util.function.Predicate
-import java.util.stream.Collectors
+
+fun makeReadObject(
+    fieldExpressionToIndexMap: Map<FieldExpression, Index>,
+    rootAlias: String,
+    rootEntity: String,
+    helper: EntityMappingHelper,
+    aliasToFullPathExpressionMap: Map<String, PathExpression>
+): ReadObject {
+
+    val pathExpToPathInfoMap = PathExpToPathInfoMapBuilder(fieldExpressionToIndexMap, rootAlias, rootEntity, helper, aliasToFullPathExpressionMap).build()
+
+    val pathInfo: PathInfo = pathExpToPathInfoMap.get(PathExpression.create(rootAlias))
+        ?: throw ObjectReaderException("No PathInfo found in pathExpToPathInfoMap for key root alias '$rootAlias'")
+
+    return pathInfo.build(pathExpToPathInfoMap)
+}
 
 fun makeReadObject(
     fieldAndIndexPairs: List<FieldAndIndexPair>,
