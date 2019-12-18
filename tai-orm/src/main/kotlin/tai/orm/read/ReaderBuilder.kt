@@ -1,7 +1,6 @@
 package tai.orm.read
 
-import tai.base.NotThreadSafe
-import tai.orm.OrmException
+import tai.base.ThreadUnsafe
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
 import tai.orm.entity.EntityMappingHelper
@@ -12,9 +11,9 @@ import java.util.*
 
 typealias Index = Int
 
-@NotThreadSafe
+@ThreadUnsafe
 internal class ReaderBuilder(
-    val fieldExpressions: Map<FieldExpression, Index>,
+    val fieldExpressionToIndexMap: Map<FieldExpression, Index>,
     val rootAlias: String,
     val rootEntity: String,
     val helper: EntityMappingHelper,
@@ -23,7 +22,7 @@ internal class ReaderBuilder(
     val map: MutableMap<PathExpression, PathInfo> = HashMap()
 
     fun build(): Map<PathExpression, PathInfo> {
-        for ((fieldExp, index) in fieldExpressions) {
+        for ((fieldExp, index) in fieldExpressionToIndexMap) {
             val pathExpression: PathExpression = toFullPathExp(
                 fieldExp.toPathExpression()
             )

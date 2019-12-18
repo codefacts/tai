@@ -24,5 +24,9 @@ interface FieldExpression {
         fun create(pathExpression: String): FieldExpression {
             return FieldExpressionImpl(pathExpression)
         }
+
+        fun parse(fieldExpStr: String): FieldExpression {
+            return FieldExpressionImpl(PathExpression.parse(fieldExpStr))
+        }
     }
 }

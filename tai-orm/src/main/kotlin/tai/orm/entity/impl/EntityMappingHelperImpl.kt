@@ -166,10 +166,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     init {
-        var entities1 = entities
-        Objects.requireNonNull(entities1)
-        entities1 = EntityUtils.validateAndPreProcess(entities1)
-        entityMap = EntityUtils.toEntityNameToEntityMap(entities1)
-        tableToEntityMap = EntityUtils.toTableToEntityMap(entities1)
+        entityMap = EntityUtils.toEntityNameToEntityMap(entities)
+        tableToEntityMap = EntityUtils.toTableToEntityMap(entities)
     }
 }

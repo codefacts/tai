@@ -16,7 +16,7 @@ class PathExpressionImpl : PathExpression {
     constructor(pathExpression: String) {
         Objects.requireNonNull(pathExpression)
         val list =
-            Stream.of(*pathExpression.split("\\.").toTypedArray())
+            Stream.of(*pathExpression.split(".").toTypedArray())
                 .filter { s: String -> !s.isEmpty() }
                 .collect(Collectors.toList())
         if (list.size < 1) {

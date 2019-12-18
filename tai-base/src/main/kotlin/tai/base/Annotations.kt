@@ -2,6 +2,6 @@ package tai.base
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class NotThreadSafe {
+annotation class ThreadUnsafe {
 
 }
