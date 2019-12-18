@@ -1,11 +1,13 @@
 package tai.orm.read
 
+import tai.base.NotThreadSafe
 import tai.orm.core.PathExpression
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.entity.Field
 import tai.orm.read.ex.InvalidPrimaryKeyIndexException
 import tai.orm.read.ex.ObjectReaderException
 
+@NotThreadSafe
 class PathInfo(val helper: EntityMappingHelper, val rootEntity: String) {
     val fieldAndIndexPairs: MutableSet<FieldAndIndexPair> = mutableSetOf()
     val directRelations: MutableSet<PathExpression> = mutableSetOf()
@@ -20,13 +22,13 @@ class PathInfo(val helper: EntityMappingHelper, val rootEntity: String) {
         return makeReadObject(
             fieldAndIndexPairs = fieldAndIndexPairs.toList(),
             directRelations = directRelations.map {
-                val pathInfo = map.get(it) ?: throw ObjectReaderException("No pathInfo found for pathExp '$it'")
+                val pathInfo = map[it] ?: throw ObjectReaderException("No pathInfo found for pathExp '$it'")
                 DirectRelation(
                     it.last(), makeReadDirectRelation(pathInfo.build(map))
                 )
             },
             indirectRelations = indirectRelations.map {
-                val pathInfo = map.get(it) ?: throw ObjectReaderException("No pathInfo found for pathExp '$it'")
+                val pathInfo = map[it] ?: throw ObjectReaderException("No pathInfo found for pathExp '$it'")
                 IndirectRelation(
                     it.last(), makeReadIndirectRelation(
                         primaryKey(it),

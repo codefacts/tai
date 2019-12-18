@@ -1,5 +1,6 @@
 package tai.orm.read
 
+import tai.base.NotThreadSafe
 import tai.orm.OrmException
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
@@ -11,6 +12,7 @@ import java.util.*
 
 typealias Index = Int
 
+@NotThreadSafe
 internal class ReaderBuilder(
     val fieldExpressions: Map<FieldExpression, Index>,
     val rootAlias: String,

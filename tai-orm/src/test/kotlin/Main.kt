@@ -1,0 +1,3 @@
+
+val kk: Hala = Hala {  }
+
