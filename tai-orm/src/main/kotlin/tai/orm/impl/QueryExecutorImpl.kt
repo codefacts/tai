@@ -1,11 +1,133 @@
 package tai.orm.impl
 
 import tai.base.JsonMap
+import tai.base.PrimitiveValue
+import tai.criteria.operators.arg_
+import tai.criteria.operators.op_
 import tai.orm.*
+import tai.orm.core.FieldExpression
+import tai.orm.entity.Entity
+import tai.orm.entity.EntityMappingHelper
+import tai.orm.query.ex.QueryParserException
+import tai.sql.FromSpec
+import tai.sql.OrderBySpec
+import tai.sql.SqlPagination
+import tai.sql.SqlQuery
 
-class QueryExecutorImpl : QueryExecutor {
+class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
+    val joinDataHelper = JoinDataHelper(helper)
+
     override suspend fun findAll(param: QueryParam): List<JsonMap> {
+        return doFindAll(param)
+    }
+
+    private fun doFindAll(param: QueryParam): List<JsonMap> {
+        val sqlQuery: SqlQuery = toSqlQuery(param)
+        return emptyList()
+    }
+
+    private fun toSqlQuery(param: QueryParam): SqlQuery {
+        val rootAlias = param.alias;
+        val rootEntity = helper.getEntity(param.entity)
+
+        val aliasToJoinDataMap = mutableMapOf<String, MutableMap<String, JoinData>>() //alias -> (field -> joinData)
+        val aliasToEntityMap = mutableMapOf<String, tai.orm.entity.Entity>()
+
+        val aliasToJoinParamMap = param.joinParams.asSequence().map { it.alias to it }.toMap()
+        val aliasToFullPathExpMap = createAliasToFullPathExpMap(param.alias, param.joinParams, aliasToJoinParamMap)
+
+        val rootJoinDataMap = mutableMapOf<String, JoinData>()
+
+        aliasToEntityMap[rootAlias] = rootEntity
+        aliasToJoinDataMap[rootAlias] = rootJoinDataMap
+
+        val createAlias = makeCreateAlias()
+
+        aliasToFullPathExpMap.forEach {(alias, fullPathExp) ->
+
+            val (childAlias, childEntity) = joinDataHelper.populateJoinDataMap(
+                rootAlias, rootEntity, fullPathExp,
+                rootJoinDataMap, createAlias = {shortCode, isLast -> if (isLast) alias else createAlias(shortCode) }
+            )
+
+            aliasToEntityMap[childAlias] = childEntity
+            aliasToJoinDataMap[childAlias] = mutableMapOf()
+        }
+
+        val where = translateAll(param.criteria, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+        val groupBy = translateAll(param.groupBy, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+        val having = translateAll(param.having, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+        val selections = translateSelections(
+            param.selections, aliasToEntityMap, aliasToJoinDataMap, createAlias
+        )
+
+        val sqlQuery = SqlQuery(
+            selections = selections,
+            from = translateFrom(),
+            where = where,
+            groupBy = groupBy,
+            having = having,
+            orderBy = translateOrderBy(param.orderBy),
+            pagination = param.pagination?.let { translatePagination(it) }
+        )
+        return sqlQuery
+    }
+
+    private fun translatePagination(pagination: Pagination): SqlPagination {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun translateOrderBy(orderBy: List<OrderBySpec>): List<OrderBySpec> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun translateFrom(): List<FromSpec> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun translateSelections(
+        selections: Collection<FieldExpression>,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): Collection<JsonMap> {
+        return selections.map { fieldExp ->
+
+            val pathExp = fieldExp.parent
+            val alias = pathExp.root()
+            val entity = aliasToEntityMap[alias] ?: throw QueryParserException("Field Expression '$fieldExp' starts with an invalid alias")
+            val rootJoinDataMap = aliasToJoinDataMap[alias] ?: throw OrmException("No JoinData found for alias '$alias' in pathExpression '$pathExp'")
+
+            val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
+                rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
+                rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
+            )
+
+            return@map createField(lastAlias, lastEntity, fieldExp)
+        }
+    }
+
+    private fun createField(lastAlias: String, lastEntity: Entity, fieldExp: FieldExpression): JsonMap {
+        return field(fieldExp) + mapOf(
+            translatedTo_ to AliasAndColumn(lastAlias, helper.getColumnMapping(lastEntity, fieldExp.field).column)
+        )
+    }
+
+    private fun translateAll(
+        criteria: List<JsonMap>,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): List<JsonMap> {
+        return criteria.map { translate(it) }
+    }
+
+    private fun translate(json: JsonMap): JsonMap {
+        return traverseFieldsInJsonMap(json) {
+            val fieldExp = it[arg_] as FieldExpression
+
+            return@traverseFieldsInJsonMap it
+        }
     }
 
     override suspend fun findAll(param: QueryParam, countKey: String): DataAndCount<JsonMap> {
@@ -26,5 +148,28 @@ class QueryExecutorImpl : QueryExecutor {
 
     override suspend fun queryForObjects(param: QueryArrayParam, countKey: String): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    companion object {
+
+        fun traverseFieldsInJsonMap(json: JsonMap, fieldHandler: (JsonMap) -> JsonMap): JsonMap {
+            return json.entries.map { (key, value) -> key to processValue(value, fieldHandler)}.toMap()
+        }
+
+        private fun processValue(value: PrimitiveValue?, fieldHandler: (JsonMap) -> JsonMap): PrimitiveValue? {
+            if (value == null) {
+                return null
+            }
+            if (value is Map<*, *>) {
+                if (value[op_] == field_) {
+                    return fieldHandler(value as JsonMap)
+                }
+            }
+            if (value is List<*>) {
+                return value.map { processValue(value, fieldHandler) }
+            }
+            return value
+        }
+
     }
 }

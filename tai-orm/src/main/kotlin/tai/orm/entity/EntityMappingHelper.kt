@@ -21,6 +21,7 @@ interface EntityMappingHelper {
     fun getField(entity: String, field: String): Field
     fun getFieldByColumn(entity: String, column: String): Field
     fun getColumnMapping(entity: String, field: String): ColumnMapping
+    fun getColumnMapping(entity: Entity, field: String): ColumnMapping
     fun getRelationMapping(entity: String, field: String): RelationMapping
     fun getReferencingEntity(
         entity: String,
@@ -37,4 +38,5 @@ interface EntityMappingHelper {
     val entities: List<Entity>
     fun isMandatory(entity: String, parent: PathExpression): Boolean
     fun getRelationMappings(entity: String): List<RelationMapping>
+    fun getChildEntity(parentEntity: Entity, childEntityField: String): String
 }

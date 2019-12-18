@@ -23,7 +23,7 @@ interface PathExpression {
     fun concat(vararg parts: List<String>): PathExpression
 
     companion object {
-        fun parseAndCreate(path: String): PathExpression? {
+        fun parse(path: String): PathExpression {
             return PathExpressionImpl(path)
         }
 

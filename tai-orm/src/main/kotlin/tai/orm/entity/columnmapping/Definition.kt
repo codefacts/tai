@@ -1,5 +1,6 @@
 package tai.orm.entity.columnmapping
 
+import tai.criteria.operators.JoinType
 import tai.orm.entity.ForeignColumnMapping
 import tai.orm.entity.RelationType
 
@@ -17,14 +18,18 @@ interface RelationMapping {
 
 interface DirectRelationMapping : RelationMapping {
     val foreignColumnMappingList: List<ForeignColumnMapping>
+    val joinType: JoinType
 }
 
 interface IndirectRelationMapping : RelationMapping {
     val relationTable: String
     val srcForeignColumnMappingList: List<ForeignColumnMapping>
     val dstForeignColumnMappingList: List<ForeignColumnMapping>
+    val srcJoinType: JoinType
+    val dstJoinType: JoinType
 }
 
 interface VirtualRelationMapping : RelationMapping {
     val foreignColumnMappingList: List<ForeignColumnMapping>
+    val joinType: JoinType
 }

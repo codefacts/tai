@@ -92,9 +92,9 @@ data class QueryParam(
     override val joinParams: Collection<JoinParam> = emptyList(),
     val selections: Collection<FieldExpression>,
     override val criteria: List<JsonMap> = emptyList(),
-    override val orderBy: List<OrderBySpec> = emptyList(),
     override val groupBy: List<JsonMap> = emptyList(),
     override val having: List<JsonMap> = emptyList(),
+    override val orderBy: List<OrderBySpec> = emptyList(),
     override val pagination: Pagination? = null
 ): QueryParamBase(entity, alias, joinParams, criteria, orderBy, groupBy, having, pagination)
 
@@ -135,3 +135,4 @@ data class ExecuteParam(
 enum class OperationType {
     UPSERT, DELETE
 }
+

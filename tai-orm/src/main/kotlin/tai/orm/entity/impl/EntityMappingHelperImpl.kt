@@ -57,7 +57,11 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getField(entity: String, field: String): Field {
-        return getEntity(entity).fields.stream()
+        return getField(getEntity(entity), field)
+    }
+
+    private fun getField(entity: Entity, field: String): Field {
+        return entity.fields.stream()
             .filter { ff: Field ->
                 ff.name == field
             }
@@ -84,7 +88,11 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getColumnMapping(entity: String, field: String): ColumnMapping {
-        return getEntity(entity).dbMapping.columnMappings.stream()
+        return getColumnMapping(getEntity(entity), field)
+    }
+
+    override fun getColumnMapping(entity: Entity, field: String): ColumnMapping {
+        return entity.dbMapping.columnMappings.stream()
             .filter { dbColumnMapping: ColumnMapping ->
                 dbColumnMapping.field.equals(
                     field
@@ -165,11 +173,12 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         return getDbMapping(entity).relationMappings
     }
 
+    override fun getChildEntity(parentEntity: Entity, childEntityField: String): String {
+        return getField(parentEntity, childEntityField).relationship?.entity ?: throw OrmException("No relationship found at ${parentEntity.name}.$childEntityField")
+    }
+
     init {
-        var entities1 = entities
-        Objects.requireNonNull(entities1)
-        entities1 = EntityUtils.validateAndPreProcess(entities1)
-        entityMap = EntityUtils.toEntityNameToEntityMap(entities1)
-        tableToEntityMap = EntityUtils.toTableToEntityMap(entities1)
+        entityMap = EntityUtils.toEntityNameToEntityMap(entities)
+        tableToEntityMap = EntityUtils.toTableToEntityMap(entities)
     }
 }

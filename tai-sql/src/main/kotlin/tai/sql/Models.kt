@@ -11,11 +11,11 @@ import tai.criteria.ops.valueOf
  */
 
 open class QueryBase(
-    open val from: List<FromSpec>,
-    open val where: List<JsonMap> = listOf(),
-    open val groupBy: List<JsonMap> = listOf(),
-    open val having: List<JsonMap> = listOf(),
-    open val orderBy: List<OrderBySpec> = listOf(),
+    open val from: Collection<FromSpec>,
+    open val where: Collection<JsonMap> = listOf(),
+    open val groupBy: Collection<JsonMap> = listOf(),
+    open val having: Collection<JsonMap> = listOf(),
+    open val orderBy: Collection<OrderBySpec> = listOf(),
     open val pagination: SqlPagination? = null
 
 ) {
@@ -51,34 +51,34 @@ open class QueryBase(
 };
 
 data class SqlQuery(
-    val selections: List<JsonMap>,
-    override val from: List<FromSpec>,
-    override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<JsonMap> = listOf(),
-    override val having: List<JsonMap> = listOf(),
-    override val orderBy: List<OrderBySpec> = listOf(),
+    val selections: Collection<JsonMap>,
+    override val from: Collection<FromSpec>,
+    override val where: Collection<JsonMap> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
+    override val having: Collection<JsonMap> = listOf(),
+    override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
 ) : QueryBase(from, where, groupBy, having, orderBy, pagination)
 
 data class SqlSelectIntoOp(
-    val selections: List<JsonMap>,
+    val selections: Collection<JsonMap>,
     val into: IntoTableSpec,
-    override val from: List<FromSpec>,
-    override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<JsonMap> = listOf(),
-    override val having: List<JsonMap> = listOf(),
-    override val orderBy: List<OrderBySpec> = listOf(),
+    override val from: Collection<FromSpec>,
+    override val where: Collection<JsonMap> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
+    override val having: Collection<JsonMap> = listOf(),
+    override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
 ) : QueryBase(from, where, groupBy, having, orderBy, pagination)
 
 data class SqlInsertIntoOp(
     val into: InsertTableSpec,
-    val selections: List<JsonMap>,
-    override val from: List<FromSpec>,
-    override val where: List<JsonMap> = listOf(),
-    override val groupBy: List<JsonMap> = listOf(),
-    override val having: List<JsonMap> = listOf(),
-    override val orderBy: List<OrderBySpec> = listOf(),
+    val selections: Collection<JsonMap>,
+    override val from: Collection<FromSpec>,
+    override val where: Collection<JsonMap> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
+    override val having: Collection<JsonMap> = listOf(),
+    override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
 ) : QueryBase(from, where, groupBy, having, orderBy, pagination)
 
@@ -86,7 +86,7 @@ data class FromSpec(
     val database: String? = null,
     val table: String,
     val alias: String? = null,
-    val joins: List<JoinSpec> = listOf()
+    val joins: Collection<JoinSpec> = listOf()
 )
 
 data class JoinSpec(
@@ -94,7 +94,7 @@ data class JoinSpec(
     val database: String? = null,
     val table: String,
     val alias: String? = null,
-    val joinRules: List<JoinRule>
+    val joinRules: Collection<JoinRule>
 )
 
 data class JoinRule(
@@ -165,10 +165,10 @@ data class SqlCondition(
 );
 
 data class SqlUpdateOp(
-    val tables: List<FromSpec>,
-    val values: List<ColumnAndValue>,
-    val from: List<FromSpec> = listOf(),
-    val where: List<JsonMap> = listOf()
+    val tables: Collection<FromSpec>,
+    val values: Collection<ColumnAndValue>,
+    val from: Collection<FromSpec> = listOf(),
+    val where: Collection<JsonMap> = listOf()
 );
 
 data class ColumnAndValue(
@@ -194,7 +194,7 @@ data class ColumnAndValue(
 data class SqlDeleteOp(
     val database: String? = null,
     val table: String,
-    val where: List<JsonMap> = listOf()
+    val where: Collection<JsonMap> = listOf()
 );
 
 data class IntoTableSpec(
@@ -205,7 +205,7 @@ data class IntoTableSpec(
 data class InsertTableSpec(
     val database: String? = null,
     val table: String,
-    val columns: List<String>
+    val columns: Collection<String>
 ) {
-    constructor(table: String, columns: List<String>) : this(null, table, columns)
+    constructor(table: String, columns: Collection<String>) : this(null, table, columns)
 }
