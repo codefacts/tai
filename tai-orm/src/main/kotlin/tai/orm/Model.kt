@@ -3,6 +3,7 @@ package tai.orm
 import tai.base.JsonList
 import tai.base.JsonMap
 import tai.criteria.operators.JoinType
+import tai.criteria.operators.Order
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
 import tai.sql.OrderBySpec
@@ -39,12 +40,20 @@ data class DataGridAndCount(
     val count: Long
 ): DataGridBase
 
+data class OrderByData(
+    val fieldExpression: JsonMap,
+    val order: Order
+) {
+    constructor(fieldExpression: FieldExpression) : this(field(fieldExpression), Order.ASC)
+    constructor(fieldExpression: FieldExpression, order: Order) : this(field(fieldExpression), order)
+}
+
 open class QueryParamBase(
     open val entity: String,
     open val alias: String,
     open val joinParams: Collection<JoinParam>,
     open val criteria: List<JsonMap>,
-    open val orderBy: List<OrderBySpec>,
+    open val orderBy: List<OrderByData>,
     open val groupBy: List<JsonMap>,
     open val having: List<JsonMap>,
     open val pagination: Pagination? = null
@@ -94,7 +103,7 @@ data class QueryParam(
     override val criteria: List<JsonMap> = emptyList(),
     override val groupBy: List<JsonMap> = emptyList(),
     override val having: List<JsonMap> = emptyList(),
-    override val orderBy: List<OrderBySpec> = emptyList(),
+    override val orderBy: List<OrderByData> = emptyList(),
     override val pagination: Pagination? = null
 ): QueryParamBase(entity, alias, joinParams, criteria, orderBy, groupBy, having, pagination)
 
@@ -110,7 +119,7 @@ data class QueryArrayParam(
     override val joinParams: Collection<JoinParam> = emptyList(),
     val selections: Collection<JsonMap>,
     override val criteria: List<JsonMap> = emptyList(),
-    override val orderBy: List<OrderBySpec> = emptyList(),
+    override val orderBy: List<OrderByData> = emptyList(),
     override val groupBy: List<JsonMap> = emptyList(),
     override val having: List<JsonMap> = emptyList(),
     override val pagination: Pagination? = null

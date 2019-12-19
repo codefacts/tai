@@ -2,7 +2,7 @@ import org.junit.Assert
 import org.junit.Test
 import tai.orm.JoinParam
 import tai.orm.core.PathExpression
-import tai.orm.impl.createAliasToFullPathExpMap
+import tai.orm.query.impl.createAliasToFullPathExpMap
 
 class FullPathExpTest {
 
@@ -13,7 +13,11 @@ class FullPathExpTest {
             JoinParam(PathExpression.parse("a.k3.k4"), "b"),
             JoinParam(PathExpression.parse("r.k1.k2"), "a")
         )
-        val map = createAliasToFullPathExpMap("r", listOf, listOf.asSequence().map { it.alias to it }.toMap())
+        val map = createAliasToFullPathExpMap(
+            "r",
+            listOf,
+            listOf.asSequence().map { it.alias to it }.toMap()
+        )
         println("result: " + map)
         Assert.assertEquals(map, mapOf(
             "a" to PathExpression.parse("r.k1.k2"),

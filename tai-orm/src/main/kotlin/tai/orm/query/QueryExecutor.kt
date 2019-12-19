@@ -1,7 +1,7 @@
-package tai.orm
+package tai.orm.query
 
-import tai.base.JsonList
 import tai.base.JsonMap
+import tai.orm.*
 
 interface QueryExecutor {
 

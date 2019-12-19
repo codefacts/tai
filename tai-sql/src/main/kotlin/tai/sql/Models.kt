@@ -117,6 +117,7 @@ data class OrderBySpec(
 };
 
 data class SqlPagination(
+    val paginationColumnSpec: ColumnSpec,
     val offset: Long = 0,
     val size: Int
 )

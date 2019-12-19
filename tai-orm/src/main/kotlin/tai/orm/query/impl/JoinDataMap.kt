@@ -1,4 +1,4 @@
-package tai.orm.impl
+package tai.orm.query.impl
 
 import tai.orm.core.PathExpression
 import tai.orm.entity.Entity

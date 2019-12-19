@@ -1,4 +1,4 @@
-package tai.orm.impl
+package tai.orm.query.impl
 
 import tai.base.JsonMap
 import tai.base.PrimitiveValue
@@ -8,11 +8,10 @@ import tai.orm.*
 import tai.orm.core.FieldExpression
 import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
+import tai.orm.query.AliasAndColumn
+import tai.orm.query.QueryExecutor
 import tai.orm.query.ex.QueryParserException
-import tai.sql.FromSpec
-import tai.sql.OrderBySpec
-import tai.sql.SqlPagination
-import tai.sql.SqlQuery
+import tai.sql.*
 
 class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
     val joinDataHelper = JoinDataHelper(helper)
@@ -34,7 +33,11 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         val aliasToEntityMap = mutableMapOf<String, tai.orm.entity.Entity>()
 
         val aliasToJoinParamMap = param.joinParams.asSequence().map { it.alias to it }.toMap()
-        val aliasToFullPathExpMap = createAliasToFullPathExpMap(param.alias, param.joinParams, aliasToJoinParamMap)
+        val aliasToFullPathExpMap = createAliasToFullPathExpMap(
+            param.alias,
+            param.joinParams,
+            aliasToJoinParamMap
+        )
 
         val rootJoinDataMap = mutableMapOf<String, JoinData>()
 
@@ -60,25 +63,48 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         val selections = translateSelections(
             param.selections, aliasToEntityMap, aliasToJoinDataMap, createAlias
         )
+        val orderBy = translateOrderBy(param.orderBy, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+        val pagination = param.pagination?.let { translatePagination(it, aliasToEntityMap, aliasToJoinDataMap, createAlias) }
+
+        val from = translateFrom()
 
         val sqlQuery = SqlQuery(
             selections = selections,
-            from = translateFrom(),
+            from = from,
             where = where,
             groupBy = groupBy,
             having = having,
-            orderBy = translateOrderBy(param.orderBy),
-            pagination = param.pagination?.let { translatePagination(it) }
+            orderBy = orderBy,
+            pagination = pagination
         )
         return sqlQuery
     }
 
-    private fun translatePagination(pagination: Pagination): SqlPagination {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun translatePagination(
+        pagination: Pagination,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): SqlPagination {
+        val aliasAndColumn = translateToAliasAndColumn(pagination.fieldExpression, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+        return SqlPagination(
+            ColumnSpec(aliasAndColumn.alias, aliasAndColumn.column),
+            pagination.offset, pagination.size
+        )
     }
 
-    private fun translateOrderBy(orderBy: List<OrderBySpec>): List<OrderBySpec> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun translateOrderBy(
+        orderBy: List<OrderByData>,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): List<OrderBySpec> {
+        return orderBy.map {
+            val translatedColumnExp = translate(
+                it.fieldExpression, aliasToEntityMap, aliasToJoinDataMap, createAlias
+            )
+            OrderBySpec(translatedColumnExp, it.order)
+        }
     }
 
     private fun translateFrom(): List<FromSpec> {
@@ -93,23 +119,43 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
     ): Collection<JsonMap> {
         return selections.map { fieldExp ->
 
-            val pathExp = fieldExp.parent
-            val alias = pathExp.root()
-            val entity = aliasToEntityMap[alias] ?: throw QueryParserException("Field Expression '$fieldExp' starts with an invalid alias")
-            val rootJoinDataMap = aliasToJoinDataMap[alias] ?: throw OrmException("No JoinData found for alias '$alias' in pathExpression '$pathExp'")
-
-            val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
-                rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
-                rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
+            val aliasAndColumn = translateToAliasAndColumn(
+                fieldExp, aliasToEntityMap, aliasToJoinDataMap, createAlias
             )
 
-            return@map createField(lastAlias, lastEntity, fieldExp)
+            return@map createdTranslatedField(fieldExp, aliasAndColumn)
         }
     }
 
-    private fun createField(lastAlias: String, lastEntity: Entity, fieldExp: FieldExpression): JsonMap {
-        return field(fieldExp) + mapOf(
-            translatedTo_ to AliasAndColumn(lastAlias, helper.getColumnMapping(lastEntity, fieldExp.field).column)
+    private fun translateToAliasAndColumn(
+        fieldExp: FieldExpression,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): AliasAndColumn {
+
+        val pathExp = fieldExp.parent
+        val alias = pathExp.root()
+        val entity = aliasToEntityMap[alias] ?: throw QueryParserException("Field Expression '$fieldExp' starts with an invalid alias")
+        val rootJoinDataMap = aliasToJoinDataMap[alias] ?: throw OrmException("No JoinData found for alias '$alias' in pathExpression '$pathExp'")
+
+        val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
+            rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
+            rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
+        )
+        return AliasAndColumn(
+            lastAlias,
+            helper.getColumnMapping(entity, fieldExp.field).column
+        )
+    }
+
+    private fun createdTranslatedField(fieldExp: FieldExpression, aliasAndColumn: AliasAndColumn): JsonMap {
+        return field(fieldExp) + translateToAliasAndColumn(aliasAndColumn)
+    }
+
+    private fun translateToAliasAndColumn(aliasAndColumn: AliasAndColumn): JsonMap {
+        return mapOf(
+            translatedTo_ to aliasAndColumn
         )
     }
 
@@ -119,14 +165,24 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
         createAlias: CreateAlias
     ): List<JsonMap> {
-        return criteria.map { translate(it) }
+        return criteria.map { translate(
+            it, aliasToEntityMap, aliasToJoinDataMap, createAlias
+        ) }
     }
 
-    private fun translate(json: JsonMap): JsonMap {
+    private fun translate(
+        json: JsonMap,
+        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
+        createAlias: CreateAlias
+    ): JsonMap {
+
         return traverseFieldsInJsonMap(json) {
             val fieldExp = it[arg_] as FieldExpression
 
-            return@traverseFieldsInJsonMap it
+            val aliasAndColumn = translateToAliasAndColumn(fieldExp, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+
+            return@traverseFieldsInJsonMap it + translateToAliasAndColumn(aliasAndColumn)
         }
     }
 
@@ -153,7 +209,11 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
     companion object {
 
         fun traverseFieldsInJsonMap(json: JsonMap, fieldHandler: (JsonMap) -> JsonMap): JsonMap {
-            return json.entries.map { (key, value) -> key to processValue(value, fieldHandler)}.toMap()
+            return json.entries.map { (key, value) -> key to processValue(
+                value,
+                fieldHandler
+            )
+            }.toMap()
         }
 
         private fun processValue(value: PrimitiveValue?, fieldHandler: (JsonMap) -> JsonMap): PrimitiveValue? {
@@ -166,7 +226,12 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
                 }
             }
             if (value is List<*>) {
-                return value.map { processValue(value, fieldHandler) }
+                return value.map {
+                    processValue(
+                        value,
+                        fieldHandler
+                    )
+                }
             }
             return value
         }

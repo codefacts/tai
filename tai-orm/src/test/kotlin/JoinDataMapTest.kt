@@ -8,9 +8,9 @@ import tai.orm.entity.Entity
 import tai.orm.entity.Field
 import tai.orm.entity.Relationship
 import tai.orm.entity.impl.EntityMappingHelperImpl
-import tai.orm.impl.JoinData
-import tai.orm.impl.JoinDataHelper
-import tai.orm.impl.makeCreateAlias
+import tai.orm.query.impl.JoinData
+import tai.orm.query.impl.JoinDataHelper
+import tai.orm.query.impl.makeCreateAlias
 
 class JoinDataMapTest {
 

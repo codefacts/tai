@@ -1,4 +1,4 @@
-package tai.orm.impl
+package tai.orm.query.impl
 
 import tai.orm.JoinParam
 import tai.orm.core.PathExpression
@@ -9,7 +9,12 @@ internal fun createAliasToFullPathExpMap(
     aliasToJoinParamMap: Map<String, JoinParam>
 ): Map<String, PathExpression> {
 
-    return joinParams.map { it.alias to toFullPathExp(it.path, rootAlias, aliasToJoinParamMap) }.toMap()
+    return joinParams.map { it.alias to toFullPathExp(
+        it.path,
+        rootAlias,
+        aliasToJoinParamMap
+    )
+    }.toMap()
 }
 
 private fun toFullPathExp(
