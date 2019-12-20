@@ -1,8 +1,11 @@
 package tai.orm.query.impl
 
+import tai.criteria.operators.JoinType
+import tai.orm.JoinParam
 import tai.orm.core.PathExpression
 import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
+import tai.orm.query.ex.QueryParserException
 
 data class AliasAndEntity(val alias: String, val entity: Entity)
 
@@ -12,11 +15,12 @@ data class JoinData(
     val parentEntity: Entity,
     val childEntityField: String,
     val childEntity: Entity,
+    val joinType: JoinType? = null,
     val joinDataMap: MutableMap<String, JoinData> = mutableMapOf()
 ) {
     override fun toString(): String {
         return "JoinData(parentEntityAlias='$parentEntityAlias', childEntityAlias='$childEntityAlias', parentEntity=${parentEntity.name}, " +
-                "childEntityField='$childEntityField', childEntity=${childEntity.name}, joinDataMap=$joinDataMap)"
+                "childEntityField='$childEntityField', childEntity=${childEntity.name}, JoinType=$joinType)"
     }
 }
 
@@ -26,11 +30,12 @@ class JoinDataHelper(
 
     fun populateJoinDataMap(
         rootAlias: String, rootEntity: Entity,
-        fullPathExp: PathExpression, rootJoinDataMap: MutableMap<String, JoinData>,
+        fullPathExp: PathExpression, joinParam: JoinParam?,
+        rootJoinDataMap: MutableMap<String, JoinData>,
         createAlias: CreateAliasIsLast
     ): AliasAndEntity {
 
-        return traverse(rootAlias, rootEntity, fullPathExp, rootJoinDataMap) { parentEntityAlias, parentEntity, childEntityField, isLast ->
+        return traverse(rootAlias, rootEntity, fullPathExp, joinParam, rootJoinDataMap) { parentEntityAlias, parentEntity, childEntityField, isLast ->
             val childEntity = helper.getEntity(
                 helper.getChildEntity(parentEntity, childEntityField)
             )
@@ -48,25 +53,39 @@ class JoinDataHelper(
         rootAlias: String,
         rootEntity: Entity,
         fullPathExp: PathExpression,
+        joinParam: JoinParam?,
         rootJoinDataMap: MutableMap<String, JoinData>,
         createJoinData: CreateJoinData
     ): AliasAndEntity {
         var alias = rootAlias
         var entity = rootEntity
         var joinDataMap = rootJoinDataMap
+        var prevJoinDataMap = rootJoinDataMap
 
+        var joinData: JoinData? = null
         fullPathExp.parts().let { it.subList(1, it.size) }
             .forEachIndexed { index, childEntityField ->
 
                 val isLast = index == fullPathExp.size() - 2
-                val joinData = joinDataMap[childEntityField] ?: createJoinData(alias, entity, childEntityField, isLast)
+                joinData = joinDataMap[childEntityField] ?: createJoinData(alias, entity, childEntityField, isLast)
 
-                joinDataMap[childEntityField] = joinData
+                val joinDataNonNull = joinData ?: throw QueryParserException("Assertion error: Join data should not be null")
 
-                alias = joinData.childEntityAlias
-                entity = joinData.childEntity
-                joinDataMap = joinData.joinDataMap
+                joinDataMap[childEntityField] = joinDataNonNull
+
+                alias = joinDataNonNull.childEntityAlias
+                entity = joinDataNonNull.childEntity
+                prevJoinDataMap = joinDataMap
+                joinDataMap = joinDataNonNull.joinDataMap
             }
+
+        if (joinData != null) {
+            val joinDataNN = joinData!!
+            prevJoinDataMap[joinDataNN.childEntityField] = joinDataNN.copy(
+                joinType = joinParam?.joinType
+            )
+        }
+
         return AliasAndEntity(alias, entity)
     }
 }

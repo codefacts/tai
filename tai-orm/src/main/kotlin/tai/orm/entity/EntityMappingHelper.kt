@@ -19,10 +19,12 @@ interface EntityMappingHelper {
     fun getColumnNameToColumnMappingMap(entity: String): Map<String, ColumnMapping>
     fun getFieldToColumnMappingMap(entity: String): Map<String, ColumnMapping>
     fun getField(entity: String, field: String): Field
+    fun getField(entity: Entity, field: String): Field
     fun getFieldByColumn(entity: String, column: String): Field
     fun getColumnMapping(entity: String, field: String): ColumnMapping
     fun getColumnMapping(entity: Entity, field: String): ColumnMapping
     fun getRelationMapping(entity: String, field: String): RelationMapping
+    fun getRelationMapping(entity: Entity, field: String): RelationMapping
     fun getReferencingEntity(
         entity: String,
         fieldExpression: FieldExpression

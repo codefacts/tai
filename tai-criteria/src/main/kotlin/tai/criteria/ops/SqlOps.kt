@@ -35,14 +35,14 @@ fun pathExpression(vararg parts: String): JsonMap {
     );
 }
 
-fun select(arg: List<JsonMap>): JsonMap {
+fun select(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to select_,
         arg_ to arg
     );
 }
 
-fun from(arg: List<JsonMap>): JsonMap {
+fun from(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to from_,
         arg_ to arg
@@ -65,7 +65,7 @@ fun where(arg: JsonMap): JsonMap {
     );
 }
 
-fun groupBy(arg: List<JsonMap>): JsonMap {
+fun groupBy(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to group_by_,
         arg_ to arg
@@ -79,7 +79,7 @@ fun having(arg: JsonMap): JsonMap {
     );
 }
 
-fun orderBy(orders: List<JsonMap>): JsonMap {
+fun orderBy(orders: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to order_by_,
         arg_ to orders
@@ -98,14 +98,14 @@ fun joinExpressions(vararg jsonMaps: JsonMap): JsonMap {
     return joinExpressions(jsonMaps.toList());
 }
 
-fun joinExpressions(arg: List<JsonMap>): JsonMap {
+fun joinExpressions(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to join_expressions_,
         arg_ to arg
     );
 }
 
-fun selectInto(select: List<JsonMap>, into: JsonMap, inOp: JsonMap = emptyCriteriaOp): JsonMap {
+fun selectInto(select: Collection<JsonMap>, into: JsonMap, inOp: JsonMap = emptyCriteriaOp): JsonMap {
     return mapOf(
         op_ to select_into_,
         select_ to select,
@@ -114,7 +114,7 @@ fun selectInto(select: List<JsonMap>, into: JsonMap, inOp: JsonMap = emptyCriter
     );
 }
 
-fun insertInto(table: JsonMap, columns: List<JsonMap>): JsonMap {
+fun insertInto(table: JsonMap, columns: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to insert_into_,
         table_ to table,
@@ -122,7 +122,7 @@ fun insertInto(table: JsonMap, columns: List<JsonMap>): JsonMap {
     );
 }
 
-fun insert(table: JsonMap, columns: List<JsonMap>): JsonMap {
+fun insert(table: JsonMap, columns: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to insert_,
         table_ to table,
@@ -134,7 +134,7 @@ fun update(vararg tables: JsonMap): JsonMap {
     return update(tables.toList());
 }
 
-fun update(tables: List<JsonMap>): JsonMap {
+fun update(tables: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to update_,
         tables_ to tables
@@ -148,14 +148,14 @@ fun delete(table: JsonMap): JsonMap {
     );
 }
 
-fun set(arg: List<JsonMap>): JsonMap {
+fun set(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to set_,
         arg_ to arg
     );
 }
 
-fun sqlValues(arg: List<JsonMap>): JsonMap {
+fun sqlValues(arg: Collection<JsonMap>): JsonMap {
     return mapOf(
         op_ to sql_values_,
         arg_ to arg

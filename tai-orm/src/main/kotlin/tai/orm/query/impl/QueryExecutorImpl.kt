@@ -49,8 +49,8 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         aliasToFullPathExpMap.forEach {(alias, fullPathExp) ->
 
             val (childAlias, childEntity) = joinDataHelper.populateJoinDataMap(
-                rootAlias, rootEntity, fullPathExp,
-                rootJoinDataMap, createAlias = {shortCode, isLast -> if (isLast) alias else createAlias(shortCode) }
+                rootAlias, rootEntity, fullPathExp, joinParam = aliasToJoinParamMap[alias] ?: throw QueryParserException("No JoinParam found in aliasToJoinParamMap for alias '$alias' -> '$fullPathExp'"),
+                rootJoinDataMap = rootJoinDataMap, createAlias = {shortCode, isLast -> if (isLast) alias else createAlias(shortCode) }
             )
 
             aliasToEntityMap[childAlias] = childEntity
@@ -66,11 +66,17 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         val orderBy = translateOrderBy(param.orderBy, aliasToEntityMap, aliasToJoinDataMap, createAlias)
         val pagination = param.pagination?.let { translatePagination(it, aliasToEntityMap, aliasToJoinDataMap, createAlias) }
 
-        val from = translateFrom()
+        val from = JoinDataToJoinSpecBuilder(
+            helper, rootEntity, rootAlias, fullPathExpToJoinParamMap = aliasToFullPathExpMap.entries.map { (alias, pathExp) ->
+                pathExp to (aliasToJoinParamMap[alias] ?: throw QueryParserException("No join param found in aliasToJoinParamMap for alias '$alias' -> '$pathExp'"))
+            }.toMap()
+            ).translateFrom(
+            aliasToJoinDataMap
+        )
 
         val sqlQuery = SqlQuery(
             selections = selections,
-            from = from,
+            from = listOf(from),
             where = where,
             groupBy = groupBy,
             having = having,
@@ -107,10 +113,6 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         }
     }
 
-    private fun translateFrom(): List<FromSpec> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     private fun translateSelections(
         selections: Collection<FieldExpression>,
         aliasToEntityMap: MutableMap<String, Entity>,
@@ -141,7 +143,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
 
         val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
             rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
-            rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
+            joinParam = null, rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
         )
         return AliasAndColumn(
             lastAlias,

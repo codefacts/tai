@@ -60,7 +60,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         return getField(getEntity(entity), field)
     }
 
-    private fun getField(entity: Entity, field: String): Field {
+    override fun getField(entity: Entity, field: String): Field {
         return entity.fields.stream()
             .filter { ff: Field ->
                 ff.name == field
@@ -103,7 +103,11 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getRelationMapping(entity: String, field: String): RelationMapping {
-        return getEntity(entity).dbMapping.relationMappings.stream()
+        return getRelationMapping(entity, field)
+    }
+
+    override fun getRelationMapping(entity: Entity, field: String): RelationMapping {
+        return entity.dbMapping.relationMappings.stream()
             .filter { dbColumnMapping: RelationMapping ->
                 dbColumnMapping.field.equals(
                     field
