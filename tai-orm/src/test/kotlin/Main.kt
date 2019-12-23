@@ -4,5 +4,6 @@ interface Kala {
 }
 
 fun main() {
-    val hh: Hala = Hala {  }
+    val it: Iterable<Int> = listOf(1)
+    it.toList().asSequence().toList()
 }

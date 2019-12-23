@@ -6,31 +6,24 @@ import tai.criteria.operators.arg_
 import tai.criteria.operators.op_
 import tai.orm.*
 import tai.orm.core.FieldExpression
+import tai.orm.core.PathExpression
 import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.query.AliasAndColumn
 import tai.orm.query.QueryExecutor
 import tai.orm.query.ex.QueryParserException
+import tai.orm.read.ReadObject
+import tai.orm.read.makeReadObject
 import tai.sql.*
 
-class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
+class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlDB) : QueryExecutor {
     val joinDataHelper = JoinDataHelper(helper)
 
     override suspend fun findAll(param: QueryParam): List<JsonMap> {
         return doFindAll(param)
     }
 
-    private fun doFindAll(param: QueryParam): List<JsonMap> {
-        val sqlQuery: SqlQuery = toSqlQuery(param)
-        return emptyList()
-    }
-
-    private fun toSqlQuery(param: QueryParam): SqlQuery {
-        val rootAlias = param.alias;
-        val rootEntity = helper.getEntity(param.entity)
-
-        val aliasToJoinDataMap = mutableMapOf<String, MutableMap<String, JoinData>>() //alias -> (field -> joinData)
-        val aliasToEntityMap = mutableMapOf<String, tai.orm.entity.Entity>()
+    private suspend fun doFindAll(param: QueryParam): List<JsonMap> {
 
         val aliasToJoinParamMap = param.joinParams.asSequence().map { it.alias to it }.toMap()
         val aliasToFullPathExpMap = createAliasToFullPathExpMap(
@@ -38,6 +31,33 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
             param.joinParams,
             aliasToJoinParamMap
         )
+
+        val sqlQuery: SqlQuery = toSqlQuery(param, aliasToJoinParamMap, aliasToFullPathExpMap)
+
+        val readObject = makeReadObject(
+            fieldExpressionToIndexMap = param.selections.asSequence().mapIndexed { index, exp ->
+                exp to index
+            }.toMap(),
+            rootAlias = param.alias,
+            rootEntity = param.entity,
+            helper = helper,
+            aliasToFullPathExpressionMap = aliasToFullPathExpMap
+        )
+
+        val dataList = baseSqlDB.queryForArrays(sqlQuery)
+        return dataList.map { readObject(it, dataList) }
+    }
+
+    private fun toSqlQuery(
+        param: QueryParam,
+        aliasToJoinParamMap: Map<String, JoinParam>,
+        aliasToFullPathExpMap: Map<String, PathExpression>
+    ): SqlQuery {
+        val rootAlias = param.alias;
+        val rootEntity = helper.getEntity(param.entity)
+
+        val aliasToJoinDataMap = mutableMapOf<String, MutableMap<String, JoinData>>() //alias -> (field -> joinData)
+        val aliasToEntityMap = mutableMapOf<String, Entity>()
 
         val rootJoinDataMap = mutableMapOf<String, JoinData>()
 

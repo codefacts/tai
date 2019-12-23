@@ -2,6 +2,9 @@ package tai.sql.impl
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import tai.base.JsonList
 import tai.criteria.SqlAndParams
 import tai.sql.ResultSet
@@ -61,7 +64,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
         return coroutineScope {
             async {
                 dataSource.connection.use { con ->
-                    sqlList.toList().map { sql -> doExecuteII(con, sql, listOf()) }
+                    sqlList.asSequence().asFlow().map { doExecuteII(con, it, listOf()) }.toList()
                 }
             }
         }.await()
@@ -71,7 +74,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
         return coroutineScope {
             async {
                 dataSource.connection.use { con ->
-                    sqlUpdates.toList().map { update -> doExecuteII(con, update.sql, update.params) }
+                    sqlUpdates.asSequence().asFlow().map { update -> doExecuteII(con, update.sql, update.params) }.toList()
                 }
             }
         }.await()
@@ -90,20 +93,24 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
         }.await()
     }
 
-    private fun doExecuteII(con: Connection, sql: String, params: JsonList): UpdateResult {
-        return con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { statement ->
-            fillStatement(statement, params);
-            val updatedCount = statement.executeUpdate();
-            val rs = statement.generatedKeys ?: return@use UpdateResultImpl(0, listOf(), listOf());
-            return@use rs.use {
-                val columnCount = statement?.metaData?.columnCount ?: 1;
-                val result = (1..columnCount).map { colNo -> convertSqlValue(rs.getObject(colNo)) }.toList();
-                return@use UpdateResultImpl(
-                    updatedCount = updatedCount,
-                    columns = columnNames(rs),
-                    result = result
-                )
-            }
+    private suspend fun doExecuteII(con: Connection, sql: String, params: JsonList): UpdateResult {
+        return coroutineScope {
+            async {
+                con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { statement ->
+                    fillStatement(statement, params);
+                    val updatedCount = statement.executeUpdate();
+                    val rs = statement.generatedKeys ?: return@use UpdateResultImpl(0, listOf(), listOf());
+                    return@use rs.use {
+                        val columnCount = statement?.metaData?.columnCount ?: 1;
+                        val result = (1..columnCount).map { colNo -> convertSqlValue(rs.getObject(colNo)) }.toList();
+                        return@use UpdateResultImpl(
+                            updatedCount = updatedCount,
+                            columns = columnNames(rs),
+                            result = result
+                        )
+                    }
+                }
+            }.await()
         }
     }
 }
