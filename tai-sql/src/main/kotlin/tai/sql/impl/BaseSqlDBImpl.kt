@@ -57,7 +57,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
                             updateOp.from.map { toCriteriaExp(it) }
                         )
                     else emptyCriteriaOp,
-                    where(and(updateOp.where))
+                    where(and(updateOp.where.toList()))
                 )
             )
         );
@@ -72,7 +72,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
                     ),
                     where(
                         and(
-                            deleteOp.where
+                            deleteOp.where.toList()
                         )
                     )
                 )

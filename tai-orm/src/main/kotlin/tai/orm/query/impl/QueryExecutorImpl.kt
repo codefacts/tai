@@ -66,13 +66,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper) : QueryExecutor {
         val orderBy = translateOrderBy(param.orderBy, aliasToEntityMap, aliasToJoinDataMap, createAlias)
         val pagination = param.pagination?.let { translatePagination(it, aliasToEntityMap, aliasToJoinDataMap, createAlias) }
 
-        val from = JoinDataToJoinSpecBuilder(
-            helper, rootEntity, rootAlias, fullPathExpToJoinParamMap = aliasToFullPathExpMap.entries.map { (alias, pathExp) ->
-                pathExp to (aliasToJoinParamMap[alias] ?: throw QueryParserException("No join param found in aliasToJoinParamMap for alias '$alias' -> '$pathExp'"))
-            }.toMap()
-            ).translateFrom(
-            aliasToJoinDataMap
-        )
+        val from = JoinDataToJoinSpecBuilder(helper, rootEntity, rootAlias).translateFrom(aliasToJoinDataMap)
 
         val sqlQuery = SqlQuery(
             selections = selections,

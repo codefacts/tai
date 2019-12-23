@@ -7,7 +7,7 @@ import tai.sql.*
 class SqlDialectImpl : SqlDialect {
 
     override fun toExecutePaginated(sqlQuery: SqlQuery): JsonMap {
-        val exps = listOf(select(sqlQuery.selections)) + createQueryExpressions(sqlQuery);
+        val exps = listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery);
 
         if (sqlQuery.pagination == null) {
             return joinExpressions(exps)
@@ -18,7 +18,7 @@ class SqlDialectImpl : SqlDialect {
     override fun toExecutePaginated(sqlQuery: SqlSelectIntoOp): JsonMap {
         val exps = listOf(
             selectInto(
-                sqlQuery.selections,
+                sqlQuery.selections.toList(),
                 table(sqlQuery.into.table),
                 sqlQuery.into.database?.let { pathExpression(it) } ?: emptyCriteriaOp
             )
@@ -36,7 +36,7 @@ class SqlDialectImpl : SqlDialect {
                 table(insertInto.into.database, insertInto.into.table),
                 insertInto.into.columns.map { column(it) }
             )
-        ) + listOf(select(insertInto.selections)) + createQueryExpressions(insertInto);
+        ) + listOf(select(insertInto.selections.toList())) + createQueryExpressions(insertInto);
 
         if (insertInto.pagination == null) {
             return joinExpressions(exps)
@@ -60,13 +60,11 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
             sqlQuery.from.map { toCriteriaExp(it) }
         ),
         where(
-            and(sqlQuery.where)
+            and(sqlQuery.where.toList())
         ),
-        groupBy(sqlQuery.groupBy),
+        groupBy(sqlQuery.groupBy.toList()),
         having(
-            and(
-                sqlQuery.having
-            )
+            and(sqlQuery.having.toList())
         ),
         orderBy(
             sqlQuery.orderBy.map { order(it.columnExpression, it.order) }

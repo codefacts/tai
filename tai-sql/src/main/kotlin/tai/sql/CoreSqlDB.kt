@@ -8,5 +8,5 @@ interface CoreSqlDB {
 
     suspend fun execute(operation: JsonMap): UpdateResult;
 
-    suspend fun executeAll(operations: List<JsonMap>): List<UpdateResult>;
+    suspend fun executeAll(operations: Collection<JsonMap>): List<UpdateResult>;
 }

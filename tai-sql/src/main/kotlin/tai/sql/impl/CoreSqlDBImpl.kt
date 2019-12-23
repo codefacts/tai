@@ -19,7 +19,7 @@ class CoreSqlDBImpl(val sqlExecutor: SqlExecutor, val criteriaToTextConverter: C
         return sqlExecutor.execute(sql, params);
     }
 
-    override suspend fun executeAll(operations: List<JsonMap>): List<UpdateResult> {
+    override suspend fun executeAll(operations: Collection<JsonMap>): List<UpdateResult> {
         return sqlExecutor.executeAll(
             operations.map { criteriaToTextConverter.convert(it) }
         )

@@ -7,7 +7,7 @@ fun and(vararg jsonMaps: JsonMap): JsonMap {
     return and(jsonMaps.toList());
 }
 
-fun and(jsonMaps: Collection<JsonMap>): JsonMap {
+fun and(jsonMaps: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to and_,
         arg_ to jsonMaps
@@ -18,7 +18,7 @@ fun or(vararg jsonMaps: JsonMap): JsonMap {
     return or(jsonMaps.toList());
 }
 
-fun or(jsonMaps: Collection<JsonMap>): JsonMap {
+fun or(jsonMaps: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to or_,
         arg_ to jsonMaps
