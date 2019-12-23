@@ -26,12 +26,13 @@ interface EntityUtils {
 
         fun validateAndPreProcess(entities: Collection<Entity>): Collection<Entity> {
             val entityMap = toEntityNameToEntityMap(entities)
-            EntitiesValidatorImpl(EntityValidatorImpl()).validate(
-                EntitiesValidator.Params(
-                    entities = EntityPreprocessor().process(entities),
-                    entityNameToEntityMap = entityMap
+            EntitiesValidatorImpl(EntityValidatorImpl())
+                .validate(
+                    EntitiesValidator.Params(
+                        entities = EntityPreprocessor().process(entities),
+                        entityNameToEntityMap = entityMap
+                    )
                 )
-            )
             return entities;
         }
     }

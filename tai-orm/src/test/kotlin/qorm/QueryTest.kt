@@ -1,15 +1,14 @@
 package qorm
 
 import org.junit.Test
-import tai.orm.query.impl.QueryExecutorImpl
+import test.orm.entity_config.Entities
+import tai.orm.entity.EntityUtils
 
 class QueryTest {
 
     @Test
     fun testToSqlQuery() {
-
-        QueryExecutorImpl(
-
-        )
+        val entities = EntityUtils.validateAndPreProcess(Entities.entities())
+        println("Entities validated: ${entities.size}")
     }
 }
