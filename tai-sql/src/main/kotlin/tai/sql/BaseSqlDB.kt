@@ -3,6 +3,7 @@ package tai.sql
 import io.reactivex.Single
 import tai.base.JsonList
 import tai.base.JsonMap
+import java.util.stream.Stream
 
 /**
  * Created by sohan on 6/26/2017.
@@ -27,5 +28,5 @@ interface BaseSqlDB {
 
     suspend fun execute(operation: SqlOperation): UpdateResult;
 
-    suspend fun executeAll(sqlList: Collection<SqlOperation>): List<UpdateResult>
+    suspend fun executeAll(sqlList: Stream<SqlOperation>): List<UpdateResult>
 }

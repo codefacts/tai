@@ -6,6 +6,7 @@ import tai.sql.CoreSqlDB
 import tai.sql.ResultSet
 import tai.sql.SqlExecutor
 import tai.sql.UpdateResult
+import java.util.stream.Stream
 
 class CoreSqlDBImpl(val sqlExecutor: SqlExecutor, val criteriaToTextConverter: CriteriaToTextConverter) : CoreSqlDB {
 
@@ -19,7 +20,7 @@ class CoreSqlDBImpl(val sqlExecutor: SqlExecutor, val criteriaToTextConverter: C
         return sqlExecutor.execute(sql, params);
     }
 
-    override suspend fun executeAll(operations: Collection<JsonMap>): List<UpdateResult> {
+    override suspend fun executeAll(operations: Stream<JsonMap>): List<UpdateResult> {
         return sqlExecutor.executeAll(
             operations.map { criteriaToTextConverter.convert(it) }
         )

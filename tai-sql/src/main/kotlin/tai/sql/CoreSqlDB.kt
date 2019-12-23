@@ -1,6 +1,7 @@
 package tai.sql
 
 import tai.base.JsonMap
+import java.util.stream.Stream
 
 interface CoreSqlDB {
 
@@ -8,5 +9,5 @@ interface CoreSqlDB {
 
     suspend fun execute(operation: JsonMap): UpdateResult;
 
-    suspend fun executeAll(operations: Collection<JsonMap>): List<UpdateResult>;
+    suspend fun executeAll(operations: Stream<JsonMap>): List<UpdateResult>;
 }

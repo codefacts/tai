@@ -3,6 +3,7 @@ package tai.sql.impl
 import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
+import java.util.stream.Stream
 
 class SqlDBImpl(val baseSqlDB: BaseSqlDB) : SqlDB, BaseSqlDB by baseSqlDB {
 
@@ -18,7 +19,7 @@ class SqlDBImpl(val baseSqlDB: BaseSqlDB) : SqlDB, BaseSqlDB by baseSqlDB {
         )
     }
 
-    override suspend fun insert(table: String, sqlList: Collection<JsonMap>): List<UpdateResult> {
+    override suspend fun insert(table: String, sqlList: Stream<JsonMap>): List<UpdateResult> {
         return baseSqlDB.executeAll(
             sqlList.map { jo -> SqlInsert(table = table, data = jo) }
         )

@@ -3,6 +3,7 @@ package tai.sql
 import tai.base.JsonList
 import tai.criteria.SqlAndParams
 import tai.sql.impl.ResultSetImpl
+import java.util.stream.Stream
 
 class SqlExecutorMock : SqlExecutor {
 
@@ -30,11 +31,11 @@ class SqlExecutorMock : SqlExecutor {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun executeALL(sqlList: Collection<String>): List<UpdateResult> {
+    override suspend fun executeALL(sqlList: Stream<String>): List<UpdateResult> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun executeAll(sqlUpdates: Collection<SqlAndParams>): List<UpdateResult> {
+    override suspend fun executeAll(sqlUpdates: Stream<SqlAndParams>): List<UpdateResult> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

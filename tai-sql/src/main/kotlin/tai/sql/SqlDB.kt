@@ -12,7 +12,7 @@ interface SqlDB : BaseSqlDB {
 
     suspend fun insert(table: String, jsonObject: JsonMap): UpdateResult
 
-    suspend fun insert(table: String, sqlList: Collection<JsonMap>): List<UpdateResult>
+    suspend fun insert(table: String, sqlList: Stream<JsonMap>): List<UpdateResult>
 
     suspend fun update(table: String, data: JsonMap, where: JsonMap): UpdateResult
 

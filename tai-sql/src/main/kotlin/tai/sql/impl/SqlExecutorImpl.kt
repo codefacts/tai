@@ -15,7 +15,10 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.Date
 import java.util.regex.Pattern
+import java.util.stream.Stream
 import javax.sql.DataSource
+import kotlin.streams.asSequence
+import kotlin.streams.toList
 
 class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
 
@@ -54,21 +57,21 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
         }.await()
     }
 
-    override suspend fun executeALL(sqlList: Collection<String>): List<UpdateResult> {
+    override suspend fun executeALL(sqlList: Stream<String>): List<UpdateResult> {
         return coroutineScope {
             async {
                 dataSource.connection.use { con ->
-                    sqlList.map { sql -> execute(sql) }
+                    sqlList.toList().map { sql -> doExecuteII(con, sql, listOf()) }
                 }
             }
         }.await()
     }
 
-    override suspend fun executeAll(sqlUpdates: Collection<SqlAndParams>): List<UpdateResult> {
+    override suspend fun executeAll(sqlUpdates: Stream<SqlAndParams>): List<UpdateResult> {
         return coroutineScope {
             async {
                 dataSource.connection.use { con ->
-                    sqlUpdates.map { update -> execute(update.sql, update.params) }
+                    sqlUpdates.toList().map { update -> doExecuteII(con, update.sql, update.params) }
                 }
             }
         }.await()

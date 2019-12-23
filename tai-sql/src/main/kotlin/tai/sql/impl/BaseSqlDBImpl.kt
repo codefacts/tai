@@ -4,6 +4,7 @@ import tai.base.JsonList
 import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
+import java.util.stream.Stream
 
 class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSqlDB {
 
@@ -86,7 +87,7 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
         )
     }
 
-    override suspend fun executeAll(sqlList: Collection<SqlOperation>): List<UpdateResult> {
+    override suspend fun executeAll(sqlList: Stream<SqlOperation>): List<UpdateResult> {
         return coreSqlDB.executeAll(
             sqlList.map { toCriteriaExp(it) }
         )
