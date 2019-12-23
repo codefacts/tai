@@ -1,9 +1,12 @@
-package tai.sql
+package qorm
 
 import com.mysql.cj.jdbc.MysqlDataSource
+import com.mysql.cj.util.TestUtils
 import tai.criteria.CriteriaDialectBuilderImpl
 import tai.criteria.CriteriaToTextConverterImpl
 import tai.criteria.operators.OPERATION_MAP
+import tai.sql.SqlDB
+import tai.sql.SqlExecutor
 import tai.sql.impl.BaseSqlDBImpl
 import tai.sql.impl.CoreSqlDBImpl
 import tai.sql.impl.SqlDBImpl
@@ -16,11 +19,12 @@ fun getMySQLDataSource(): DataSource {
     val props = Properties()
     var mysqlDS = MysqlDataSource()
     try {
-        val fis = SqlDBTest::class.java.getResourceAsStream("../../db.properties")
+        val fis = TestUtils::class.java.getResourceAsStream("../../../../db.properties")
         props.load(fis)
         mysqlDS.setURL(props.getProperty("MYSQL_DB_URL"))
         mysqlDS.user = props.getProperty("MYSQL_DB_USERNAME")
         mysqlDS.password = props.getProperty("MYSQL_DB_PASSWORD")
+        println()
     } catch (e: IOException) {
         e.printStackTrace()
     }

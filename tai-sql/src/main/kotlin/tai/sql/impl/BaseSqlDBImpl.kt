@@ -15,11 +15,11 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
     }
 
     override suspend fun queryForArrays(sqlQuery: SqlQuery): List<JsonList> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return query(sqlQuery).results
     }
 
     override suspend fun queryForObjects(sqlQuery: SqlQuery): List<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return query(sqlQuery).toJsonMaps()
     }
 
     override suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult {

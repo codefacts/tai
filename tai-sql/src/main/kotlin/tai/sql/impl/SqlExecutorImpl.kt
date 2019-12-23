@@ -81,6 +81,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
     }
 
     private suspend fun doQueryII(sql: String, params: JsonList): ResultSet {
+        System.out.println("SQL: $sql | PARAMS: $params")
         return coroutineScope {
             async {
                 dataSource.connection.use { con ->

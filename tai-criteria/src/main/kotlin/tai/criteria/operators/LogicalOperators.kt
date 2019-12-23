@@ -141,7 +141,7 @@ class LikeOperatorImpl : CriteriaOperation2 {
 
 fun main() {
     val kk = CriteriaToTextConverterImpl(
-        operationMap,
+        OPERATION_MAP,
         criteriaDialectBuilder = CriteriaDialectBuilderImpl()
     );
     val exp = kk.convert(

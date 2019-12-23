@@ -13,12 +13,12 @@ interface OperationMap {
 class OperationMapImpl(override val operationMap: Map<String, CriteriaOperation>) : OperationMap {
     override fun get(key: String): CriteriaOperation {
         return Objects.requireNonNull(
-            operationMap[key], "No criteria operation found for operation name '$key' in the operation map"
+            operationMap[key], "No criteria operation found in the operation map for operation name '$key'"
         )!!;
     }
 }
 
-val operationMap = OperationMapImpl(
+val OPERATION_MAP = OperationMapImpl(
     mapOf(
         boolean_value_ to BooleanValueHolder(),
         byte_value_ to ByteValueHolder(),
