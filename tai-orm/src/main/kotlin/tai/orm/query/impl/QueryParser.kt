@@ -10,6 +10,8 @@ import tai.orm.core.PathExpression
 import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.query.AliasAndColumn
+import tai.orm.query.CreateAlias
+import tai.orm.query.CreateAliasIsLast
 import tai.orm.query.ex.QueryParserException
 import tai.sql.ColumnSpec
 import tai.sql.OrderBySpec
@@ -41,7 +43,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
             val (childAlias, childEntity) = joinDataHelper.populateJoinDataMap(
                 rootAlias, rootEntity, fullPathExp, joinParam = aliasToJoinParamMap[alias] ?: throw QueryParserException("No JoinParam found in aliasToJoinParamMap for alias '$alias' -> '$fullPathExp'"),
-                rootJoinDataMap = rootJoinDataMap, createAlias = {shortCode, isLast -> if (isLast) alias else createAlias(shortCode) }
+                rootJoinDataMap = rootJoinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) alias else createAlias.create(shortCode) }
             )
 
             aliasToEntityMap[childAlias] = childEntity
@@ -128,7 +130,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
         val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
             rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
-            joinParam = null, rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
+            joinParam = null, rootJoinDataMap = rootJoinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> createAlias.create(shortCode) }
         )
         return AliasAndColumn(
             lastAlias,

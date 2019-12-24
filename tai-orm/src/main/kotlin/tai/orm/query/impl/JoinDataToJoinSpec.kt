@@ -6,6 +6,7 @@ import tai.orm.entity.EntityMappingHelper
 import tai.orm.entity.columnmapping.DirectRelationMapping
 import tai.orm.entity.columnmapping.IndirectRelationMapping
 import tai.orm.entity.columnmapping.VirtualRelationMapping
+import tai.orm.query.CreateAlias
 import tai.orm.query.ex.QueryParserException
 import tai.sql.ColumnSpec
 import tai.sql.FromSpec
@@ -44,7 +45,7 @@ class JoinDataToJoinSpecBuilder(
         }
     }
 
-    private fun createJoinSpecs(joinData: JoinData, createAlias: (shortCode: String) -> String): Collection<JoinSpec> {
+    private fun createJoinSpecs(joinData: JoinData, createAlias: CreateAlias): Collection<JoinSpec> {
         val field = helper.getField(joinData.parentEntity, joinData.childEntityField)
         val relationship = field.relationship
             ?: throw QueryParserException("Relation does not exists in field '${joinData.parentEntity.name}.${joinData.childEntityField}'")
@@ -65,10 +66,10 @@ class JoinDataToJoinSpecBuilder(
         val joinRules = relationMapping.foreignColumnMappingList.map {
             JoinRule(
                 from = ColumnSpec(
-                    alias = joinData.parentEntityAlias, column = it.dstColumn
+                    alias = joinData.childEntityAlias, column = it.srcColumn
                 ),
                 to = ColumnSpec(
-                    alias = joinData.childEntityAlias, column = it.srcColumn
+                    alias = joinData.parentEntityAlias, column = it.dstColumn
                 )
             )
         }
@@ -102,10 +103,10 @@ class JoinDataToJoinSpecBuilder(
     private fun indirectRelationMapping(
         relationMapping: IndirectRelationMapping,
         joinData: JoinData,
-        createAlias: (shortCode: String) -> String
+        createAlias: CreateAlias
     ): Collection<JoinSpec> {
 
-        val relationTableAlias = createAlias(RELATION_TABLE_ALIAS)
+        val relationTableAlias = createAlias.create(RELATION_TABLE_ALIAS)
 
         val srcJoinRules = relationMapping.srcForeignColumnMappingList.map {
             JoinRule(
@@ -140,7 +141,7 @@ class JoinDataToJoinSpecBuilder(
 
 private fun makeCreateRelationAlias(): CreateAlias {
     var count = 1;
-    return {
+    return CreateAlias {
         "$it${count++}"
     }
 }

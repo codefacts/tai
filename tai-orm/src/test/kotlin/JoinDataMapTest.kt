@@ -10,6 +10,7 @@ import tai.orm.entity.Entity
 import tai.orm.entity.Field
 import tai.orm.entity.Relationship
 import tai.orm.entity.impl.EntityMappingHelperImpl
+import tai.orm.query.CreateAliasIsLast
 import tai.orm.query.impl.JoinData
 import tai.orm.query.impl.JoinDataHelper
 import tai.orm.query.impl.makeCreateAlias
@@ -30,25 +31,25 @@ class JoinDataMapTest {
         val ae = joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_b.field_c"), JoinParam(PathExpression.parse("r.field_a.field_b.field_c"), "k", JoinType.INNER_JOIN),
-            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "k" else createAlias(shortCode) }
+            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "k" else createAlias.create(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_a.field_a"), JoinParam(PathExpression.parse("r.field_a.field_a.field_a"), "q", JoinType.LEFT_JOIN),
-            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "q" else createAlias(shortCode) }
+            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "q" else createAlias.create(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_a.field_c"), JoinParam(PathExpression.parse("r.field_a.field_a.field_c"), "w", JoinType.RIGHT_JOIN),
-            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "w" else createAlias(shortCode) }
+            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "w" else createAlias.create(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_b.field_a.field_b"), JoinParam(PathExpression.parse("r.field_b.field_a.field_b"), "n", JoinType.FULL_JOIN),
-            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "n" else createAlias(shortCode) }
+            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "n" else createAlias.create(shortCode) }
         )
 
         println(ae)
