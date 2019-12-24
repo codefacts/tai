@@ -4,18 +4,21 @@ import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
 
-class SqlDialectImpl : SqlDialect {
+class SqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
-    override fun toExecutePaginated(sqlQuery: SqlQuery): JsonMap {
+    override suspend fun executePaginated(sqlQuery: SqlQuery): ResultSet {
         val exps = listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery);
 
-        if (sqlQuery.pagination == null) {
-            return joinExpressions(exps)
-        }
-        return withOffsetLimit(exps, sqlQuery.pagination);
+        return coreSqlDB.query(
+            if (sqlQuery.pagination == null) {
+                joinExpressions(exps)
+            } else {
+                withOffsetLimit(exps, sqlQuery.pagination)
+            }
+        )
     }
 
-    override fun toExecutePaginated(sqlQuery: SqlSelectIntoOp): JsonMap {
+    override suspend fun executePaginated(sqlQuery: SqlSelectIntoOp): UpdateResult {
         val exps = listOf(
             selectInto(
                 sqlQuery.selections.toList(),
@@ -24,13 +27,16 @@ class SqlDialectImpl : SqlDialect {
             )
         ) + createQueryExpressions(sqlQuery);
 
-        if (sqlQuery.pagination == null) {
-            return joinExpressions(exps)
-        }
-        return withOffsetLimit(exps, sqlQuery.pagination)
+        return coreSqlDB.execute(
+            if (sqlQuery.pagination == null) {
+                joinExpressions(exps)
+            } else {
+                withOffsetLimit(exps, sqlQuery.pagination)
+            }
+        )
     }
 
-    override fun toExecutePaginated(insertInto: SqlInsertIntoOp): JsonMap {
+    override suspend fun executePaginated(insertInto: SqlInsertIntoOp): UpdateResult {
         val exps = listOf(
             insertInto(
                 table(insertInto.into.database, insertInto.into.table),
@@ -38,10 +44,13 @@ class SqlDialectImpl : SqlDialect {
             )
         ) + listOf(select(insertInto.selections.toList())) + createQueryExpressions(insertInto);
 
-        if (insertInto.pagination == null) {
-            return joinExpressions(exps)
-        }
-        return withOffsetLimit(exps, insertInto.pagination)
+        return coreSqlDB.execute(
+            if (insertInto.pagination == null) {
+                joinExpressions(exps)
+            } else {
+                withOffsetLimit(exps, insertInto.pagination)
+            }
+        )
     }
 }
 

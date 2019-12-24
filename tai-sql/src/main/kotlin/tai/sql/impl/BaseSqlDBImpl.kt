@@ -9,9 +9,7 @@ import java.util.stream.Stream
 class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSqlDB {
 
     override suspend fun query(sqlQuery: SqlQuery): ResultSet {
-        return coreSqlDB.query(
-            dialect.toExecutePaginated(sqlQuery)
-        );
+        return dialect.executePaginated(sqlQuery)
     }
 
     override suspend fun queryForArrays(sqlQuery: SqlQuery): List<JsonList> {
@@ -23,15 +21,11 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
     }
 
     override suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult {
-        return coreSqlDB.execute(
-            dialect.toExecutePaginated(selectInto)
-        );
+        return dialect.executePaginated(selectInto)
     }
 
     override suspend fun insertInto(insertInto: SqlInsertIntoOp): UpdateResult {
-        return coreSqlDB.execute(
-            dialect.toExecutePaginated(insertInto)
-        )
+        return dialect.executePaginated(insertInto)
     }
 
     override suspend fun insert(insert: SqlInsert): UpdateResult {

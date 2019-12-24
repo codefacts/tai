@@ -12,7 +12,7 @@ import java.io.IOException
 import java.util.*
 import javax.sql.DataSource
 
-fun getMySQLDataSource(): DataSource {
+fun createDataSource(): DataSource {
     val props = Properties()
     var mysqlDS = MysqlDataSource()
     try {
@@ -29,16 +29,17 @@ fun getMySQLDataSource(): DataSource {
 }
 
 fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
+    val coreSqlDB = CoreSqlDBImpl(
+        sqlExecutor,
+        CriteriaToTextConverterImpl(
+            OPERATION_MAP,
+            CriteriaDialectBuilderImpl()
+        )
+    )
     return SqlDBImpl(
         BaseSqlDBImpl(
-            CoreSqlDBImpl(
-                sqlExecutor,
-                CriteriaToTextConverterImpl(
-                    OPERATION_MAP,
-                    CriteriaDialectBuilderImpl()
-                )
-            ),
-            SqlDialectImpl()
+            coreSqlDB,
+            SqlDialectImpl(coreSqlDB)
         )
     )
 }

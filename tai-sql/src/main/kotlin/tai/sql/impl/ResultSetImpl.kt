@@ -6,7 +6,7 @@ import tai.base.assertThat
 import tai.sql.ResultSet
 import tai.sql.ex.TaiSqlException
 
-class ResultSetImpl(
+data class ResultSetImpl(
     override val columnNames: List<String>,
     override val results: List<JsonList>,
     override val output: JsonList? = null
