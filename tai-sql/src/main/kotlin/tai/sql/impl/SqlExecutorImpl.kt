@@ -1,5 +1,7 @@
 package tai.sql.impl
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.asFlow
@@ -23,7 +25,10 @@ import javax.sql.DataSource
 import kotlin.streams.asSequence
 import kotlin.streams.toList
 
-class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
+class SqlExecutorImpl(
+    val dataSource: DataSource,
+    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : SqlExecutor {
 
     override suspend fun query(sql: String): ResultSet {
         return doQueryII(sql, emptyList())
@@ -54,7 +59,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
 
     override suspend fun execute(sql: String, params: JsonList): UpdateResult {
         return coroutineScope {
-            async {
+            async(dispatcher) {
                 dataSource.connection.use { con -> doExecuteII(con, sql, params); }
             }
         }.await()
@@ -62,7 +67,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
 
     override suspend fun executeALL(sqlList: Stream<String>): List<UpdateResult> {
         return coroutineScope {
-            async {
+            async(dispatcher) {
                 dataSource.connection.use { con ->
                     sqlList.asSequence().asFlow().map { doExecuteII(con, it, listOf()) }.toList()
                 }
@@ -72,7 +77,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
 
     override suspend fun executeAll(sqlUpdates: Stream<SqlAndParams>): List<UpdateResult> {
         return coroutineScope {
-            async {
+            async(dispatcher) {
                 dataSource.connection.use { con ->
                     sqlUpdates.asSequence().asFlow().map { update -> doExecuteII(con, update.sql, update.params) }.toList()
                 }
@@ -83,7 +88,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
     private suspend fun doQueryII(sql: String, params: JsonList): ResultSet {
         System.out.println("SQL: $sql | PARAMS: $params")
         return coroutineScope {
-            async {
+            async(dispatcher) {
                 dataSource.connection.use { con ->
                     con.prepareStatement(sql).use { statement ->
                         fillStatement(statement, params);
@@ -96,7 +101,7 @@ class SqlExecutorImpl(val dataSource: DataSource) : SqlExecutor {
 
     private suspend fun doExecuteII(con: Connection, sql: String, params: JsonList): UpdateResult {
         return coroutineScope {
-            async {
+            async(dispatcher) {
                 con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { statement ->
                     fillStatement(statement, params);
                     val updatedCount = statement.executeUpdate();
