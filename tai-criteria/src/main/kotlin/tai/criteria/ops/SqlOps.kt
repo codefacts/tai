@@ -35,6 +35,10 @@ fun pathExpression(vararg parts: String): JsonMap {
     );
 }
 
+fun select(vararg selections: JsonMap): JsonMap {
+    return select(selections.toList())
+}
+
 fun select(arg: List<JsonMap>): JsonMap {
     return mapOf(
         op_ to select_,
@@ -47,6 +51,10 @@ fun from(arg: List<JsonMap>): JsonMap {
         op_ to from_,
         arg_ to arg
     );
+}
+
+fun from(vararg froms: JsonMap): JsonMap {
+    return from(froms.toList())
 }
 
 fun join(joiningTable: JsonMap, joinOn: JsonMap, joinType: JoinType = JoinType.JOIN): JsonMap {

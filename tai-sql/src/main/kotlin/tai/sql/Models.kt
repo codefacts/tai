@@ -117,9 +117,9 @@ data class OrderBySpec(
 };
 
 data class SqlPagination(
-    val paginationColumnSpec: ColumnSpec,
     val offset: Long = 0,
-    val size: Int
+    val size: Int,
+    val paginationColumnSpec: ColumnSpec? = null
 )
 
 data class ColumnSpec(

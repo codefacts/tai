@@ -7,15 +7,26 @@ import tai.sql.*
 class SqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
     override suspend fun executePaginated(sqlQuery: SqlQuery): ResultSet {
-        val exps = listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery);
 
         return coreSqlDB.query(
             if (sqlQuery.pagination == null) {
-                joinExpressions(exps)
+                joinExpressions(
+                    listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery)
+                )
             } else {
-                withOffsetLimit(exps, sqlQuery.pagination)
+                withPagination(sqlQuery, sqlQuery.pagination)
             }
         )
+    }
+
+    private fun withPagination(sqlQuery: SqlQuery, pagination: SqlPagination): JsonMap {
+        if (pagination.paginationColumnSpec == null) {
+            return withOffsetLimit(
+                listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery),
+                pagination
+            )
+        }
+        return mapOf()
     }
 
     override suspend fun executePaginated(sqlQuery: SqlSelectIntoOp): UpdateResult {
@@ -78,5 +89,5 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
         orderBy(
             sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
         )
-    );
+    )
 }

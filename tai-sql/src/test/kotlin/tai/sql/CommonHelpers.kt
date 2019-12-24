@@ -29,17 +29,21 @@ fun createDataSource(): DataSource {
 }
 
 fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
-    val coreSqlDB = CoreSqlDBImpl(
-        sqlExecutor,
-        CriteriaToTextConverterImpl(
-            OPERATION_MAP,
-            CriteriaDialectBuilderImpl()
-        )
-    )
+    val coreSqlDB = createCoreSqlDB(sqlExecutor)
     return SqlDBImpl(
         BaseSqlDBImpl(
             coreSqlDB,
             SqlDialectImpl(coreSqlDB)
+        )
+    )
+}
+
+fun createCoreSqlDB(sqlExecutor: SqlExecutor): CoreSqlDB {
+    return CoreSqlDBImpl(
+        sqlExecutor,
+        CriteriaToTextConverterImpl(
+            OPERATION_MAP,
+            CriteriaDialectBuilderImpl()
         )
     )
 }

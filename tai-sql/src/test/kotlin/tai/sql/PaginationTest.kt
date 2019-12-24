@@ -2,12 +2,13 @@ package tai.sql
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import tai.criteria.ops.column
+import tai.criteria.ops.*
+import tai.sql.impl.CoreSqlDBImpl
 import tai.sql.impl.SqlExecutorImpl
 
 class PaginationTest {
 
-    @Test
+
     fun testPagination() {
         val sqlDB = createSqlDb(
             SqlExecutorImpl(
@@ -34,6 +35,30 @@ class PaginationTest {
             )
             println("size: ${list.size}")
             println(list.joinToString { "$it\n" })
+        }
+    }
+
+    @Test
+    fun testPagination2() {
+        val coreSqlDB = createCoreSqlDB(
+            SqlExecutorImpl(
+                createDataSource()
+            )
+        )
+        runBlocking {
+
+            val frm = listOf(
+                select(
+                    column("id"),
+                    column("username")
+                ),
+                from(
+                    table("users")
+                )
+            )
+
+            val rs = coreSqlDB.query(joinExpressions(frm))
+            println(rs)
         }
     }
 }
