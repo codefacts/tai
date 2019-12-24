@@ -65,10 +65,10 @@ class JoinDataToJoinSpecBuilder(
         val joinRules = relationMapping.foreignColumnMappingList.map {
             JoinRule(
                 from = ColumnSpec(
-                    alias = joinData.childEntityAlias, column = it.dstColumn
+                    alias = joinData.parentEntityAlias, column = it.dstColumn
                 ),
                 to = ColumnSpec(
-                    alias = joinData.parentEntityAlias, column = it.srcColumn
+                    alias = joinData.childEntityAlias, column = it.srcColumn
                 )
             )
         }
@@ -85,8 +85,8 @@ class JoinDataToJoinSpecBuilder(
     private fun directRelationMapping(relationMapping: DirectRelationMapping, joinData: JoinData): Collection<JoinSpec> {
 
         val joinRules = relationMapping.foreignColumnMappingList.map { JoinRule(
-            from = ColumnSpec(alias = joinData.childEntityAlias, column = it.srcColumn),
-            to = ColumnSpec(alias = joinData.parentEntityAlias, column = it.dstColumn)
+            from = ColumnSpec(alias = joinData.parentEntityAlias, column = it.srcColumn),
+            to = ColumnSpec(alias = joinData.childEntityAlias, column = it.dstColumn)
         ) }
 
         return listOf(

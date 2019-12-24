@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by sohan on 6/25/2017.
  */
-public interface Entities {
+public interface SaleEntities {
     //Entities
     String USER_ENTITY = "User";
     String LEAVE_ENTITY = "Leave";
@@ -1137,7 +1137,7 @@ public interface Entities {
                     field(RegionModel.name),
                     field(RegionModel.areas, new Relationship(
                         Relationship.Name.HAS_MANY,
-                        Entities.AREA_ENTITY,
+                        SaleEntities.AREA_ENTITY,
                         new Relationship.Options()
                     ))
                 ))
@@ -1157,7 +1157,7 @@ public interface Entities {
                     .add(
                         new VirtualRelationMappingImpl(
                             RegionModel.areas,
-                            Entities.AREA_TABLE, Entities.AREA_ENTITY,
+                            SaleEntities.AREA_TABLE, SaleEntities.AREA_ENTITY,
                             ImmutableList.of(
                                 new ForeignColumnMapping(AreaTable.region_id, RegionTable.id)
                             ),
@@ -1184,7 +1184,7 @@ public interface Entities {
                     )),
                     field(AreaModel.territoryMasters, new Relationship(
                         Relationship.Name.HAS_MANY,
-                        Entities.TERRITORY_MASTER_ENTITY,
+                        SaleEntities.TERRITORY_MASTER_ENTITY,
                         new Relationship.Options()
                     ))
                 ))
@@ -1211,7 +1211,7 @@ public interface Entities {
                     ))
                     .add(new VirtualRelationMappingImpl(
                         AreaModel.territoryMasters,
-                        Entities.TERRITORY_MASTER_TABLE, Entities.TERRITORY_MASTER_ENTITY,
+                        SaleEntities.TERRITORY_MASTER_TABLE, SaleEntities.TERRITORY_MASTER_ENTITY,
                         ImmutableList.of(
                             new ForeignColumnMapping(TerritoryMasterTable.area_id, AreaTable.id)
                         ),

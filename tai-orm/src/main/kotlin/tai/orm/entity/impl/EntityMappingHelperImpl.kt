@@ -66,7 +66,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
                 ff.name == field
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperException("Field '$field' does not exists in '$entity'") }
+            .orElseThrow { EntityMappingHelperException("Field '$field' does not exists in '${entity.name}'") }
     }
 
     override fun getFieldByColumn(entity: String, column: String): Field {
@@ -99,7 +99,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
                 )
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '$entity.$field'") }
+            .orElseThrow { EntityMappingHelperException("No ColumnMapping exists for column '${entity.name}.$field'") }
     }
 
     override fun getRelationMapping(entity: String, field: String): RelationMapping {
@@ -114,7 +114,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
                 )
             }
             .findAny()
-            .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '$entity.$field'") }
+            .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '${entity.name}.$field'") }
     }
 
     override fun getReferencingEntity(

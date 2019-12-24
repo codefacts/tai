@@ -39,7 +39,7 @@ fun makeReadObject(
             val parentId = data[primaryKeyIndex] ?: throw ObjectReaderException("Data does not contains ID in Parent.field '${it.field}'")
             mutableMap.put(it.field, it.indirectRelationReader(parentId, data, dataList))
         }
-        mutableMap.toMap()
+        mutableMap
     }
 }
 

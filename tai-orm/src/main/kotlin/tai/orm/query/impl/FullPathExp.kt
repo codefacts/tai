@@ -3,6 +3,10 @@ package tai.orm.query.impl
 import tai.orm.JoinParam
 import tai.orm.core.PathExpression
 
+internal fun createAliasToJoinParamMap(joinParams: Collection<JoinParam>): Map<String, JoinParam> {
+    return joinParams.asSequence().map { it.alias to it }.toMap()
+}
+
 internal fun createAliasToFullPathExpMap(
     rootAlias: String,
     joinParams: Collection<JoinParam>,
