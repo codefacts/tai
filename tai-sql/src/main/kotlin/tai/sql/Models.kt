@@ -13,7 +13,7 @@ import tai.criteria.ops.valueOf
 open class QueryBase(
     open val from: Collection<FromSpec>,
     open val where: Collection<JsonMap> = listOf(),
-    open val groupBy: Collection<ColumnSpec> = listOf(),
+    open val groupBy: Collection<JsonMap> = listOf(),
     open val having: Collection<JsonMap> = listOf(),
     open val orderBy: Collection<OrderBySpec> = listOf(),
     open val pagination: SqlPagination? = null
@@ -54,7 +54,7 @@ data class SqlQuery(
     val selections: Collection<JsonMap>,
     override val from: Collection<FromSpec>,
     override val where: Collection<JsonMap> = listOf(),
-    override val groupBy: Collection<ColumnSpec> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
     override val having: Collection<JsonMap> = listOf(),
     override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -65,7 +65,7 @@ data class SqlSelectIntoOp(
     val into: IntoTableSpec,
     override val from: Collection<FromSpec>,
     override val where: Collection<JsonMap> = listOf(),
-    override val groupBy: Collection<ColumnSpec> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
     override val having: Collection<JsonMap> = listOf(),
     override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -76,7 +76,7 @@ data class SqlInsertIntoOp(
     val selections: Collection<JsonMap>,
     override val from: Collection<FromSpec>,
     override val where: Collection<JsonMap> = listOf(),
-    override val groupBy: Collection<ColumnSpec> = listOf(),
+    override val groupBy: Collection<JsonMap> = listOf(),
     override val having: Collection<JsonMap> = listOf(),
     override val orderBy: Collection<OrderBySpec> = listOf(),
     override val pagination: SqlPagination? = null
@@ -103,11 +103,12 @@ data class JoinRule(
 )
 
 data class OrderBySpec(
-    val alias: String? = null,
-    val column: String,
-    val order: Order = Order.ASC
+    val columnExpression: JsonMap,
+    val order: Order
 ) {
-    constructor(column: String, order: Order): this(null, column, order)
+    constructor(column: String) : this(tai.criteria.ops.column(column), Order.ASC)
+    constructor(column: String, order: Order) : this(tai.criteria.ops.column(column), order)
+    constructor(alias: String?, column: String, order: Order) : this(tai.criteria.ops.column(alias, column), order)
 }
 
 data class SqlPagination(

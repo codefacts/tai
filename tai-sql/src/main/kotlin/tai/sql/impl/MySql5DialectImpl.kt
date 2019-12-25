@@ -20,18 +20,34 @@ class MySql5DialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
     }
 
     private fun withPagination(sqlQuery: SqlQuery, pagination: SqlPagination): JsonMap {
+
         if (pagination.paginationColumnSpec == null) {
             return withOffsetLimit(
                 listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery),
                 pagination
             )
         }
-        return mapOf()
+        return mapOf();
 //        val originalQry = joinExpressions(
 //            listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery)
 //        )
 //
-//
+//        val paginatedQry = joinExpressions(
+//            select(
+//                pagination.paginationColumnSpec.let { column(it.alias, it.column) }
+//            ),
+//            from(
+//                asOp(
+//                    originalQry,
+//                    pagination.paginationColumnSpec
+//                )
+//            ),
+//            orderBy(
+//                sqlQuery.orderBy
+//            ),
+//            limit(valueOf(pagination.size)),
+//            offset(valueOf(pagination.offset))
+//        )
 //
 //        val expressions = listOf(
 //            select(sqlQuery.selections.toList()),
@@ -46,7 +62,7 @@ class MySql5DialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 //                        and(sqlQuery.having.toList())
 //                    ),
 //                    orderBy(
-//                        sqlQuery.orderBy.map { order(it.columnSpec, it.order) }
+//                        sqlQuery.orderBy
 //                    )
 //                )
 //            ),
@@ -58,7 +74,7 @@ class MySql5DialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 //                and(sqlQuery.having.toList())
 //            ),
 //            orderBy(
-//                sqlQuery.orderBy.map { order(it.columnSpec, it.order) }
+//                sqlQuery.orderBy
 //            )
 //        )
 //
@@ -118,12 +134,12 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
         where(
             and(sqlQuery.where.toList())
         ),
-        groupBy(sqlQuery.groupBy.asSequence().map { column(it.alias, it.column) }.toList()),
+        groupBy(sqlQuery.groupBy.toList()),
         having(
             and(sqlQuery.having.toList())
         ),
         orderBy(
-            sqlQuery.orderBy.map { order(column(it.alias, it.column), it.order) }
+            sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
         )
     )
 }

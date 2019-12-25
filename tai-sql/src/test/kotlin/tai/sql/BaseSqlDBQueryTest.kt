@@ -30,8 +30,8 @@ class SqlDBTest {
                         eq(column("active"), valueOf(true))
                     ),
                     groupBy = listOf(
-                        ColumnSpec("username"),
-                        ColumnSpec("password")
+                        column("username"),
+                        column("password")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC),
@@ -71,7 +71,7 @@ class SqlDBTest {
                         eq(column("user_type"), valueOf("foe"))
                     ),
                     groupBy = listOf(
-                        ColumnSpec("username")
+                        column("username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC)
@@ -108,7 +108,7 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        ColumnSpec("username")
+                        column("username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("username", Order.ASC)
@@ -270,8 +270,8 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        ColumnSpec("u1", "username"),
-                        ColumnSpec("u2", "username")
+                        column("u1", "username"),
+                        column("u2", "username")
                     ),
                     orderBy = listOf(
                         OrderBySpec("u1", "username", Order.ASC),
@@ -311,7 +311,7 @@ class SqlDBTest {
                     ),
                     where = listOf(),
                     groupBy = listOf(
-                        ColumnSpec("u", "username")
+                        column("u", "username")
                     ),
                     having = listOf(
                         gte(
