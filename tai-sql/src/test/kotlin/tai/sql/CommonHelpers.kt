@@ -7,7 +7,7 @@ import tai.criteria.operators.OPERATION_MAP
 import tai.sql.impl.BaseSqlDBImpl
 import tai.sql.impl.CoreSqlDBImpl
 import tai.sql.impl.SqlDBImpl
-import tai.sql.impl.MySql5DialectImpl
+import tai.sql.impl.DefaultSqlDialectV1Impl
 import java.io.IOException
 import java.util.*
 import javax.sql.DataSource
@@ -33,7 +33,7 @@ fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
     return SqlDBImpl(
         BaseSqlDBImpl(
             coreSqlDB,
-            MySql5DialectImpl(coreSqlDB)
+            DefaultSqlDialectV1Impl(coreSqlDB)
         )
     )
 }

@@ -2,7 +2,7 @@ package tai.sql.impl
 
 import tai.sql.*
 
-class MySql8DialectImpl: SqlDialect {
+class DefaultSqlDialectV2Impl: SqlDialect {
     override suspend fun executePaginated(sqlQuery: SqlQuery): ResultSet {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

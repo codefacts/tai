@@ -4,7 +4,7 @@ import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
 
-class MySql5DialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
+class DefaultSqlDialectV1Impl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
     override suspend fun executePaginated(sqlQuery: SqlQuery): ResultSet {
 
