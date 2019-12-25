@@ -2,26 +2,15 @@ package qorm
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import tai.criteria.CriteriaDialectBuilderImpl
-import tai.criteria.CriteriaToTextConverterImpl
-import tai.criteria.operators.OPERATION_MAP
-import tai.criteria.operators.OperationMapImpl
 import tai.orm.Pagination
 import tai.orm.QueryParam
 import tai.orm.core.FieldExpression
-import tai.orm.entity.Entity
 import test.orm.entity_config.SaleEntities
 import tai.orm.entity.EntityUtils
 import tai.orm.entity.impl.EntityMappingHelperImpl
-import tai.orm.field_
 import tai.orm.query.impl.*
 import tai.orm.read.makeReadObject
-import tai.sql.impl.BaseSqlDBImpl
-import tai.sql.impl.CoreSqlDBImpl
-import tai.sql.impl.SqlDialectImpl
-import tai.sql.impl.SqlExecutorImpl
 import test.orm.entities.*
-import javax.sql.DataSource
 
 class QueryTest {
 

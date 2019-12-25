@@ -4,7 +4,7 @@ import tai.base.JsonMap
 import tai.criteria.ops.*
 import tai.sql.*
 
-class SqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
+class MySql5DialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
     override suspend fun executePaginated(sqlQuery: SqlQuery): ResultSet {
 
@@ -27,6 +27,42 @@ class SqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
             )
         }
         return mapOf()
+//        val originalQry = joinExpressions(
+//            listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery)
+//        )
+//
+//
+//
+//        val expressions = listOf(
+//            select(sqlQuery.selections.toList()),
+//            from(
+//                sqlQuery.from.map { toCriteriaExp(it) } + listOf(
+//                    select(sqlQuery.selections.toList()),
+//                    where(
+//                        and(sqlQuery.where.toList())
+//                    ),
+//                    groupBy(sqlQuery.groupBy.toList()),
+//                    having(
+//                        and(sqlQuery.having.toList())
+//                    ),
+//                    orderBy(
+//                        sqlQuery.orderBy.map { order(it.columnSpec, it.order) }
+//                    )
+//                )
+//            ),
+//            where(
+//                and(sqlQuery.where.toList())
+//            ),
+//            groupBy(sqlQuery.groupBy.toList()),
+//            having(
+//                and(sqlQuery.having.toList())
+//            ),
+//            orderBy(
+//                sqlQuery.orderBy.map { order(it.columnSpec, it.order) }
+//            )
+//        )
+//
+//        return joinExpressions(expressions)
     }
 
     override suspend fun executePaginated(sqlQuery: SqlSelectIntoOp): UpdateResult {
@@ -82,12 +118,12 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
         where(
             and(sqlQuery.where.toList())
         ),
-        groupBy(sqlQuery.groupBy.toList()),
+        groupBy(sqlQuery.groupBy.asSequence().map { column(it.alias, it.column) }.toList()),
         having(
             and(sqlQuery.having.toList())
         ),
         orderBy(
-            sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
+            sqlQuery.orderBy.map { order(column(it.alias, it.column), it.order) }
         )
     )
 }
