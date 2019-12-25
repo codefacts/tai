@@ -1,9 +1,23 @@
+import tai.criteria.CriteriaDialectBuilderImpl
+import tai.criteria.CriteriaToTextConverterImpl
+import tai.criteria.operators.OPERATION_MAP
+import tai.criteria.ops.*
 import kotlin.streams.asSequence
 import kotlin.streams.asStream
 
 fun main() {
-    val it: Iterable<String> = listOf<String>()
-    val stream = listOf<String>().stream()
-    stream.asSequence().asStream().asSequence()
-    it.asSequence().asSequence()
+    val converterImpl = CriteriaToTextConverterImpl(OPERATION_MAP, CriteriaDialectBuilderImpl())
+    val kk = converterImpl.convert(
+        asOp(
+            joinExpressions(
+                listOf(
+                    select(column("username")),
+                    from(table("users"))
+                ),
+                isParenthesis = true
+            ),
+            "k"
+        )
+    )
+    println(kk)
 }

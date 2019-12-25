@@ -104,11 +104,10 @@ data class JoinRule(
 
 data class OrderBySpec(
     val columnExpression: JsonMap,
-    val order: Order
+    val order: Order = Order.ASC
 ) {
-    constructor(column: String) : this(tai.criteria.ops.column(column), Order.ASC)
-    constructor(column: String, order: Order) : this(tai.criteria.ops.column(column), order)
-    constructor(alias: String?, column: String, order: Order) : this(tai.criteria.ops.column(alias, column), order)
+    constructor(column: String, order: Order = Order.ASC) : this(tai.criteria.ops.column(column), order)
+    constructor(alias: String?, column: String, order: Order = Order.ASC) : this(tai.criteria.ops.column(alias, column), order)
 }
 
 data class SqlPagination(
