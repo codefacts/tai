@@ -16,6 +16,8 @@ interface QueryExecutor {
 
     suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount
 
+    suspend fun <T> querySingle(param: QueryArrayParam): T
+
     suspend fun queryObjects(param: QueryArrayParam): List<JsonMap>
 
     suspend fun queryObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap>

@@ -9,6 +9,8 @@ import tai.orm.core.FieldExpression
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.query.AliasAndColumn
 import tai.orm.query.QueryExecutor
+import tai.orm.query.ex.MultipleResultException
+import tai.orm.query.ex.NoResultException
 import tai.orm.read.ReadObject
 import tai.orm.read.makeReadObject
 import tai.sql.*
@@ -35,6 +37,17 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
 
     override suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
         return doQuery(param, countKey)
+    }
+
+    override suspend fun <T> querySingle(param: QueryArrayParam): T {
+        val data = query(param).data
+        if (data.isEmpty()) {
+            throw NoResultException("No result found in query single, expected exactly one result")
+        }
+        if (data.size > 1) {
+            throw MultipleResultException("Multiple result found in query single, expected exactly one result")
+        }
+        return data[0][0] as T
     }
 
     override suspend fun queryObjects(param: QueryArrayParam): List<JsonMap> {
