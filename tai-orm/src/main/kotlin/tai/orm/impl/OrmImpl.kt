@@ -2,6 +2,7 @@ package tai.orm.impl
 
 import tai.base.JsonMap
 import tai.orm.*
+import tai.orm.core.FieldExpression
 
 class OrmImpl : Orm {
     override suspend fun countDistinct(entity: String): Long {
@@ -20,7 +21,7 @@ class OrmImpl : Orm {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun findAll(param: QueryParam, countKey: String): DataAndCount<JsonMap> {
+    override suspend fun findAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -28,7 +29,7 @@ class OrmImpl : Orm {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: String): DataGridAndCount {
+    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -36,7 +37,7 @@ class OrmImpl : Orm {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForObjects(param: QueryArrayParam, countKey: String): DataAndCount<JsonMap> {
+    override suspend fun queryForObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -10,7 +10,7 @@ import tai.sql.OrderBySpec
 import java.util.*
 
 data class CountDistinctParam(
-    val countingKey: PathExpression,
+    val countingKey: FieldExpression,
     val entity: String,
     val alias: String,
     val joinParams: Collection<JoinParam> = emptyList(),

@@ -23,6 +23,26 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
         return doFindAll(param)
     }
 
+    override suspend fun findAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryForObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private suspend fun doFindAll(param: QueryParam): List<JsonMap> {
 
         val aliasToJoinParamMap = createAliasToJoinParamMap(param.joinParams)
@@ -46,25 +66,5 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
 
         val dataList = baseSqlDB.queryForArrays(sqlQuery)
         return dataList.map { readObject(it, dataList) }
-    }
-
-    override suspend fun findAll(param: QueryParam, countKey: String): DataAndCount<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: String): DataGridAndCount {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun queryForObjects(param: QueryArrayParam, countKey: String): DataAndCount<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
