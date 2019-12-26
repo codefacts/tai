@@ -170,7 +170,7 @@ class QueryParser(val helper: EntityMappingHelper) {
         aliasToEntityMap: Map<String, Entity>,
         aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
         createAlias: CreateAlias
-    ): Collection<JsonMap> {
+    ): List<JsonMap> {
         return selections.map { fieldExp ->
 
             val aliasAndColumn = translateToAliasAndColumn(
@@ -215,7 +215,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
     private fun translateAll(
         criteria: List<JsonMap>,
-        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToEntityMap: Map<String, Entity>,
         aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
         createAlias: CreateAlias
     ): List<JsonMap> {
@@ -228,7 +228,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
     private fun translateQueryParam(
         json: JsonMap,
-        aliasToEntityMap: MutableMap<String, Entity>,
+        aliasToEntityMap: Map<String, Entity>,
         aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
         createAlias: CreateAlias
     ): JsonMap {

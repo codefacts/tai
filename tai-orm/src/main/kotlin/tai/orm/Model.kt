@@ -13,7 +13,7 @@ data class CountDistinctParam(
     val countingKey: FieldExpression,
     val entity: String,
     val alias: String,
-    val joinParams: Collection<JoinParam> = emptyList(),
+    val joinParams: List<JoinParam> = emptyList(),
     val criteria: List<JsonMap> = emptyList(),
     val groupBy: List<JsonMap> = emptyList(),
     val having: List<JsonMap> = emptyList()
@@ -51,7 +51,7 @@ data class OrderByData(
 open class QueryParamBase(
     open val entity: String,
     open val alias: String,
-    open val joinParams: Collection<JoinParam>,
+    open val joinParams: List<JoinParam>,
     open val criteria: List<JsonMap>,
     open val orderBy: List<OrderByData>,
     open val groupBy: List<JsonMap>,
@@ -98,8 +98,8 @@ open class QueryParamBase(
 data class QueryParam(
     override val entity: String,
     override val alias: String,
-    override val joinParams: Collection<JoinParam> = emptyList(),
-    val selections: Collection<FieldExpression>,
+    override val joinParams: List<JoinParam> = emptyList(),
+    val selections: List<FieldExpression>,
     override val criteria: List<JsonMap> = emptyList(),
     override val groupBy: List<JsonMap> = emptyList(),
     override val having: List<JsonMap> = emptyList(),
@@ -116,8 +116,8 @@ data class Pagination(
 data class QueryArrayParam(
     override val entity: String,
     override val alias: String,
-    override val joinParams: Collection<JoinParam> = emptyList(),
-    val selections: Collection<JsonMap>,
+    override val joinParams: List<JoinParam> = emptyList(),
+    val selections: List<JsonMap>,
     override val criteria: List<JsonMap> = emptyList(),
     override val orderBy: List<OrderByData> = emptyList(),
     override val groupBy: List<JsonMap> = emptyList(),
