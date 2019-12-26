@@ -13,15 +13,17 @@ interface Orm {
 
     suspend fun findAll(param: QueryParam): List<JsonMap>
 
-    suspend fun findAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap>
+    suspend fun findAllWithCount(param: QueryParam): DataAndCount<JsonMap>
 
-    suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid
+    suspend fun findAllWithCount(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap>
 
-    suspend fun queryForDataGrid(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount
+    suspend fun query(param: QueryArrayParam): DataGrid
 
-    suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap>
+    suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount
 
-    suspend fun queryForObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap>
+    suspend fun queryObjects(param: QueryArrayParam): List<JsonMap>
+
+    suspend fun queryObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap>
 
     suspend fun <T> querySingle(param: QueryArrayParam): T
 

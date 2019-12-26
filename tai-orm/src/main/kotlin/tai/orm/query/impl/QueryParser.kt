@@ -21,11 +21,12 @@ import tai.sql.SqlQuery
 class QueryParser(val helper: EntityMappingHelper) {
     val joinDataHelper = JoinDataHelper(helper)
 
-    fun toSqlQuery(
+    fun translate(
         param: QueryParam,
+        countKey: FieldExpression? = null,
         aliasToJoinParamMap: Map<String, JoinParam>,
         aliasToFullPathExpMap: Map<String, PathExpression>
-    ): SqlQuery {
+    ): TranslationResult {
         val rootAlias = param.alias;
         val rootEntity = helper.getEntity(param.entity)
 
@@ -59,6 +60,8 @@ class QueryParser(val helper: EntityMappingHelper) {
         val orderBy = translateOrderBy(param.orderBy, aliasToEntityMap, aliasToJoinDataMap, createAlias)
         val pagination = param.pagination?.let { translatePagination(it, aliasToEntityMap, aliasToJoinDataMap, createAlias) }
 
+        val countKeyTranslation = if (countKey == null) null else translateToAliasAndColumn(countKey, aliasToEntityMap, aliasToJoinDataMap, createAlias)
+
         val from = JoinDataToJoinSpecBuilder(helper, rootEntity, rootAlias).translateFrom(aliasToJoinDataMap)
 
         val sqlQuery = SqlQuery(
@@ -70,7 +73,7 @@ class QueryParser(val helper: EntityMappingHelper) {
             orderBy = orderBy,
             pagination = pagination
         )
-        return sqlQuery
+        return TranslationResult(sqlQuery, countKeyTranslation)
     }
 
     private fun translatePagination(
@@ -81,8 +84,8 @@ class QueryParser(val helper: EntityMappingHelper) {
     ): SqlPagination {
         val aliasAndColumn = translateToAliasAndColumn(pagination.fieldExpression, aliasToEntityMap, aliasToJoinDataMap, createAlias)
         return SqlPagination(
-            ColumnSpec(aliasAndColumn.alias, aliasAndColumn.column),
-            pagination.offset, pagination.size
+            pagination.offset, pagination.size,
+            ColumnSpec(aliasAndColumn.alias, aliasAndColumn.column)
         )
     }
 
@@ -154,9 +157,11 @@ class QueryParser(val helper: EntityMappingHelper) {
         aliasToJoinDataMap: MutableMap<String, MutableMap<String, JoinData>>,
         createAlias: CreateAlias
     ): List<JsonMap> {
-        return criteria.map { translate(
-            it, aliasToEntityMap, aliasToJoinDataMap, createAlias
-        ) }
+        return criteria.map {
+            translate(
+                it, aliasToEntityMap, aliasToJoinDataMap, createAlias
+            )
+        }
     }
 
     private fun translate(
@@ -178,11 +183,7 @@ class QueryParser(val helper: EntityMappingHelper) {
     companion object {
 
         fun traverseFieldsInJsonMap(json: JsonMap, fieldHandler: (JsonMap) -> JsonMap): JsonMap {
-            return json.entries.map { (key, value) -> key to processValue(
-                value,
-                fieldHandler
-            )
-            }.toMap()
+            return processValue(json, fieldHandler) as JsonMap
         }
 
         private fun processValue(value: PrimitiveValue?, fieldHandler: (JsonMap) -> JsonMap): PrimitiveValue? {
@@ -193,17 +194,17 @@ class QueryParser(val helper: EntityMappingHelper) {
                 if (value[op_] == field_) {
                     return fieldHandler(value as JsonMap)
                 }
+                return value.entries.map { (key, value) -> key to processValue(value, fieldHandler) }.toMap()
             }
             if (value is List<*>) {
                 return value.map {
-                    processValue(
-                        value,
-                        fieldHandler
-                    )
+                    processValue(value, fieldHandler)
                 }
             }
             return value
         }
 
     }
+
+    data class TranslationResult(val sqlQuery: SqlQuery, val countKey: AliasAndColumn?)
 }

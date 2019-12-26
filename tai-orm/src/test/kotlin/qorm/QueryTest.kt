@@ -2,6 +2,8 @@ package qorm
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import tai.criteria.operators.Order
+import tai.orm.OrderByData
 import tai.orm.Pagination
 import tai.orm.QueryParam
 import tai.orm.core.FieldExpression
@@ -14,7 +16,7 @@ import test.orm.entities.*
 
 class QueryTest {
 
-    @Test
+//    @Test
     fun testWithBasicQuery() {
 
         val exec = createQueryExecutore(createDateSource(), SaleEntities.entities())
@@ -40,7 +42,7 @@ class QueryTest {
         }
     }
 
-    @Test
+//    @Test
     fun testNestedSelect() {
 
         val parser = createQueryParser(createDateSource(), SaleEntities.entities())
@@ -97,8 +99,8 @@ class QueryTest {
             val joinParamMap = createAliasToJoinParamMap(param.joinParams)
             val fullPathExpMap = createAliasToFullPathExpMap(param.alias, param.joinParams, joinParamMap)
 
-            val sqlQry = parser.toSqlQuery(
-                param, aliasToJoinParamMap = joinParamMap,
+            val (sqlQry, _) = parser.translate(
+                param, null, aliasToJoinParamMap = joinParamMap,
                 aliasToFullPathExpMap = fullPathExpMap
             )
 
@@ -118,6 +120,37 @@ class QueryTest {
         }
     }
 
+    @Test
+    fun testWithPagination() {
+
+        val exec = createQueryExecutore(createDateSource(), SaleEntities.entities())
+
+        runBlocking {
+            val list = exec.findAllWithCount(
+                QueryParam(
+                    entity = SaleEntities.USER_ENTITY,
+                    alias = "r",
+                    selections = listOf(
+                        FieldExpression.create("r", "id"),
+                        FieldExpression.create("r", "username"),
+                        FieldExpression.create("r", "password")
+                    ),
+                    orderBy = listOf(
+                        OrderByData(
+                            FieldExpression.create("r", "username"), Order.DESC
+                        )
+                    ),
+                    pagination = Pagination(
+                        fieldExpression = FieldExpression.create("r", "id"),
+                        offset = 25,
+                        size = 20
+                    )
+                )
+            )
+            println("count: " + list.count)
+            println("data: " + list.data.map { it.toString() }.joinToString(separator = "\n"))
+        }
+    }
 
 }
 

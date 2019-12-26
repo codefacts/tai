@@ -1,20 +1,16 @@
 package tai.orm.query.impl
 
 import tai.base.JsonMap
-import tai.base.PrimitiveValue
-import tai.criteria.operators.arg_
-import tai.criteria.operators.op_
+import tai.criteria.ops.column
+import tai.criteria.ops.count
+import tai.criteria.ops.distinct
 import tai.orm.*
 import tai.orm.core.FieldExpression
-import tai.orm.core.PathExpression
-import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
-import tai.orm.query.AliasAndColumn
 import tai.orm.query.QueryExecutor
-import tai.orm.query.ex.QueryParserException
-import tai.orm.read.ReadObject
 import tai.orm.read.makeReadObject
 import tai.sql.*
+import java.lang.NullPointerException
 
 class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlDB) : QueryExecutor {
     val parser = QueryParser(helper)
@@ -23,27 +19,31 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
         return doFindAll(param)
     }
 
-    override suspend fun findAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+    override suspend fun findAllWithCount(param: QueryParam): DataAndCount<JsonMap> {
+        return findAllWithCount(param, FieldExpression.create(param.alias, helper.getPrimaryKey(param.entity)))
+    }
+
+    override suspend fun findAllWithCount(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+        return doFindAll(param, countKey)
+    }
+
+    override suspend fun query(param: QueryArrayParam): DataGrid {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid {
+    override suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
+    override suspend fun queryObjects(param: QueryArrayParam): List<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap> {
+    override suspend fun queryObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private suspend fun doFindAll(param: QueryParam): List<JsonMap> {
+    private suspend fun doFindAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
 
         val aliasToJoinParamMap = createAliasToJoinParamMap(param.joinParams)
         val aliasToFullPathExpMap = createAliasToFullPathExpMap(
@@ -52,7 +52,11 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
             aliasToJoinParamMap
         )
 
-        val sqlQuery: SqlQuery = parser.toSqlQuery(param, aliasToJoinParamMap, aliasToFullPathExpMap)
+        val (sqlQuery, countKeyAliasAndColumn) = parser.translate(param, countKey, aliasToJoinParamMap, aliasToFullPathExpMap)
+
+        if (countKeyAliasAndColumn == null) {
+            throw NullPointerException("CountKey '$countKey' translation failed for entity '${param.entity}'")
+        }
 
         val readObject = makeReadObject(
             fieldExpressionToIndexMap = param.selections.asSequence().mapIndexed { index, exp ->
@@ -64,7 +68,44 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
             aliasToFullPathExpressionMap = aliasToFullPathExpMap
         )
 
-        val dataList = baseSqlDB.queryForArrays(sqlQuery)
+        val dataList = baseSqlDB.queryArrays(sqlQuery)
+        val count = baseSqlDB.querySingle<Long>(
+            sqlQuery.copy(
+                selections = listOf(
+                    count(
+                        distinct(column(countKeyAliasAndColumn.alias, countKeyAliasAndColumn.column))
+                    )
+                ),
+                orderBy = listOf(),
+                pagination = null
+            )
+        )
+        val data = dataList.map { readObject(it, dataList) }
+        return DataAndCount(data, count)
+    }
+
+    private suspend fun doFindAll(param: QueryParam): List<JsonMap> {
+
+        val aliasToJoinParamMap = createAliasToJoinParamMap(param.joinParams)
+        val aliasToFullPathExpMap = createAliasToFullPathExpMap(
+            param.alias,
+            param.joinParams,
+            aliasToJoinParamMap
+        )
+
+        val (sqlQuery, _) = parser.translate(param, null, aliasToJoinParamMap, aliasToFullPathExpMap)
+
+        val readObject = makeReadObject(
+            fieldExpressionToIndexMap = param.selections.asSequence().mapIndexed { index, exp ->
+                exp to index
+            }.toMap(),
+            rootAlias = param.alias,
+            rootEntity = param.entity,
+            helper = helper,
+            aliasToFullPathExpressionMap = aliasToFullPathExpMap
+        )
+
+        val dataList = baseSqlDB.queryArrays(sqlQuery)
         return dataList.map { readObject(it, dataList) }
     }
 }

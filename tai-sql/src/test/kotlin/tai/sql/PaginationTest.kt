@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import tai.criteria.operators.Order
 import tai.criteria.ops.*
-import tai.sql.impl.CoreSqlDBImpl
 import tai.sql.impl.SqlExecutorImpl
 
 class PaginationTest {
@@ -18,7 +17,7 @@ class PaginationTest {
         )
 
         runBlocking {
-            val list = sqlDB.queryForArrays(
+            val list = sqlDB.queryArrays(
                 SqlQuery(
                     selections = listOf(
                         column("u", "id"),

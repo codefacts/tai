@@ -5,6 +5,7 @@ import tai.orm.*
 import tai.orm.core.FieldExpression
 
 class OrmImpl : Orm {
+
     override suspend fun countDistinct(entity: String): Long {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -21,23 +22,27 @@ class OrmImpl : Orm {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun findAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+    override suspend fun findAllWithCount(param: QueryParam): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForDataGrid(param: QueryArrayParam): DataGrid {
+    override suspend fun findAllWithCount(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForDataGrid(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
+    override suspend fun query(param: QueryArrayParam): DataGrid {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForObjects(param: QueryArrayParam): List<JsonMap> {
+    override suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun queryForObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
+    override suspend fun queryObjects(param: QueryArrayParam): List<JsonMap> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun queryObjects(param: QueryArrayParam, countKey: FieldExpression): DataAndCount<JsonMap> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

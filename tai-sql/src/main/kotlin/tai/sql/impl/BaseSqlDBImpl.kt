@@ -12,11 +12,15 @@ class BaseSqlDBImpl(val coreSqlDB: CoreSqlDB, val dialect: SqlDialect) : BaseSql
         return dialect.executePaginated(sqlQuery)
     }
 
-    override suspend fun queryForArrays(sqlQuery: SqlQuery): List<JsonList> {
+    override suspend fun <T> querySingle(sqlQuery: SqlQuery): T {
+        return queryArrays(sqlQuery)[0][0] as T
+    }
+
+    override suspend fun queryArrays(sqlQuery: SqlQuery): List<JsonList> {
         return query(sqlQuery).results
     }
 
-    override suspend fun queryForObjects(sqlQuery: SqlQuery): List<JsonMap> {
+    override suspend fun queryObjects(sqlQuery: SqlQuery): List<JsonMap> {
         return query(sqlQuery).toJsonMaps()
     }
 

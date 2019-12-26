@@ -12,9 +12,11 @@ interface BaseSqlDB {
 
     suspend fun query(sqlQuery: SqlQuery): ResultSet
 
-    suspend fun queryForArrays(sqlQuery: SqlQuery): List<JsonList>
+    suspend fun <T> querySingle(sqlQuery: SqlQuery): T
 
-    suspend fun queryForObjects(sqlQuery: SqlQuery): List<JsonMap>
+    suspend fun queryArrays(sqlQuery: SqlQuery): List<JsonList>
+
+    suspend fun queryObjects(sqlQuery: SqlQuery): List<JsonMap>
 
     suspend fun selectInto(selectInto: SqlSelectIntoOp): UpdateResult;
 

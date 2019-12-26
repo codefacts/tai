@@ -13,6 +13,7 @@ import tai.orm.field_
 import tai.orm.query.impl.FieldExpOperator
 import tai.orm.query.impl.QueryExecutorImpl
 import tai.orm.query.impl.QueryParser
+import tai.sql.CoreSqlDB
 import tai.sql.SqlDB
 import tai.sql.SqlExecutor
 import tai.sql.impl.*
@@ -40,14 +41,23 @@ fun getMySQLDataSource(): DataSource {
 fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
     return SqlDBImpl(
         BaseSqlDBImpl(
-            CoreSqlDBImpl(
-                sqlExecutor,
-                CriteriaToTextConverterImpl(
-                    OPERATION_MAP,
-                    CriteriaDialectBuilderImpl()
-                )
-            ),
-            DefaultSqlDialectImpl()
+            createCoreSqlDB(sqlExecutor),
+            DefaultSqlDialectImpl(createCoreSqlDB(sqlExecutor))
+        )
+    )
+}
+
+fun createCoreSqlDB(sqlExecutor: SqlExecutor): CoreSqlDB {
+    val opMap = OperationMapImpl(
+        OPERATION_MAP.operationMap + mapOf(
+            field_ to FieldExpOperator()
+        )
+    )
+    return CoreSqlDBImpl(
+        sqlExecutor,
+        CriteriaToTextConverterImpl(
+            opMap,
+            CriteriaDialectBuilderImpl()
         )
     )
 }
@@ -67,7 +77,7 @@ fun createQueryExecutore(createDateSource: DataSource, ormEntities: Collection<E
             CriteriaToTextConverterImpl(
                 opMap, CriteriaDialectBuilderImpl()
             )
-        ), DefaultSqlDialectImpl()
+        ), DefaultSqlDialectImpl(createCoreSqlDB(SqlExecutorImpl(createDateSource())))
     )
     return QueryExecutorImpl(helper, baseSqlDB)
 }
@@ -87,7 +97,7 @@ fun createQueryParser(createDateSource: DataSource, ormEntities: Collection<Enti
             CriteriaToTextConverterImpl(
                 opMap, CriteriaDialectBuilderImpl()
             )
-        ), DefaultSqlDialectImpl()
+        ), DefaultSqlDialectImpl(createCoreSqlDB(SqlExecutorImpl(createDateSource())))
     )
     return QueryParser(helper)
 }
@@ -105,7 +115,7 @@ fun createBaseSqlDB(createDateSource: DataSource): BaseSqlDBImpl {
             SqlExecutorImpl(createDateSource),
             CriteriaToTextConverterImpl(opMap, CriteriaDialectBuilderImpl())
         ),
-        DefaultSqlDialectImpl()
+        DefaultSqlDialectImpl(createCoreSqlDB(SqlExecutorImpl(createDateSource)))
     )
 }
 
