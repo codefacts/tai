@@ -47,7 +47,7 @@ fun createSqlDb(sqlExecutor: SqlExecutor): SqlDB {
                     CriteriaDialectBuilderImpl()
                 )
             ),
-            SqlDialectImpl()
+            DefaultSqlDialectImpl()
         )
     )
 }
@@ -67,7 +67,7 @@ fun createQueryExecutore(createDateSource: DataSource, ormEntities: Collection<E
             CriteriaToTextConverterImpl(
                 opMap, CriteriaDialectBuilderImpl()
             )
-        ), SqlDialectImpl()
+        ), DefaultSqlDialectImpl()
     )
     return QueryExecutorImpl(helper, baseSqlDB)
 }
@@ -87,7 +87,7 @@ fun createQueryParser(createDateSource: DataSource, ormEntities: Collection<Enti
             CriteriaToTextConverterImpl(
                 opMap, CriteriaDialectBuilderImpl()
             )
-        ), SqlDialectImpl()
+        ), DefaultSqlDialectImpl()
     )
     return QueryParser(helper)
 }
@@ -105,7 +105,7 @@ fun createBaseSqlDB(createDateSource: DataSource): BaseSqlDBImpl {
             SqlExecutorImpl(createDateSource),
             CriteriaToTextConverterImpl(opMap, CriteriaDialectBuilderImpl())
         ),
-        SqlDialectImpl()
+        DefaultSqlDialectImpl()
     )
 }
 

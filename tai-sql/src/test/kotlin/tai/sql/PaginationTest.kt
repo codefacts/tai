@@ -2,13 +2,14 @@ package tai.sql
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import tai.criteria.operators.Order
 import tai.criteria.ops.*
 import tai.sql.impl.CoreSqlDBImpl
 import tai.sql.impl.SqlExecutorImpl
 
 class PaginationTest {
 
-
+    @Test
     fun testPagination() {
         val sqlDB = createSqlDb(
             SqlExecutorImpl(
@@ -20,14 +21,17 @@ class PaginationTest {
             val list = sqlDB.queryForArrays(
                 SqlQuery(
                     selections = listOf(
-                        column("id"),
-                        column("username")
+                        column("u", "id"),
+                        column("u","username")
                     ),
                     from = listOf(
-                        FromSpec(table = "users")
+                        FromSpec(table = "users", alias = "u")
+                    ),
+                    orderBy = listOf(
+                        OrderBySpec("u", "username", Order.DESC)
                     ),
                     pagination = SqlPagination(
-                        paginationColumnSpec = ColumnSpec("id"),
+                        paginationColumnSpec = ColumnSpec("u", "username"),
                         size = 20,
                         offset = 0
                     )
@@ -38,7 +42,7 @@ class PaginationTest {
         }
     }
 
-    @Test
+//    @Test
     fun testPagination2() {
         val coreSqlDB = createCoreSqlDB(
             SqlExecutorImpl(
@@ -58,6 +62,7 @@ class PaginationTest {
             )
 
             val rs = coreSqlDB.query(joinExpressions(frm))
+
             println(rs)
         }
     }

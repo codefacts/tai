@@ -142,8 +142,11 @@ class JoinExpressionsOperator : CriteriaOperation1 {
         criteriaDialect: CriteriaDialect,
         list: List<CriteriaExpression>
     ): CriteriaExpression {
+        val isParenthesis = criteriaDialect.ctxObject[is_parenthesis_] as Boolean? ?: false;
         val delimiter = criteriaDialect.ctxObject[delimiter_] as String? ?: " ";
-        return joinCriteriaExpressions(list, delimiter);
+        return withParenthesis(
+            joinCriteriaExpressions(list, delimiter), isParenthesis
+        )
     }
 
     override fun renderExpression(dialect: CriteriaDialect, param: CriteriaExpression): CriteriaExpression {

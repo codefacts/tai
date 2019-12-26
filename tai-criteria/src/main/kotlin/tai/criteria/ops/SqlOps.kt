@@ -102,14 +102,16 @@ fun order(column: JsonMap, order: Order): JsonMap {
     );
 }
 
-fun joinExpressions(vararg jsonMaps: JsonMap): JsonMap {
-    return joinExpressions(jsonMaps.toList());
+fun joinExpressions(vararg jsonMaps: JsonMap, isParenthesis: Boolean = false, delimiter: String = " "): JsonMap {
+    return joinExpressions(jsonMaps.toList(), isParenthesis, delimiter);
 }
 
-fun joinExpressions(arg: List<JsonMap>): JsonMap {
+fun joinExpressions(arg: List<JsonMap>, isParenthesis: Boolean = false, delimiter: String = " "): JsonMap {
     return mapOf(
         op_ to join_expressions_,
-        arg_ to arg
+        arg_ to arg,
+        is_parenthesis_ to isParenthesis,
+        delimiter_ to delimiter
     );
 }
 
