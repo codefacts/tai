@@ -108,7 +108,7 @@ class SqlExecutorImpl(
                     val rs = statement.generatedKeys ?: return@use UpdateResultImpl(0, listOf(), listOf());
                     return@use rs.use {
                         val columnCount = statement?.metaData?.columnCount ?: 1;
-                        val result = (1..columnCount).map { colNo -> convertSqlValue(rs.getObject(colNo)) }.toList();
+                        val result = (1..columnCount).map { colNo -> convertSqlValue(rs.getObject(colNo)) };
                         return@use UpdateResultImpl(
                             updatedCount = updatedCount,
                             columns = columnNames(rs),
@@ -144,7 +144,7 @@ fun toResultSet(rs: java.sql.ResultSet): ResultSet {
 
 fun columnNames(rs: java.sql.ResultSet): List<String> {
     val metaData = rs.metaData
-    return (1..metaData.columnCount).map { colNo -> metaData.getColumnLabel(colNo) }.toList();
+    return (1..metaData.columnCount).map { colNo -> metaData.getColumnLabel(colNo) };
 }
 
 

@@ -17,7 +17,7 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
         return coreSqlDB.query(
             if (sqlQuery.pagination == null) {
                 joinExpressions(
-                    listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery)
+                    listOf(select(sqlQuery.selections)) + createQueryExpressions(sqlQuery)
                 )
             } else {
                 withPagination(sqlQuery, sqlQuery.pagination)
@@ -29,7 +29,7 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
         if (pagination.paginationColumnSpec == null) {
             return withOffsetLimit(
-                listOf(select(sqlQuery.selections.toList())) + createQueryExpressions(sqlQuery),
+                listOf(select(sqlQuery.selections)) + createQueryExpressions(sqlQuery),
                 pagination
             )
         }
@@ -46,11 +46,11 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
                 sqlQuery.from.map { toCriteriaExp(it) }
             ),
             where(
-                and(sqlQuery.where.toList())
+                and(sqlQuery.where)
             ),
-            groupBy(sqlQuery.groupBy.toList()),
+            groupBy(sqlQuery.groupBy),
             having(
-                and(sqlQuery.having.toList())
+                and(sqlQuery.having)
             ),
             orderBy(
                 sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
@@ -63,7 +63,7 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
         val paginationColumnJson = pagination.paginationColumnSpec.let { column(it.alias, it.column) }
 
         val expressions = listOf(
-            select(sqlQuery.selections.toList()),
+            select(sqlQuery.selections),
             from(
                 sqlQuery.from.map { toCriteriaExp(it) } + listOf(
                     asOp(
@@ -89,7 +89,7 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
     override suspend fun executePaginated(sqlQuery: SqlSelectIntoOp): UpdateResult {
         val exps = listOf(
             selectInto(
-                sqlQuery.selections.toList(),
+                sqlQuery.selections,
                 table(sqlQuery.into.table),
                 sqlQuery.into.database?.let { pathExpression(it) } ?: emptyCriteriaOp
             )
@@ -110,7 +110,7 @@ class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
                 table(insertInto.into.database, insertInto.into.table),
                 insertInto.into.columns.map { column(it) }
             )
-        ) + listOf(select(insertInto.selections.toList())) + createQueryExpressions(insertInto);
+        ) + listOf(select(insertInto.selections)) + createQueryExpressions(insertInto);
 
         return coreSqlDB.execute(
             if (insertInto.pagination == null) {

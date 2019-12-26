@@ -8,7 +8,7 @@ import tai.sql.impl.SqlExecutorImpl
 
 class PaginationTest {
 
-    @Test
+//    @Test
     fun testPagination() {
         val sqlDB = createSqlDb(
             SqlExecutorImpl(

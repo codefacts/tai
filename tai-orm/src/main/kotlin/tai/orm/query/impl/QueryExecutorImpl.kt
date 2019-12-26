@@ -28,7 +28,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
     }
 
     override suspend fun query(param: QueryArrayParam): DataGrid {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return doQuery(param)
     }
 
     override suspend fun query(param: QueryArrayParam, countKey: FieldExpression): DataGridAndCount {
@@ -52,7 +52,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
             aliasToJoinParamMap
         )
 
-        val (sqlQuery, countKeyAliasAndColumn) = parser.translate(param, countKey, aliasToJoinParamMap, aliasToFullPathExpMap)
+        val (sqlQuery, countKeyAliasAndColumn) = parser.translateQueryParam(param, countKey, aliasToJoinParamMap, aliasToFullPathExpMap)
 
         if (countKeyAliasAndColumn == null) {
             throw NullPointerException("CountKey '$countKey' translation failed for entity '${param.entity}'")
@@ -93,7 +93,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
             aliasToJoinParamMap
         )
 
-        val (sqlQuery, _) = parser.translate(param, null, aliasToJoinParamMap, aliasToFullPathExpMap)
+        val (sqlQuery, _) = parser.translateQueryParam(param, null, aliasToJoinParamMap, aliasToFullPathExpMap)
 
         val readObject = makeReadObject(
             fieldExpressionToIndexMap = param.selections.asSequence().mapIndexed { index, exp ->
@@ -107,5 +107,30 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
 
         val dataList = baseSqlDB.queryArrays(sqlQuery)
         return dataList.map { readObject(it, dataList) }
+    }
+
+    private fun doQuery(param: QueryArrayParam): DataGrid {
+
+        val aliasToJoinParamMap = createAliasToJoinParamMap(param.joinParams)
+        val aliasToFullPathExpMap = createAliasToFullPathExpMap(
+            param.alias,
+            param.joinParams,
+            aliasToJoinParamMap
+        )
+
+        val (sqlQuery, _) = parser.translateQueryParam(param, null, aliasToJoinParamMap, aliasToFullPathExpMap)
+
+        val readObject = makeReadObject(
+            fieldExpressionToIndexMap = param.selections.asSequence().mapIndexed { index, exp ->
+                exp to index
+            }.toMap(),
+            rootAlias = param.alias,
+            rootEntity = param.entity,
+            helper = helper,
+            aliasToFullPathExpressionMap = aliasToFullPathExpMap
+        )
+
+        val dataList = baseSqlDB.queryArrays(sqlQuery)
+
     }
 }

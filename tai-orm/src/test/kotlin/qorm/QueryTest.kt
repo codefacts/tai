@@ -99,7 +99,7 @@ class QueryTest {
             val joinParamMap = createAliasToJoinParamMap(param.joinParams)
             val fullPathExpMap = createAliasToFullPathExpMap(param.alias, param.joinParams, joinParamMap)
 
-            val (sqlQry, _) = parser.translate(
+            val (sqlQry, _) = parser.translateQueryParam(
                 param, null, aliasToJoinParamMap = joinParamMap,
                 aliasToFullPathExpMap = fullPathExpMap
             )

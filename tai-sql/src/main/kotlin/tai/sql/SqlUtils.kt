@@ -105,11 +105,11 @@ fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
             sqlQuery.from.map { toCriteriaExp(it) }
         ),
         where(
-            and(sqlQuery.where.toList())
+            and(sqlQuery.where)
         ),
-        groupBy(sqlQuery.groupBy.toList()),
+        groupBy(sqlQuery.groupBy),
         having(
-            and(sqlQuery.having.toList())
+            and(sqlQuery.having)
         ),
         orderBy(
             sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
