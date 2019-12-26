@@ -6,7 +6,7 @@ import tai.criteria.withParenthesis
 import tai.sql.*
 import tai.sql.ex.TaiSqlException
 
-class DefaultSqlDialectV1Impl(val coreSqlDB: CoreSqlDB) : SqlDialect {
+class DefaultSqlDialectImpl(val coreSqlDB: CoreSqlDB) : SqlDialect {
 
     companion object {
         const val PAGINATED_QRY_ALIAS = "k"
@@ -122,29 +122,3 @@ class DefaultSqlDialectV1Impl(val coreSqlDB: CoreSqlDB) : SqlDialect {
     }
 }
 
-private fun withOffsetLimit(exps: List<JsonMap>, pagination: SqlPagination): JsonMap {
-    return joinExpressions(
-        exps + listOf(
-            limit(valueOf(pagination.size)),
-            offset(valueOf(pagination.offset))
-        )
-    )
-}
-
-fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
-    return listOf(
-        from(
-            sqlQuery.from.map { toCriteriaExp(it) }
-        ),
-        where(
-            and(sqlQuery.where.toList())
-        ),
-        groupBy(sqlQuery.groupBy.toList()),
-        having(
-            and(sqlQuery.having.toList())
-        ),
-        orderBy(
-            sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
-        )
-    )
-}

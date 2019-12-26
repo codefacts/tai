@@ -98,3 +98,30 @@ fun emptyResultSet(): ResultSet {
         listOf(), listOf(), listOf()
     );
 }
+
+fun createQueryExpressions(sqlQuery: QueryBase): List<JsonMap> {
+    return listOf(
+        from(
+            sqlQuery.from.map { toCriteriaExp(it) }
+        ),
+        where(
+            and(sqlQuery.where.toList())
+        ),
+        groupBy(sqlQuery.groupBy.toList()),
+        having(
+            and(sqlQuery.having.toList())
+        ),
+        orderBy(
+            sqlQuery.orderBy.map { order(it.columnExpression, it.order) }
+        )
+    )
+}
+
+fun withOffsetLimit(exps: List<JsonMap>, pagination: SqlPagination): JsonMap {
+    return joinExpressions(
+        exps + listOf(
+            limit(valueOf(pagination.size)),
+            offset(valueOf(pagination.offset))
+        )
+    )
+}
