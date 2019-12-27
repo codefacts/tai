@@ -93,13 +93,13 @@ class UpsertFunctionImpl(
         ) {
             val field = belongsTo.field
             val value = entity[field] ?: return
-            JsonDependencyHandler(JoHandler { jsonObject: JsonMap ->
+            UpsertUtils.traverseJsonTree(value) { jsonObject: JsonMap ->
                 handleBelongToJsonObject(
                     belongsTo,
                     tableValues,
                     jsonObject
                 )
-            }).handle(value)
+            }
         }
 
         private fun handleBelongToJsonObject(
@@ -123,13 +123,13 @@ class UpsertFunctionImpl(
         ) {
             val field = indirectDependency.field
             val value = entity[field] ?: return
-            JsonDependencyHandler(JoHandler { jsonObject: JsonMap ->
+            UpsertUtils.traverseJsonTree(value) { jsonObject: JsonMap ->
                 handleIndirectJsonObject(
                     indirectDependency,
                     tableData,
                     jsonObject
                 )
-            }).handle(value)
+            }
         }
 
         private fun handleIndirectJsonObject(
