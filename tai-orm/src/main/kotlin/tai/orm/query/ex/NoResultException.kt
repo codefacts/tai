@@ -1,6 +1,6 @@
 package tai.orm.query.ex
 
-import tai.orm.OrmException
+import tai.orm.ex.OrmException
 
 class NoResultException(message: String) : OrmException(message) {
 }

@@ -1,4 +1,4 @@
-package tai.orm
+package tai.orm.ex
 
 import java.lang.RuntimeException
 

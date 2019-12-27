@@ -9,6 +9,7 @@ import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
 import tai.orm.entity.Entity
 import tai.orm.entity.EntityMappingHelper
+import tai.orm.ex.OrmException
 import tai.orm.query.AliasAndColumn
 import tai.orm.query.CreateAlias
 import tai.orm.query.CreateAliasIsLast

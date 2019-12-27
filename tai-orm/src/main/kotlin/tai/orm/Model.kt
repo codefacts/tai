@@ -6,7 +6,6 @@ import tai.criteria.operators.JoinType
 import tai.criteria.operators.Order
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
-import tai.sql.OrderBySpec
 import java.util.*
 
 data class CountDistinctParam(
@@ -145,3 +144,4 @@ enum class OperationType {
     UPSERT, DELETE
 }
 
+data class ColumnToColumnMapping(val srcColumn: String, val dstColumn: String)

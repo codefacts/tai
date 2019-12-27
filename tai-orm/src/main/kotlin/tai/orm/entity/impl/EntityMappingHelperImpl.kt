@@ -1,6 +1,6 @@
 package tai.orm.entity.impl
 
-import tai.orm.OrmException
+import tai.orm.ex.OrmException
 import tai.orm.Utils
 import tai.orm.core.FieldExpression
 import tai.orm.core.PathExpression
@@ -12,7 +12,6 @@ import tai.orm.entity.Field
 import tai.orm.entity.columnmapping.ColumnMapping
 import tai.orm.entity.columnmapping.RelationMapping
 import tai.orm.validation.ex.EntityMappingHelperException
-import java.util.*
 import java.util.function.Function
 import java.util.function.Predicate
 
@@ -178,7 +177,9 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     }
 
     override fun getChildEntity(parentEntity: Entity, childEntityField: String): String {
-        return getField(parentEntity, childEntityField).relationship?.entity ?: throw OrmException("No relationship found at ${parentEntity.name}.$childEntityField")
+        return getField(parentEntity, childEntityField).relationship?.entity ?: throw OrmException(
+            "No relationship found at ${parentEntity.name}.$childEntityField"
+        )
     }
 
     init {

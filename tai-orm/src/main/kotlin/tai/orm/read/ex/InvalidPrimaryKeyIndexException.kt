@@ -1,6 +1,6 @@
 package tai.orm.read.ex
 
-import tai.orm.OrmException
+import tai.orm.ex.OrmException
 
 /**
  * Created by sohan on 2017-07-25.
