@@ -108,9 +108,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
     override fun getRelationMapping(entity: Entity, field: String): RelationMapping {
         return entity.dbMapping.relationMappings.stream()
             .filter { dbColumnMapping: RelationMapping ->
-                dbColumnMapping.field.equals(
-                    field
-                )
+                dbColumnMapping.field == field
             }
             .findAny()
             .orElseThrow { EntityMappingHelperException("No ColumnMapping found for column '${entity.name}.$field'") }

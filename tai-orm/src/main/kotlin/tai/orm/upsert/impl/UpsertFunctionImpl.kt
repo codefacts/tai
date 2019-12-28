@@ -5,7 +5,6 @@ import tai.base.MutableJsonMap
 import tai.orm.upsert.*
 import tai.orm.upsert.UpsertUtils.Companion.isNew
 import tai.orm.upsert.UpsertUtils.Companion.toTableAndPrimaryColumnsKey
-import java.util.*
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -71,7 +70,7 @@ class UpsertFunctionImpl(
                     dependencyColumnValuePopulator
                         .populate(
                             dependencyHandler
-                                .requireUpsert(
+                                .upsert(
                                     jsonObject,
                                     context
                                 )
