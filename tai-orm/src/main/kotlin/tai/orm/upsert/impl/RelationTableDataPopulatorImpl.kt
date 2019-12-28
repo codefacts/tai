@@ -12,8 +12,8 @@ import java.util.*
  */
 class RelationTableDataPopulatorImpl(
     val relationTable: String,
-    val srcMappings: Array<ColumnToColumnMapping>,
-    val dstMappings: Array<ColumnToColumnMapping>
+    val srcMappings: List<ColumnToColumnMapping>,
+    val dstMappings: List<ColumnToColumnMapping>
 ) : RelationTableDataPopulator {
 
     override fun populate(srcTableData: TableData, dstTableData: TableData, isNew: Boolean): TableData {
@@ -22,10 +22,10 @@ class RelationTableDataPopulatorImpl(
         val map: MutableJsonMap = HashMap()
 
         for ((srcColumn, dstColumn) in srcMappings) {
-            map[dstColumn] = srcValues[srcColumn]
+            map[srcColumn] = srcValues[dstColumn]
         }
         for ((srcColumn, dstColumn) in dstMappings) {
-            map[dstColumn] = dstValues[srcColumn]
+            map[srcColumn] = dstValues[dstColumn]
         }
         return TableData(
             relationTable,
