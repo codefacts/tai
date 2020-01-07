@@ -3,19 +3,20 @@ package tai.orm.upsert.impl
 import tai.base.JsonMap
 import tai.orm.upsert.DirectDependencyHandler
 import tai.orm.upsert.TableData
+import tai.orm.upsert.TableDataPopulator
 import tai.orm.upsert.UpsertContext
-import tai.orm.upsert.UpsertFunction
 import java.util.*
 
 /**
- * Created by Jango on 2017-01-09.
+ * Created by sohan on 7/7/2017.
  */
-class DirectDependencyHandlerImpl(val upsertFunction: UpsertFunction) : DirectDependencyHandler {
+class TableDataPopulatingDirectDependencyHandlerImpl(val tableDataPopulator: TableDataPopulator) :
+    DirectDependencyHandler {
 
     override fun upsert(
         entity: JsonMap,
         upsertContext: UpsertContext
     ): TableData {
-        return upsertFunction.upsert(entity, upsertContext)
+        return tableDataPopulator.populate(entity, false)
     }
 }

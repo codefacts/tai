@@ -24,10 +24,9 @@ class UpsertFunctionImpl(
     override fun upsert(
         jsonObject: JsonMap,
         upsertContext: UpsertContext
-    ): JsonMap {
+    ): TableData {
 
-        Inserter(jsonObject, upsertContext).insert()
-        return jsonObject
+        return Inserter(jsonObject, upsertContext).insert()
     }
 
     private inner class Inserter(
@@ -73,7 +72,7 @@ class UpsertFunctionImpl(
                     dependencyColumnValuePopulator
                         .populate(
                             dependencyHandler
-                                .requireUpsert(
+                                .upsert(
                                     jsonObject,
                                     context
                                 )

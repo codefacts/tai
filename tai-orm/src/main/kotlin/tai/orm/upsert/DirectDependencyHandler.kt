@@ -7,5 +7,5 @@ import tai.base.JsonMap
  */
 @FunctionalInterface
 interface DirectDependencyHandler {
-    fun requireUpsert(entity: JsonMap, upsertContext: UpsertContext): TableData
+    fun upsert(entity: JsonMap, upsertContext: UpsertContext): TableData
 }

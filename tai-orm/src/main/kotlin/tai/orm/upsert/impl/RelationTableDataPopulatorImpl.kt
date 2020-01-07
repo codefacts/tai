@@ -23,10 +23,10 @@ class RelationTableDataPopulatorImpl(
         val map: MutableJsonMap = HashMap()
 
         for ((srcColumn, dstColumn) in srcMappings) {
-            map[dstColumn] = srcValues[srcColumn]
+            map[srcColumn] = srcValues[dstColumn]
         }
         for ((srcColumn, dstColumn) in dstMappings) {
-            map[dstColumn] = dstValues[srcColumn]
+            map[srcColumn] = dstValues[dstColumn]
         }
         return TableData(
             relationTable,

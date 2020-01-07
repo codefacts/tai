@@ -2,6 +2,9 @@ package tai.orm.upsert
 
 import tai.base.JsonMap
 import tai.orm.entity.DbMapping
+import tai.orm.entity.Entity
+import tai.orm.entity.EntityMappingHelper
+import tai.orm.entity.columnmapping.DirectRelationMapping
 import tai.orm.entity.columnmapping.RelationMapping
 import java.util.stream.Collectors
 import java.util.stream.Stream
@@ -43,6 +46,15 @@ class UpsertUtils {
                     }
                 }
             }
+        }
+
+        fun getRelationMappingsForUpsert(entity: Entity, helper: EntityMappingHelper): Stream<RelationMapping> {
+
+            val fieldToRelationMappingMap = entity.dbMapping.relationMappings.asSequence().map { it.field to it }.toMap()
+
+            return entity.fields.stream()
+                .filter { it.relationship != null  && (fieldToRelationMappingMap[it.name] is DirectRelationMapping || it.relationship.options.cascadeUpsert) }
+                .map { fieldToRelationMappingMap[it.name] }
         }
     }
 }

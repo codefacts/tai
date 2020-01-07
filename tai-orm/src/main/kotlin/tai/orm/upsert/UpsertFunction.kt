@@ -10,5 +10,5 @@ interface UpsertFunction {
     fun upsert(
         jsonObject: JsonMap,
         upsertContext: UpsertContext
-    ): JsonMap
+    ): TableData
 }

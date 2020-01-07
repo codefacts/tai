@@ -10,7 +10,10 @@ const val translatedTo_ = "translatedTo"
 
 class Utils {
     companion object {
+
         fun not(value: Boolean) = !value
+
+        fun <T> cast(t: Any): T = t as T
     }
 }
 
