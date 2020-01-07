@@ -6,6 +6,8 @@ import tai.orm.entity.columnmapping.RelationMapping
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
+typealias JsonMapOrList = Any
+
 class UpsertUtils {
     companion object {
 
@@ -30,6 +32,18 @@ class UpsertUtils {
             return entity[isNewKey] as Boolean? ?: false
         }
 
+        fun traverseEntityMapOrList(value: JsonMapOrList, jsonHandler: (jo: JsonMap) -> Unit) {
+            when (value) {
+                is Map<*, *> -> {
+                    jsonHandler(value as JsonMap)
+                }
+                is List<*> -> {
+                    value.forEach {
+                        jsonHandler(it as JsonMap)
+                    }
+                }
+            }
+        }
     }
 }
 

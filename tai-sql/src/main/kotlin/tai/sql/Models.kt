@@ -134,7 +134,7 @@ data class SqlInsert(
 }
 
 data class SqlUpdate(
-    val database: String?,
+    val database: String? = null,
     val table: String,
     val data: JsonMap,
     val sqlConditions: List<SqlCondition>
@@ -143,7 +143,7 @@ data class SqlUpdate(
 }
 
 data class SqlDelete(
-    val database: String?,
+    val database: String? = null,
     val table: String,
     val sqlConditions: List<SqlCondition>
 ) : SqlOperation() {

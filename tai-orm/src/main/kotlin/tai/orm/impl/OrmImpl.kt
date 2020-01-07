@@ -1,5 +1,7 @@
 package tai.orm.impl
 
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import tai.base.JsonMap
 import tai.criteria.ops.count
 import tai.criteria.ops.distinct
@@ -9,8 +11,14 @@ import tai.orm.entity.EntityMappingHelper
 import tai.orm.query.QueryExecutor
 import tai.orm.query.ex.MultipleResultException
 import tai.orm.query.ex.NoResultException
+import tai.orm.update.UpdateExecutor
+import java.util.stream.Stream
 
-class OrmImpl(val executor: QueryExecutor, val helper: EntityMappingHelper) : Orm {
+class OrmImpl(
+    val helper: EntityMappingHelper,
+    val executor: QueryExecutor,
+    val updateExecutor: UpdateExecutor
+) : Orm {
 
     override suspend fun countDistinct(entity: String): Long {
         return executor.querySingle(
@@ -84,34 +92,62 @@ class OrmImpl(val executor: QueryExecutor, val helper: EntityMappingHelper) : Or
     }
 
     override suspend fun upsert(entity: String, data: JsonMap): JsonMap {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return updateExecutor.upsert(
+            UpsertParam(
+            entity, jsonObject = data
+        )).jsonObject
     }
 
-    override suspend fun upsertAll(entity: String, jsonObjects: List<JsonMap>): List<JsonMap> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun upsertAll(entity: String, jsonObjects: Stream<JsonMap>): Stream<JsonMap> {
+        return updateExecutor.executeAll(
+            jsonObjects.map { ExecuteParam(
+                OperationType.UPSERT,
+                entity = entity,
+                jsonObject = it
+            ) }
+        ).map { it.jsonObject }
     }
 
-    override suspend fun <T> delete(entity: String, id: T) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun <T> delete(entity: String, id: T): T {
+        val primaryKey = helper.getPrimaryKey(entity)
+        return updateExecutor.delete(
+            DeleteParam(
+            entity = entity,
+                jsonObject = ImmutableMap.of(
+                    primaryKey, id
+                )
+        )).jsonObject[primaryKey] as T
     }
 
-    override suspend fun <T> deleteAll(entity: String, ids: List<T>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun <T> deleteAll(entity: String, ids: Stream<T>): Stream<T> {
+        val primaryKey = helper.getPrimaryKey(entity)
+        return updateExecutor.executeAll(
+            ids.map { id -> ExecuteParam(
+                OperationType.DELETE,
+                entity = entity,
+                jsonObject = ImmutableMap.of(primaryKey, id)
+            ) }
+        ).map { it.jsonObject[primaryKey] as T }
     }
 
-    override suspend fun <T> deleteEntity(entity: String, obj: JsonMap) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun <T> deleteEntity(entity: String, obj: JsonMap): JsonMap {
+        return updateExecutor.delete(
+            DeleteParam(
+            entity, obj
+        )).jsonObject
     }
 
-    override suspend fun <T> deleteAllEntities(entity: String, objects: List<JsonMap>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun <T> deleteAllEntities(entity: String, objects: Stream<JsonMap>): Stream<JsonMap> {
+        return updateExecutor.executeAll(
+            objects.map { ExecuteParam(OperationType.DELETE, entity, it) }
+        ).map { it.jsonObject }
     }
 
-    override suspend fun execute(param: ExecuteParam): ExecuteParam {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun execute(param: ExecuteParam): Stream<ExecuteParam> {
+        return updateExecutor.executeAll(Stream.of(param))
     }
 
-    override suspend fun executeAll(params: Collection<ExecuteParam>): Collection<ExecuteParam> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun executeAll(params: Stream<ExecuteParam>): Stream<ExecuteParam> {
+        return updateExecutor.executeAll(params)
     }
 }

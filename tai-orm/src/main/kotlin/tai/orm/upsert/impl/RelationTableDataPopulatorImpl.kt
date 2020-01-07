@@ -3,6 +3,7 @@ package tai.orm.upsert.impl
 import tai.base.JsonMap
 import tai.base.MutableJsonMap
 import tai.orm.ColumnToColumnMapping
+import tai.orm.entity.ForeignColumnMapping
 import tai.orm.upsert.RelationTableDataPopulator
 import tai.orm.upsert.TableData
 import java.util.*
@@ -12,8 +13,8 @@ import java.util.*
  */
 class RelationTableDataPopulatorImpl(
     val relationTable: String,
-    val srcMappings: Array<ColumnToColumnMapping>,
-    val dstMappings: Array<ColumnToColumnMapping>
+    val srcMappings: List<ForeignColumnMapping>,
+    val dstMappings: List<ForeignColumnMapping>
 ) : RelationTableDataPopulator {
 
     override fun populate(srcTableData: TableData, dstTableData: TableData, isNew: Boolean): TableData {

@@ -2,6 +2,7 @@ package tai.orm
 
 import tai.base.JsonMap
 import tai.orm.core.FieldExpression
+import java.util.stream.Stream
 
 interface Orm {
 
@@ -29,17 +30,17 @@ interface Orm {
 
     suspend fun upsert(entity: String, data: JsonMap): JsonMap
 
-    suspend fun upsertAll(entity: String, jsonObjects: List<JsonMap>): List<JsonMap>
+    suspend fun upsertAll(entity: String, jsonObjects: Stream<JsonMap>): Stream<JsonMap>
 
-    suspend fun <T> delete(entity: String, id: T)
+    suspend fun <T> delete(entity: String, id: T): T
 
-    suspend fun <T> deleteAll(entity: String, ids: List<T>)
+    suspend fun <T> deleteAll(entity: String, ids: Stream<T>): Stream<T>
 
-    suspend fun <T> deleteEntity(entity: String, obj: JsonMap)
+    suspend fun <T> deleteEntity(entity: String, obj: JsonMap): JsonMap
 
-    suspend fun <T> deleteAllEntities(entity: String, objects: List<JsonMap>)
+    suspend fun <T> deleteAllEntities(entity: String, objects: Stream<JsonMap>): Stream<JsonMap>
 
-    suspend fun execute(param: ExecuteParam): ExecuteParam
+    suspend fun execute(param: ExecuteParam): Stream<ExecuteParam>
 
-    suspend fun executeAll(params: Collection<ExecuteParam>): Collection<ExecuteParam>
+    suspend fun executeAll(params: Stream<ExecuteParam>): Stream<ExecuteParam>
 }

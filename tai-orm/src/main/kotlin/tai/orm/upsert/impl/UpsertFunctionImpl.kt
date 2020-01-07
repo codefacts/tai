@@ -5,6 +5,7 @@ import tai.base.MutableJsonMap
 import tai.orm.upsert.*
 import tai.orm.upsert.UpsertUtils.Companion.isNew
 import tai.orm.upsert.UpsertUtils.Companion.toTableAndPrimaryColumnsKey
+import tai.orm.upsert.UpsertUtils.Companion.traverseEntityMapOrList
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
@@ -23,9 +24,10 @@ class UpsertFunctionImpl(
     override fun upsert(
         jsonObject: JsonMap,
         upsertContext: UpsertContext
-    ): TableData {
+    ): JsonMap {
 
-        return Inserter(jsonObject, upsertContext).insert()
+        Inserter(jsonObject, upsertContext).insert()
+        return jsonObject
     }
 
     private inner class Inserter(
@@ -93,13 +95,13 @@ class UpsertFunctionImpl(
         ) {
             val field = belongsTo.field
             val value = entity[field] ?: return
-            JsonDependencyHandler(JoHandler { jsonObject: JsonMap ->
+            UpsertUtils.traverseEntityMapOrList(value) { jsonObject: JsonMap ->
                 handleBelongToJsonObject(
                     belongsTo,
                     tableValues,
                     jsonObject
                 )
-            }).handle(value)
+            }
         }
 
         private fun handleBelongToJsonObject(
@@ -123,13 +125,13 @@ class UpsertFunctionImpl(
         ) {
             val field = indirectDependency.field
             val value = entity[field] ?: return
-            JsonDependencyHandler(JoHandler { jsonObject: JsonMap ->
+            traverseEntityMapOrList(value) { jsonObject: JsonMap ->
                 handleIndirectJsonObject(
                     indirectDependency,
                     tableData,
                     jsonObject
                 )
-            }).handle(value)
+            }
         }
 
         private fun handleIndirectJsonObject(
