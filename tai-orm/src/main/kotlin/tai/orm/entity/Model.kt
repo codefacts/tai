@@ -37,7 +37,7 @@ data class Relationship(
     data class Options(
         val cascadeUpsert: Boolean = false,
         val cascadeDelete: Boolean = false,
-        val isNonNull: Boolean = false
+        val separateLoading: Boolean = false
     )
 }
 

@@ -21,7 +21,8 @@ data class CountDistinctParam(
 data class JoinParam(
     val path: PathExpression,
     val alias: String,
-    val joinType: JoinType? = null
+    val joinType: JoinType? = null,
+    val separateLoading: Boolean? = null
 )
 
 data class DataAndCount<T>(val data: List<T>, val count: Long)

@@ -162,7 +162,7 @@ class EntityMappingHelperImpl(entities: Collection<Entity>) :
         val parts = pathExpression.parts()
         for (i in 1 until parts.size) {
             val field = getField(entity1, parts[i])
-            if (Utils.not(field.relationship?.options?.isNonNull == true)) {
+            if (Utils.not(field.relationship?.options?.separateLoading == true)) {
                 return false
             }
             entity1 = field.relationship?.entity ?: throw OrmException("Relationship does not exists on field $field in $entity.$pathExpression")
