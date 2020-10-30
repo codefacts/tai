@@ -38,16 +38,16 @@ class JoinDataHelper(
         createAlias: CreateAliasIsLast
     ): AliasAndEntity {
 
-        return traverse(rootAlias, rootEntity, fullPathExp, joinParam, rootJoinDataMap, createJoinData = CreateJoinData { parentEntityAlias, parentEntity, childEntityField, isLast ->
+        return traverse(rootAlias, rootEntity, fullPathExp, joinParam, rootJoinDataMap, createJoinData = { parentEntityAlias, parentEntity, childEntityField, isLast ->
             val childEntity = helper.getEntity(
                 helper.getChildEntity(parentEntity, childEntityField)
             )
-            return@CreateJoinData JoinData(
+            return@traverse JoinData(
                 parentEntityAlias = parentEntityAlias,
                 parentEntity = parentEntity,
                 childEntityField = childEntityField,
                 childEntity = childEntity,
-                childEntityAlias = createAlias.create(childEntity.dbMapping.tableShortCode, isLast)
+                childEntityAlias = createAlias(childEntity.dbMapping.tableShortCode, isLast)
             )
         })
     }
@@ -70,7 +70,7 @@ class JoinDataHelper(
             .forEachIndexed { index, childEntityField ->
 
                 val isLast = index == fullPathExp.size() - 2
-                joinData = joinDataMap[childEntityField] ?: createJoinData.create(alias, entity, childEntityField, isLast)
+                joinData = joinDataMap[childEntityField] ?: createJoinData(alias, entity, childEntityField, isLast)
 
                 val joinDataNonNull = joinData ?: throw QueryParserException("Assertion error: Join data should not be null")
 
@@ -96,9 +96,9 @@ class JoinDataHelper(
 fun makeCreateAlias(): CreateAlias {
     val aliasToCountMap = mutableMapOf<String, Int>()
 
-    return CreateAlias { shortCode ->
+    return { shortCode ->
         val count = (aliasToCountMap[shortCode] ?: 0) + 1
         aliasToCountMap[shortCode] = count
-        "$shortCode$count"
+        "${shortCode}_$count"
     }
 }

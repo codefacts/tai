@@ -11,7 +11,8 @@ import tai.orm.query.AliasAndColumn
 import tai.orm.query.QueryExecutor
 import tai.orm.query.ex.MultipleResultException
 import tai.orm.query.ex.NoResultException
-import tai.orm.read.ReadObject
+import tai.orm.read.ConvertToObjects
+import tai.orm.read.makeConvertToObjects
 import tai.orm.read.makeReadObject
 import tai.sql.*
 import java.lang.NullPointerException
@@ -60,7 +61,7 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
 
     private suspend fun doFindAll(param: QueryParam, countKey: FieldExpression): DataAndCount<JsonMap> {
 
-        val (sqlQuery, countKeyAliasAndColumn, readObject) = toQueryElements(param, countKey)
+        val (sqlQuery, countKeyAliasAndColumn, convertToObjects) = toQueryElements(param, countKey)
 
         if (countKeyAliasAndColumn == null) {
             throw NullPointerException("CountKey '$countKey' translation failed for entity '${param.entity}'")
@@ -78,16 +79,15 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
                 pagination = null
             )
         )
-        val data = dataList.map { readObject(it, dataList) }
+        val data = convertToObjects(dataList)
         return DataAndCount(data, count)
     }
 
     private suspend fun doFindAll(param: QueryParam): List<JsonMap> {
 
-        val (sqlQuery, _, readObject) = toQueryElements(param, null)
-
+        val (sqlQuery, _, convertToObjects) = toQueryElements(param, null)
         val dataList = baseSqlDB.queryArrays(sqlQuery)
-        return dataList.map { readObject(it, dataList) }
+        return convertToObjects(dataList)
     }
 
     private suspend fun doQuery(param: QueryArrayParam): DataGrid {
@@ -158,7 +158,9 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
             aliasToFullPathExpressionMap = aliasToFullPathExpMap
         )
 
-        return QueryElements(sqlQuery, countKeyAliasAndColumn, readObject)
+        val convertToObjects = makeConvertToObjects(readObject, helper.getPrimaryKey(param.entity))
+
+        return QueryElements(sqlQuery, countKeyAliasAndColumn, convertToObjects)
     }
 
     private fun toQueryElements(param: QueryArrayParam, countKey: FieldExpression?): QueryParser.TranslationResult {
@@ -184,5 +186,5 @@ class QueryExecutorImpl(val helper: EntityMappingHelper, val baseSqlDB: BaseSqlD
         )
     }
 
-    data class QueryElements(val sqlQuery: SqlQuery, val countKeyAliasAndColumn: AliasAndColumn?, val readObject: ReadObject)
+    data class QueryElements(val sqlQuery: SqlQuery, val countKeyAliasAndColumn: AliasAndColumn?, val convertToObjects: ConvertToObjects)
 }

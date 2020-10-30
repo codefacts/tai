@@ -31,8 +31,15 @@ class OperationMapBuilderImpl(
 
     private fun createOperation(entityName: String, context: OperationMapBuilderContextImpl): OperationHolder {
 
-        if (context.containsHolder(entityName)) {
+        if (context.containsValue(entityName)) {
             return context.get(entityName)
+        }
+
+        if (context.containsEmpty(entityName)) {
+            return OperationHolder(
+                upsertFunction = context.createProxyUpsertFunction(entityName),
+                deleteFunction = context.createProxyDeleteFunction(entityName)
+            )
         }
 
         context.putEmpty(entityName)

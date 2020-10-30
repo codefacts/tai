@@ -48,13 +48,13 @@ class OrmImpl(
         )
     }
 
-    override suspend fun <T> findOne(param: QueryParam): JsonMap {
+    override suspend fun findOne(param: QueryParam): JsonMap {
         val data = executor.findAll(param)
         if (data.isEmpty()) {
-            throw NoResultException("No result found in query single, expected exactly one result")
+            throw NoResultException("No result found, expected exactly one result")
         }
         if (data.size > 1) {
-            throw MultipleResultException("Multiple result found in query single, expected exactly one result")
+            throw MultipleResultException("Multiple result found, expected exactly one result")
         }
         return data[0]
     }

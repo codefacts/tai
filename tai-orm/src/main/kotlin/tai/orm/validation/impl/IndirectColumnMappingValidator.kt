@@ -1,14 +1,10 @@
 package tai.orm.validation.impl
 
-import tai.orm.Utils
 import tai.orm.entity.Entity
 import tai.orm.entity.Field
-import tai.orm.entity.ForeignColumnMapping
-import tai.orm.entity.RelationType
 import tai.orm.entity.columnmapping.IndirectRelationMapping
 import tai.orm.validation.ex.EntityValidationException
 import java.util.*
-import java.util.function.Consumer
 
 /**
  * Created by sohan on 4/14/2017.

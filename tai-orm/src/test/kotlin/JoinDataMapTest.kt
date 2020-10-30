@@ -31,25 +31,25 @@ class JoinDataMapTest {
         val ae = joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_b.field_c"), JoinParam(PathExpression.parse("r.field_a.field_b.field_c"), "k", JoinType.INNER_JOIN),
-            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "k" else createAlias.create(shortCode) }
+            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "k" else createAlias(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_a.field_a"), JoinParam(PathExpression.parse("r.field_a.field_a.field_a"), "q", JoinType.LEFT_JOIN),
-            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "q" else createAlias.create(shortCode) }
+            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "q" else createAlias(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_a.field_a.field_c"), JoinParam(PathExpression.parse("r.field_a.field_a.field_c"), "w", JoinType.RIGHT_JOIN),
-            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "w" else createAlias.create(shortCode) }
+            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "w" else createAlias(shortCode) }
         )
 
         joinDataHelper.populateJoinDataMap(
             "r", helper.getEntity("B"),
             PathExpression.parse("r.field_b.field_a.field_b"), JoinParam(PathExpression.parse("r.field_b.field_a.field_b"), "n", JoinType.FULL_JOIN),
-            joinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) "n" else createAlias.create(shortCode) }
+            joinDataMap, createAlias = { shortCode, isLast -> if (isLast) "n" else createAlias(shortCode) }
         )
 
         println(ae)
@@ -60,44 +60,46 @@ class JoinDataMapTest {
 
         println(pretty)
 
-        Assert.assertEquals("{\n" +
-                "  field_a\n" +
-                "    JoinData(parentEntityAlias='r', childEntityAlias='a1', parentEntity=B, childEntityField='field_a', childEntity=A, JoinType=null)\n" +
-                "    {\n" +
-                "      field_b\n" +
-                "        JoinData(parentEntityAlias='a1', childEntityAlias='b1', parentEntity=A, childEntityField='field_b', childEntity=B, JoinType=null)\n" +
-                "        {\n" +
-                "          field_c\n" +
-                "            JoinData(parentEntityAlias='b1', childEntityAlias='k', parentEntity=B, childEntityField='field_c', childEntity=C, JoinType=INNER_JOIN)\n" +
-                "            {\n" +
-                "            }\n" +
-                "        }\n" +
-                "      field_a\n" +
-                "        JoinData(parentEntityAlias='a1', childEntityAlias='a2', parentEntity=A, childEntityField='field_a', childEntity=A, JoinType=null)\n" +
-                "        {\n" +
-                "          field_a\n" +
-                "            JoinData(parentEntityAlias='a2', childEntityAlias='q', parentEntity=A, childEntityField='field_a', childEntity=A, JoinType=LEFT_JOIN)\n" +
-                "            {\n" +
-                "            }\n" +
-                "          field_c\n" +
-                "            JoinData(parentEntityAlias='a2', childEntityAlias='w', parentEntity=A, childEntityField='field_c', childEntity=C, JoinType=RIGHT_JOIN)\n" +
-                "            {\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "  field_b\n" +
-                "    JoinData(parentEntityAlias='r', childEntityAlias='b2', parentEntity=B, childEntityField='field_b', childEntity=B, JoinType=null)\n" +
-                "    {\n" +
-                "      field_a\n" +
-                "        JoinData(parentEntityAlias='b2', childEntityAlias='a3', parentEntity=B, childEntityField='field_a', childEntity=A, JoinType=null)\n" +
-                "        {\n" +
-                "          field_b\n" +
-                "            JoinData(parentEntityAlias='a3', childEntityAlias='n', parentEntity=A, childEntityField='field_b', childEntity=B, JoinType=FULL_JOIN)\n" +
-                "            {\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "}", pretty)
+        Assert.assertEquals("""
+            {
+              field_a
+                JoinData(parentEntityAlias='r', childEntityAlias='a_1', parentEntity=B, childEntityField='field_a', childEntity=A, JoinType=null)
+                {
+                  field_b
+                    JoinData(parentEntityAlias='a_1', childEntityAlias='b_1', parentEntity=A, childEntityField='field_b', childEntity=B, JoinType=null)
+                    {
+                      field_c
+                        JoinData(parentEntityAlias='b_1', childEntityAlias='k', parentEntity=B, childEntityField='field_c', childEntity=C, JoinType=INNER_JOIN)
+                        {
+                        }
+                    }
+                  field_a
+                    JoinData(parentEntityAlias='a_1', childEntityAlias='a_2', parentEntity=A, childEntityField='field_a', childEntity=A, JoinType=null)
+                    {
+                      field_a
+                        JoinData(parentEntityAlias='a_2', childEntityAlias='q', parentEntity=A, childEntityField='field_a', childEntity=A, JoinType=LEFT_JOIN)
+                        {
+                        }
+                      field_c
+                        JoinData(parentEntityAlias='a_2', childEntityAlias='w', parentEntity=A, childEntityField='field_c', childEntity=C, JoinType=RIGHT_JOIN)
+                        {
+                        }
+                    }
+                }
+              field_b
+                JoinData(parentEntityAlias='r', childEntityAlias='b_2', parentEntity=B, childEntityField='field_b', childEntity=B, JoinType=null)
+                {
+                  field_a
+                    JoinData(parentEntityAlias='b_2', childEntityAlias='a_3', parentEntity=B, childEntityField='field_a', childEntity=A, JoinType=null)
+                    {
+                      field_b
+                        JoinData(parentEntityAlias='a_3', childEntityAlias='n', parentEntity=A, childEntityField='field_b', childEntity=B, JoinType=FULL_JOIN)
+                        {
+                        }
+                    }
+                }
+            }
+        """.trimIndent(), pretty)
 
     }
 

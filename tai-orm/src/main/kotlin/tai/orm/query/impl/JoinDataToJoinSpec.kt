@@ -106,7 +106,7 @@ class JoinDataToJoinSpecBuilder(
         createAlias: CreateAlias
     ): Collection<JoinSpec> {
 
-        val relationTableAlias = createAlias.create(RELATION_TABLE_ALIAS)
+        val relationTableAlias = createAlias(RELATION_TABLE_ALIAS)
 
         val srcJoinRules = relationMapping.srcForeignColumnMappingList.map {
             JoinRule(
@@ -125,13 +125,13 @@ class JoinDataToJoinSpecBuilder(
         return listOf(
             JoinSpec(
                 joinType = joinData.joinType ?: relationMapping.srcJoinType,
-                table = joinData.parentEntity.dbMapping.table,
-                alias = joinData.parentEntityAlias,
+                table = relationMapping.relationTable,
+                alias = relationTableAlias,
                 joinRules = srcJoinRules
             ),
             JoinSpec(
                 joinType = joinData.joinType ?: relationMapping.dstJoinType,
-                table = joinData.childEntity.dbMapping.table,
+                table = relationMapping.referencingTable,
                 alias = joinData.childEntityAlias,
                 joinRules = dstJoinRules
             )
@@ -141,7 +141,7 @@ class JoinDataToJoinSpecBuilder(
 
 private fun makeCreateRelationAlias(): CreateAlias {
     var count = 1;
-    return CreateAlias {
+    return {
         "$it${count++}"
     }
 }

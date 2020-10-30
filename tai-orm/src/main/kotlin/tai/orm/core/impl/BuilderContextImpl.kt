@@ -1,6 +1,5 @@
 package tai.orm.core.impl
 
-import tai.orm.Utils.Companion.not
 import tai.orm.core.BuilderContext
 import tai.orm.core.ex.BuilderContextException
 import java.util.*

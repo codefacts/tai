@@ -7,6 +7,12 @@ import tai.orm.core.PathExpression
 import tai.orm.entity.EntityMappingHelper
 import tai.orm.read.ex.ObjectReaderException
 
+fun makeConvertToObjects(readObject: ReadObject, primaryKey: String): ConvertToObjects {
+    return { dataList ->
+        dataList.map { readObject(it, dataList) }.map { obj -> obj[primaryKey] to obj }.toMap().values.toList()
+    }
+}
+
 fun makeReadObject(
     fieldExpressionToIndexMap: Map<FieldExpression, Index>,
     rootAlias: String,

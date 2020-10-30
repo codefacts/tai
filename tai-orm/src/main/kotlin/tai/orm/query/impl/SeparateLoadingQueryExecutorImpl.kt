@@ -9,7 +9,7 @@ import tai.orm.query.QueryExecutor
 class SeparateLoadingQueryExecutorImpl(val queryExecutor: QueryExecutor) : QueryExecutor by queryExecutor {
 
     override suspend fun findAll(param: QueryParam): List<JsonMap> {
-
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override suspend fun findAllWithCount(param: QueryParam): DataAndCount<JsonMap> {

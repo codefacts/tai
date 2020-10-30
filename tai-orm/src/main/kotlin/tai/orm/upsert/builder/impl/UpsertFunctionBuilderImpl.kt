@@ -1,8 +1,8 @@
 package tai.orm.upsert.builder.impl
 
 import tai.base.JsonMap
-import tai.orm.ColumnToColumnMapping
-import tai.orm.Utils.Companion.cast
+import tai.orm.OrmUtils
+import tai.orm.OrmUtils.cast
 import tai.orm.core.BuilderContext
 import tai.orm.entity.DbMapping
 import tai.orm.entity.EntityMappingHelper

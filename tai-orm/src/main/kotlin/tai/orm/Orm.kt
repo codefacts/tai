@@ -10,7 +10,7 @@ interface Orm {
 
     suspend fun countDistinct(param: CountDistinctParam): Long
 
-    suspend fun <T> findOne(param: QueryParam): JsonMap
+    suspend fun findOne(param: QueryParam): JsonMap
 
     suspend fun findAll(param: QueryParam): List<JsonMap>
 

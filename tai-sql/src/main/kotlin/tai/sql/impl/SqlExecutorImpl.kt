@@ -100,6 +100,7 @@ class SqlExecutorImpl(
     }
 
     private suspend fun doExecuteII(con: Connection, sql: String, params: JsonList): UpdateResult {
+        println("SQL: $sql | params: $params")
         return coroutineScope {
             async(dispatcher) {
                 con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { statement ->
@@ -107,6 +108,9 @@ class SqlExecutorImpl(
                     val updatedCount = statement.executeUpdate();
                     val rs = statement.generatedKeys ?: return@use UpdateResultImpl(0, listOf(), listOf());
                     return@use rs.use {
+                        if (!rs.next()) {
+                            return@use UpdateResultImpl(0, listOf(), listOf());
+                        }
                         val columnCount = statement?.metaData?.columnCount ?: 1;
                         val result = (1..columnCount).map { colNo -> convertSqlValue(rs.getObject(colNo)) };
                         return@use UpdateResultImpl(

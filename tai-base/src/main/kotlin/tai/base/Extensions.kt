@@ -135,3 +135,120 @@ fun JsonList.getBinary(pos: Int): ByteArray? {
 fun JsonList.getInstant(pos: Int): Instant? {
     return this[pos] as Instant?;
 }
+
+//----------NON NULL-----------------------------------------------------------------------------------
+
+fun JsonMap.getBooleanNonNull(key: String): Boolean {
+    val any = this[key];
+    return any as Boolean
+}
+
+fun JsonMap.getIntNonNull(key: String): Int {
+    return when (val number = this[key] as Number) {
+        is Int -> number
+        else -> number.toInt()
+    }
+}
+
+fun JsonMap.getLongNonNull(key: String): Long {
+    return when (val number = this.get(key) as Number) {
+        is Long -> number
+        else -> number.toLong()
+    }
+}
+
+fun JsonMap.getFloatNonNull(key: String): Float {
+    return when (val number = this.get(key) as Number) {
+        is Float -> number
+        else -> number.toFloat()
+    }
+}
+
+fun JsonMap.getDoubleNonNull(key: String): Double {
+    return when (val number = this[key] as Number) {
+        is Double -> number
+        else -> number.toDouble()
+    }
+}
+
+fun JsonMap.getStringNonNull(key: String): String {
+    val cs = this[key] as CharSequence
+    return cs.toString();
+}
+
+fun JsonMap.getJsonMapNonNull(key: String): JsonMap {
+    return this.get(key) as JsonMap
+}
+
+fun JsonMap.getJsonListNonNull(key: String): JsonList {
+    return this.get(key) as JsonList
+}
+
+fun JsonMap.getBinaryNonNull(key: String): ByteArray {
+    return this[key] as ByteArray
+}
+
+fun JsonMap.getInstantNonNull(key: String): Instant {
+    return this[key] as Instant
+}
+
+fun JsonList.getStringNonNull(pos: Int): String {
+    val cs = this.get(pos) as CharSequence
+    return cs?.toString()
+}
+
+fun JsonList.getIntegerNonNull(pos: Int): Int {
+    val number = this.get(pos) as Number
+    return if (number is Int) {
+        number
+    } else {
+        number.toInt()
+    }
+}
+
+fun JsonList.getLongNonNull(pos: Int): Long {
+    val number = this.get(pos) as Number
+    return if (number is Long) {
+        number // Avoids unnecessary unbox/box
+    } else {
+        number.toLong()
+    }
+}
+
+fun JsonList.getDoubleNonNull(pos: Int): Double {
+    val number = this.get(pos) as Number
+    return if (number is Double) {
+        number // Avoids unnecessary unbox/box
+    } else {
+        number.toDouble()
+    }
+}
+
+fun JsonList.getFloatNonNull(pos: Int): Float {
+    val number = this.get(pos) as Number
+    return if (number is Float) {
+        number // Avoids unnecessary unbox/box
+    } else {
+        number.toFloat()
+    }
+}
+
+fun JsonList.getBooleanNonNull(pos: Int): Boolean {
+    return this.get(pos) as Boolean
+}
+
+fun JsonList.getJsonObjectNonNull(pos: Int): JsonMap {
+    return this.get(pos) as JsonMap
+}
+
+fun JsonList.getJsonArrayNonNull(pos: Int): JsonList {
+    return this.get(pos) as JsonList
+}
+
+fun JsonList.getBinaryNonNull(pos: Int): ByteArray {
+    return this[pos] as ByteArray
+}
+
+fun JsonList.getInstantNonNull(pos: Int): Instant {
+    return this[pos] as Instant
+}

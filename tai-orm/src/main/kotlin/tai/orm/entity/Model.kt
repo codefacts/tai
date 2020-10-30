@@ -20,7 +20,7 @@ data class DbMapping(
     val primaryColumn: String,
     val tableShortCode: String,
     val columnMappings: List<ColumnMapping>,
-    val relationMappings: List<RelationMapping>
+    val relationMappings: List<RelationMapping> = listOf()
 )
 
 data class ForeignColumnMapping(val srcColumn: String, val dstColumn: String)
@@ -37,7 +37,7 @@ data class Relationship(
     data class Options(
         val cascadeUpsert: Boolean = false,
         val cascadeDelete: Boolean = false,
-        val separateLoading: Boolean = false
+        val separateLoading: Boolean? = null
     )
 }
 

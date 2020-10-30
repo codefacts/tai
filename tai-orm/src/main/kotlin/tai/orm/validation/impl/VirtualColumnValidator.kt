@@ -1,11 +1,8 @@
 package tai.orm.validation.impl
 
-import tai.orm.Utils
 import tai.orm.entity.Entity
 import tai.orm.entity.Field
 import tai.orm.entity.ForeignColumnMapping
-import tai.orm.entity.RelationType
-import tai.orm.entity.columnmapping.DirectRelationMapping
 import tai.orm.entity.columnmapping.VirtualRelationMapping
 import tai.orm.validation.ex.EntityValidationException
 import java.util.*

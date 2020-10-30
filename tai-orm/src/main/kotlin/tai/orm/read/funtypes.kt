@@ -5,6 +5,8 @@ import tai.base.JsonMap
 
 typealias ReadObject = (data: JsonList, dataList: List<JsonList>) -> JsonMap
 
+typealias ConvertToObjects = (dataList: List<JsonList>) -> List<JsonMap>
+
 typealias ReadIndirectRelation = (
     parentId: Any,
     data: JsonList,

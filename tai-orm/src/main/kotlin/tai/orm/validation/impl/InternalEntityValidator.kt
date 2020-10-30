@@ -1,6 +1,5 @@
 package tai.orm.validation.impl
 
-import tai.orm.Utils
 import tai.orm.entity.*
 import tai.orm.entity.columnmapping.*
 import tai.orm.validation.EntityValidator

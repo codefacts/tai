@@ -23,9 +23,14 @@ class OperationMapBuilderContextImpl : OperationMapBuilderContext {
         return holder != null && holder.value == null
     }
 
-    override fun containsHolder(entity: String): Boolean {
+    override fun containsValue(entity: String): Boolean {
         val holder = map[entity]
         return holder?.value != null
+    }
+
+    override fun containsEmpty(entity: String): Boolean {
+        val holder = map[entity]
+        return holder != null && holder.value == null
     }
 
     override fun put(entity: String, operationHolder: OperationHolder) {

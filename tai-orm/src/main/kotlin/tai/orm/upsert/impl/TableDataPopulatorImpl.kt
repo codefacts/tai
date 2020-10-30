@@ -19,7 +19,9 @@ class TableDataPopulatorImpl(
     override fun populate(jsonObject: JsonMap, isNew: Boolean): TableData {
         val map: MutableJsonMap = LinkedHashMap()
         for ((field, column) in fieldToColumnMappings) {
-            map[column] = jsonObject[field]
+            if (jsonObject.containsKey(field)) {
+                map[column] = jsonObject[field]
+            }
         }
         return TableData(table, listOf(primaryColumn), map, isNew)
     }

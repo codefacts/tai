@@ -114,7 +114,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
             val (childAlias, childEntity) = joinDataHelper.populateJoinDataMap(
                 rootAlias, rootEntity, fullPathExp, joinParam = aliasToJoinParamMap[alias] ?: throw QueryParserException("No JoinParam found in aliasToJoinParamMap for alias '$alias' -> '$fullPathExp'"),
-                rootJoinDataMap = rootJoinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> if (isLast) alias else createAlias.create(shortCode) }
+                rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> if (isLast) alias else createAlias(shortCode) }
             )
 
             aliasToEntityMap[childAlias] = childEntity
@@ -196,7 +196,7 @@ class QueryParser(val helper: EntityMappingHelper) {
 
         val (lastAlias, lastEntity) = joinDataHelper.populateJoinDataMap(
             rootAlias = alias, rootEntity = entity, fullPathExp = pathExp,
-            joinParam = null, rootJoinDataMap = rootJoinDataMap, createAlias = CreateAliasIsLast { shortCode, isLast -> createAlias.create(shortCode) }
+            joinParam = null, rootJoinDataMap = rootJoinDataMap, createAlias = { shortCode, isLast -> createAlias(shortCode) }
         )
         return AliasAndColumn(
             lastAlias,
